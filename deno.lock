@@ -1,0 +1,7 @@
+{
+  "version": "5",
+  "remote": {
+    "https://raw.githubusercontent.com/wainggan/raas/refs/heads/main/application.ts": "2a3e8bde360ded3eab528123a6545b7b7963f748af0a3b6cb21b96984b602ad2",
+    "https://raw.githubusercontent.com/wainggan/raas/refs/heads/main/router.ts": "1e0e6b34427c389a3f63078afbe33e1d4e552633e78813bdfe284fcd153b7983"
+  }
+}

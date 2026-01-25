@@ -1,7 +1,7 @@
 {
 	"compilerOptions": {
 		"strict": true,
-		
+
 		"noImplicitReturns": true,
 		"noImplicitOverride": true,
 		"noUnusedLocals": true,
@@ -10,6 +10,12 @@
 	},
 	"tasks": {
 		"dev": "deno run --check --watch main.ts"
+	},
+	"imports": {
+		"@parchii/html": "https://raw.githubusercontent.com/wainggan/raas/refs/heads/main/html.ts",
+		"@parchii/jsx": "https://raw.githubusercontent.com/wainggan/raas/refs/heads/main/jsx.ts",
+		"@parchii/router": "https://raw.githubusercontent.com/wainggan/raas/refs/heads/main/router.ts",
+		"@parchii/application": "https://raw.githubusercontent.com/wainggan/raas/refs/heads/main/application.ts"
 	},
 	"fmt": {
 		"useTabs": true,

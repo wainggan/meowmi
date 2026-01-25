@@ -10,3 +10,5 @@ first, install [deno](https://deno.com/).
 deno task dev
 ```
 
+then connect to `localhost:8000` (probably)
+
