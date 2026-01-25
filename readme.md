@@ -1,6 +1,3 @@
-
 # meowmi
 
 collab :3
-
-
