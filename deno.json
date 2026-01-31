@@ -20,5 +20,13 @@
 	"fmt": {
 		"useTabs": true,
 		"indentWidth": 4
+	},
+	"lint": {
+		"rules": {
+			"exclude": [
+				"ban-types",
+				"require-await"
+			]
+		}
 	}
 }
