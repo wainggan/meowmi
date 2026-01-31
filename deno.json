@@ -9,7 +9,9 @@
 		"noPropertyAccessFromIndexSignature": true
 	},
 	"tasks": {
-		"dev": "deno run --check --watch main.ts"
+		"check": "deno check && deno run -A jsr:@cunarist/deno-circular-deps src/main.ts",
+		"run": "deno task check && deno run --allow-net --allow-read --allow-write src/main.ts",
+		"dev": "deno run --allow-net --allow-read --allow-write --check=all --watch src/main.ts"
 	},
 	"imports": {
 		"@parchii/html": "https://raw.githubusercontent.com/wainggan/raas/refs/heads/main/html.ts",
