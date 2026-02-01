@@ -6,7 +6,7 @@ const config: import("./src/config.types.ts").default = {
 	// database settings
 	db: {
 		// where the database is located
-		path: './local/db.sql',
+		path: './.local/db.sql',
 	},
 };
 
