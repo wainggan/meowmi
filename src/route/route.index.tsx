@@ -11,7 +11,13 @@ import { render } from "@parchii/html";
 const index: router.Middleware<{}, 'GET', never> = async ctx => {
 	const dom = (
 		<template.Base title="index">
-			meow!
+			<p>
+				<a href="/login">login</a>
+			</p>
+			
+			<p>
+				meow!
+			</p>
 		</template.Base>
 	);
 
