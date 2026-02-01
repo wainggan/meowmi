@@ -1,3 +1,7 @@
+/*
+various helpful jsx 'template' components
+*/
+
 import { jsx, fragment } from "@parchii/jsx";
 
 export const Base = (input: { title: string }, children: unknown[]) => {

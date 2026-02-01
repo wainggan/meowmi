@@ -52,5 +52,23 @@ export class DBSql implements DB {
 
 		return result as User;
 	}
+
+	async users_set(user: User): Promise<null | Miss<"internal" | "conflict">> {
+		try {
+			this.db.prepare(`
+				UPDATE users
+				SET
+					username = (?),
+					password = (?)
+				WHERE
+					id = (?);
+			`).run(user.username, user.password, user.id);
+		}
+		catch (_e) {
+			return new Miss('conflict', `username '${user.username}' already exists`);
+		}
+
+		return null;
+	}
 }
 

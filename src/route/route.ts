@@ -1,3 +1,7 @@
+/*
+gathers together all our middleware and exports a `Router`.
+*/
+
 import * as router from "@parchii/router";
 import { Shared } from "../shared.ts";
 

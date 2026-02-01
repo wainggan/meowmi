@@ -1,3 +1,7 @@
+/*
+page used for the front page.
+*/
+
 import * as router from "@parchii/router";
 import * as template from "./template.tsx";
 
