@@ -66,7 +66,7 @@ export class Result<T, E> {
 }
 
 export class Miss<E> {
-	private constructor(type: E, message: string) {
+	constructor(type: E, message: string) {
 		this.#type = type;
 		this.#message = message;
 	}
