@@ -1,8 +1,9 @@
 import * as router from "@parchii/router";
+import { Shared } from "../shared.ts";
 
 import route_index from "./route.index.tsx";
 
-const route = new router.Router();
+const route = new router.Router<Shared>();
 
 route.get("/ping", async (ctx) => {
 	return ctx.build_response("meow", "ok", "txt");
