@@ -22,3 +22,18 @@ export const Base = (input: { title: string }, children: unknown[]) => {
 	);
 };
 
+export const Flash = (input: { message: string | null }) => {
+	const out = input.message === null
+		? null
+		: (
+			<div class="flash">
+				{ input.message }
+			</div>
+		);
+	return (
+		<>
+			{ out }
+		</>
+	);
+};
+
