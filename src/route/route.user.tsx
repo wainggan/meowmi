@@ -5,18 +5,69 @@ import * as template from "./template.tsx";
 
 import { Shared } from "../shared.ts";
 import { Miss } from "../common.ts";
+import link from "./link.ts";
 
 import { FlashExport } from "./util.flash.tsx";
 
-import { jsx } from "@parchii/jsx";
+import { jsx, fragment } from "@parchii/jsx";
 import { render } from "@parchii/html";
+
+const view: router.Middleware<Shared, 'GET', 'username', FlashExport> = async ctx => {
+	const user = await ctx.data.db.users_get(ctx.extract.username);
+
+	let dom_inner, code: keyof typeof router.status_codes;
+
+	if (user instanceof Miss) {
+		let message;
+		
+		if (user.type === 'not_found') {
+			message = `user '${ctx.extract.username}' does not exist`;
+			code = 'not_found';
+		}
+		else {
+			message = `unknown error`;
+			code = 'internal_error';
+		}
+
+		dom_inner = (
+			<>
+				<h1>404</h1>
+				<p>
+					{ message }
+				</p>
+			</>
+		);
+	}
+	else {
+		dom_inner = (
+			<>
+				<h1>{ user.username }</h1>
+				<p>
+					wow!
+				</p>
+			</>
+		);
+		code = 'ok';
+	}
+	
+	const dom = (
+		<template.Base title="user">
+			<template.Flash message={ ctx.ware.flash.get() }/>
+			{ dom_inner }
+		</template.Base>
+	);
+
+	const src = render(dom);
+
+	return ctx.build_response(src, code, 'html');
+};
 
 const login: router.Middleware<Shared, 'GET', never, FlashExport> = async ctx => {
 	const dom = (
 		<template.Base title="login">
-			<h1>login</h1>
-
 			<template.Flash message={ ctx.ware.flash.get() }/>
+			
+			<h1>login</h1>
 
 			<form action="" method="post" enctype="multipart/form-data">
 				<input type="text" name="username"/>
@@ -60,10 +111,11 @@ const login_api: router.Middleware<Shared, 'POST', never, FlashExport> = async c
 
 	// success!
 	ctx.ware.flash.set(`success`);
-	return ctx.build_redirect(ctx.url);
+	return ctx.build_redirect(link.user_view(user.username));
 };
 
 export default {
+	view,
 	login,
 	login_api,
 };

@@ -18,6 +18,8 @@ route.get("/ping", async (ctx) => {
 
 route.get("/", route_index.index);
 
+route.get("/user/:username", flash_middleware, route_user.view);
+
 route.get("/login", flash_middleware, route_user.login);
 route.post("/login", flash_middleware, route_user.login_api);
 
