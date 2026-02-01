@@ -21,7 +21,8 @@
 		"@parchii/html": "https://raw.githubusercontent.com/wainggan/raas/refs/heads/main/html.ts",
 		"@parchii/jsx": "https://raw.githubusercontent.com/wainggan/raas/refs/heads/main/jsx.ts",
 		"@parchii/router": "https://raw.githubusercontent.com/wainggan/raas/refs/heads/main/router.ts",
-		"@parchii/application": "https://raw.githubusercontent.com/wainggan/raas/refs/heads/main/application.ts"
+		"@parchii/application": "https://raw.githubusercontent.com/wainggan/raas/refs/heads/main/application.ts",
+		"@std/http": "jsr:@std/http@^1.0.24"
 	},
 	"fmt": {
 		"useTabs": true,
