@@ -1,11 +1,5 @@
-import * as router from "@parchii/router";
 import application from "@parchii/application";
-
-const route = new router.Router();
-
-route.get("/", async (ctx) => {
-	return ctx.build_response("meow", "ok", "txt");
-});
+import route from "./route/route.ts";
 
 const app = application({
 	data: null,

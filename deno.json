@@ -6,7 +6,11 @@
 		"noImplicitOverride": true,
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
-		"noPropertyAccessFromIndexSignature": true
+		"noPropertyAccessFromIndexSignature": true,
+
+		"jsx": "react",
+		"jsxFactory": "jsx",
+		"jsxFragmentFactory": "fragment"
 	},
 	"tasks": {
 		"check": "deno check && deno run -A jsr:@cunarist/deno-circular-deps src/main.ts",
