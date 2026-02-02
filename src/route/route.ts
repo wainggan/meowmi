@@ -10,6 +10,7 @@ import route_index from "./route.index.tsx";
 import route_user from "./route.user.tsx";
 
 import { flash_middleware } from "./util.flash.tsx";
+import { session_middleware } from "./util.session.tsx";
 
 const route = new router.Router<Shared>();
 
@@ -43,7 +44,7 @@ route.get("/", route_index.index);
 route.get("/user/:username", flash_middleware, route_user.view);
 
 route.get("/login", flash_middleware, route_user.login);
-route.post("/login", flash_middleware, route_user.login_api);
+route.post("/login", session_middleware, flash_middleware, route_user.login_api);
 
 export default route;
 

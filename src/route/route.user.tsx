@@ -1,5 +1,3 @@
-
-
 import * as router from "@parchii/router";
 import * as template from "./template.tsx";
 
@@ -8,6 +6,7 @@ import { Miss } from "../common.ts";
 import link from "./link.ts";
 
 import { FlashExport } from "./util.flash.tsx";
+import { SessionExport } from "./util.session.tsx";
 
 import { jsx, fragment } from "@parchii/jsx";
 import { render } from "@parchii/html";
@@ -70,9 +69,20 @@ const login: router.Middleware<Shared, 'GET', never, FlashExport> = async ctx =>
 			<h1>login</h1>
 
 			<form action="" method="post" enctype="multipart/form-data">
+				<input type="hidden" name="which" value="login"/>
 				<input type="text" name="username"/>
 				<input type="password" name="password"/>
 				<button type="submit">login</button>
+			</form>
+
+			<h1>register</h1>
+
+			<form action="" method="post" enctype="multipart/form-data">
+				<input type="hidden" name="which" value="register"/>
+				<input type="text" name="username"/>
+				<input type="password" name="password"/>
+				<input type="password" name="password-again"/>
+				<button type="submit">register</button>
 			</form>
 		</template.Base>
 	);
@@ -82,36 +92,104 @@ const login: router.Middleware<Shared, 'GET', never, FlashExport> = async ctx =>
 	return ctx.build_response(src, 'ok', 'html');
 };
 
-const login_api: router.Middleware<Shared, 'POST', never, FlashExport> = async ctx => {
+const login_api: router.Middleware<Shared, 'POST', never, FlashExport & SessionExport> = async ctx => {
 	// parse form
 	const form = await ctx.request.formData();
 
-	const form_username = form.get('username');
-	const form_password = form.get('password');
+	const form_which = form.get('which');
 
-	if (
-		typeof form_username !== 'string' ||
-		typeof form_password !== 'string'
-	) {
-		ctx.ware.flash.set(`bad form`);
-		return ctx.build_redirect(ctx.url);
+	switch (form_which) {
+		case 'login': {
+			const form_username = form.get('username');
+			const form_password = form.get('password');
+
+			if (
+				typeof form_username !== 'string' ||
+				typeof form_password !== 'string'
+			) {
+				ctx.ware.flash.set(`bad form`);
+				return ctx.build_redirect(ctx.url);
+			}
+
+			const user = await ctx.data.db.users_get_name(form_username);
+			if (user instanceof Miss) {
+				if (user.type === 'not_found') {
+					ctx.ware.flash.set(user.message);
+				}
+				else if (user.type === 'internal') {
+					ctx.ware.flash.set(user.message);
+				}
+				else {
+					throw user.type satisfies never;
+				}
+
+				return ctx.build_redirect(ctx.url);
+			}
+
+			const session_id = await ctx.data.db.session_new(user.id, 24 * 14);
+			if (session_id instanceof Miss) {
+				if (session_id.type === 'internal') {
+					ctx.ware.flash.set(`internal error`);
+				}
+				else {
+					throw session_id.type satisfies never;
+				}
+				
+				return ctx.build_redirect(ctx.url);
+			}
+
+			ctx.ware.session.set(session_id);
+
+			// success!
+			ctx.ware.flash.set(`successfully logged in!`);
+			return ctx.build_redirect(link.user_view(user.username));
+		}
+
+		case 'register': {
+			const form_username = form.get('username');
+			const form_password = form.get('password');
+			const form_password_again = form.get('password-again');
+
+			if (
+				typeof form_username !== 'string' ||
+				typeof form_password !== 'string' ||
+				typeof form_password_again !== 'string'
+			) {
+				ctx.ware.flash.set(`bad form`);
+				return ctx.build_redirect(ctx.url);
+			}
+
+			if (form_password !== form_password_again) {
+				ctx.ware.flash.set(`passwords do not match`);
+				return ctx.build_redirect(ctx.url);
+			}
+
+			const password_buffer = new TextEncoder().encode(form_password);
+			const password_hash_buffer = await crypto.subtle.digest('sha-256', password_buffer);
+			const password_hash = new TextDecoder().decode(password_hash_buffer);
+
+			const user_id = await ctx.data.db.users_new(form_username, password_hash);
+			if (user_id instanceof Miss) {
+				if (user_id.type === 'exists') {
+					ctx.ware.flash.set(`username '${form_username}' already exists.`);
+				}
+				else if (user_id.type === 'internal') {
+					ctx.ware.flash.set(`internal error`);
+				}
+				else {
+					throw user_id.type satisfies never;
+				}
+
+				return ctx.build_redirect(ctx.url);
+			}
+
+			ctx.ware.flash.set(`successfully created account. please log in.`);
+			return ctx.build_redirect(ctx.url);
+		}
 	}
 
-	const user = await ctx.data.db.users_get_name(form_username);
-	if (user instanceof Miss) {
-		if (user.type === 'not_found') {
-			ctx.ware.flash.set(`user '${form_username}' does not exist`);
-		}
-		else if (user.type === 'internal') {
-			ctx.ware.flash.set(`unknown error`);
-		}
-
-		return ctx.build_redirect(ctx.url);
-	}
-
-	// success!
-	ctx.ware.flash.set(`success`);
-	return ctx.build_redirect(link.user_view(user.username));
+	ctx.ware.flash.set(`bad form`);
+	return ctx.build_redirect(ctx.url);
 };
 
 export default {
