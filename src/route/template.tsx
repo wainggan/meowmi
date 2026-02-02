@@ -40,7 +40,7 @@ export const Navigation = (input: {}) => {
 	return (
 		<>
 			<nav>
-				<button class="nav-btn">Home</button>
+				<a href="/" class="nav-btn">Home</a>
 
 				<NavigationGroup name="News">
 					<button>Build Info</button>
@@ -78,16 +78,6 @@ export const Navigation = (input: {}) => {
 
 				<a href="/login" class="nav-btn">Login</a>
 				<button class="nav-btn" onclick="toggleMenu()">☰</button>
-
-				<script>
-				{
-				`
-				function toggleMenu() {
-					document.getElementById("menu").classList.toggle("open");
-				}
-				`
-				}
-				</script>
 			</nav>
 
 			<div id="menu" class="side-menu">
@@ -103,6 +93,16 @@ export const Navigation = (input: {}) => {
 					<button>Log Out</button>
 				</div>
 			</div>
+
+			<script defer>
+			{
+			`
+			function toggleMenu() {
+				document.getElementById("menu").classList.toggle("open");
+			}
+			`
+			}
+			</script>
 		</>
 	);
 };
