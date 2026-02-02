@@ -1,7 +1,7 @@
 /*
 page used for the front page.
 */
-// deno-lint-ignore-file jsx-button-has-type
+
 import * as router from "@parchii/router";
 import * as template from "./template.tsx";
 

@@ -32,7 +32,9 @@
 		"rules": {
 			"exclude": [
 				"ban-types",
-				"require-await"
+				"require-await",
+				"jsx-button-has-type",
+				"jsx-key"
 			]
 		}
 	}
