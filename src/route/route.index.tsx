@@ -11,9 +11,9 @@ import { render } from "@parchii/html";
 const index: router.Middleware<{}, 'GET', never> = async ctx => {
 	const dom = (
 		<template.Base title="index">
-			<p>
+
 				<a href="/login">login</a>
-			</p>
+
 			
 
 
@@ -77,11 +77,10 @@ const index: router.Middleware<{}, 'GET', never> = async ctx => {
 </nav>
 
 <main>
-<div>
   <div class="hero">
     NEWS TICKER ART
-  </div>
 </div>
+
 </main>
 
 <div class="carousel-wrap">
