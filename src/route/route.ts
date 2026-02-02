@@ -12,6 +12,25 @@ import { flash_middleware } from "./util.flash.tsx";
 
 const route = new router.Router<Shared>();
 
+route.set_static(async ctx => {
+	const parts = "./" + ctx.url_parts.slice(1).join("/");
+
+	const ext = ctx.url_parts.at(-1)?.split(".").at(-1);
+	if (ext === undefined || !(ext in router.content_type_codes)) {
+		return ctx.build_response(`404`, 'not_found', 'txt');
+	}
+
+	let file;
+	try {
+		file = await Deno.readFile(parts);
+	}
+	catch (_e) {
+		return ctx.build_response(`404`, 'not_found', 'txt');
+	}
+
+	return ctx.build_response(file, 'ok', ext as keyof typeof router.content_type_codes);
+});
+
 route.get("/ping", async (ctx) => {
 	return ctx.build_response("meow", "ok", "txt");
 });
