@@ -11,13 +11,6 @@ import { render } from "@parchii/html";
 const index: router.Middleware<{}, 'GET', never> = async ctx => {
 	const dom = (
 		<template.Base title="index">
-
-				<a href="/login">login</a>
-
-			
-
-
-
 <nav>
 
   <button class="nav-btn">Home</button>
@@ -71,7 +64,7 @@ const index: router.Middleware<{}, 'GET', never> = async ctx => {
 
   <div class="spacer"></div>
 
-  <button class="nav-btn">Login</button>
+  <a href="/login" class="nav-btn">Login</a>
   <button class="nav-btn" onclick="toggleMenu()">☰</button>
 
 </nav>
