@@ -15,9 +15,7 @@ const index: router.Middleware<{}, 'GET', never> = async ctx => {
 				<a href="/login">login</a>
 			</p>
 			
-			<p>
 
-	<body>
 
 
 <nav>
@@ -78,13 +76,13 @@ const index: router.Middleware<{}, 'GET', never> = async ctx => {
 
 </nav>
 
-
+<main>
 <div>
   <div class="hero">
     NEWS TICKER ART
   </div>
 </div>
-
+</main>
 
 <div class="carousel-wrap">
   <div class="carousel">
@@ -118,8 +116,6 @@ const index: router.Middleware<{}, 'GET', never> = async ctx => {
 }
 </script>
 
-</body>
-			</p>
 		</template.Base>
 	);
 
