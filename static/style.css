@@ -226,3 +226,112 @@ nav {
 	opacity: 1;
 }
 
+
+.auth-wrap{
+  width:100%;
+  max-width:520px;
+  background:#fff;
+  border-radius:18px;
+  padding:18px;
+  box-shadow:0 10px 25px rgba(0,0,0,.10);
+}
+
+
+.auth-wrap h1{
+  margin:14px 0 10px;
+  font-size:22px;
+}
+
+
+.auth-wrap form{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  padding:12px;
+  border-radius:14px;
+  background:#f7f8ff;
+  border:1px solid #e1e6ff;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+
+.auth-wrap input{
+  border:1px solid #d7ddef;
+  border-radius:12px;
+  padding:10px 12px;
+  font-size:14px;
+  outline:none;
+  background:#fff;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+.auth-wrap input:focus{
+  border-color:#9fb0ff;
+  box-shadow:0 0 0 3px rgba(159,176,255,.25);
+}
+
+.auth-wrap button{
+  border:none;
+  border-radius:12px;
+  padding:10px 12px;
+  font-weight:800;
+  background:#8aa0ff;
+  color:#fff;
+  cursor:pointer;
+}
+
+.auth-wrap button:hover{
+  filter:brightness(.97);
+}
+
+.auth-wrap button:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+}
+
+
+.flash {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  padding: 12px 20px;
+  border-radius: 12px;
+
+  background: #ffecec;
+  color: #b42318;
+  border: 1px solid #f5b5b5;
+
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+
+  box-shadow: 0 8px 20px rgba(0,0,0,.15);
+  z-index: 999;
+  animation: flash-shakey 3s ease forwards;
+}
+
+@keyframes flash-shakey {
+  0%   { transform: translateX(-50%) translateX(0); opacity: 0; }
+  5%   { opacity: 1; }
+  10%  { transform: translateX(-50%) translateX(-6px); }
+  20%  { transform: translateX(-50%) translateX(6px); }
+  30%  { transform: translateX(-50%) translateX(-4px); }
+  40%  { transform: translateX(-50%) translateX(4px); }
+  50%  { transform: translateX(-50%) translateX(0); }
+  75%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.pw-box{
+  background:#ffffff;
+  border:1px solid #d7ddef;
+  border-radius:14px;
+  padding:10px 12px;
+  font-size:inherit;
+  font-family: inherit;
+  color:#4a557a;
+}

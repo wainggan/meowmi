@@ -66,6 +66,7 @@ const login: router.Middleware<Shared, 'GET', never, FlashExport> = async ctx =>
 		<template.Base title="login">
 			<template.Flash message={ ctx.ware.flash.get() }/>
 			
+	<div class="auth-wrap">
 			<h1>login</h1>
 
 			<form action="" method="post" enctype="multipart/form-data">
@@ -84,6 +85,8 @@ const login: router.Middleware<Shared, 'GET', never, FlashExport> = async ctx =>
 				<input type="password" name="password-again"/>
 				<button type="submit">register</button>
 			</form>
+
+		</div>
 		</template.Base>
 	);
 
