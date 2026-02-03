@@ -1,6 +1,6 @@
 
 import * as router from "@parchii/router";
-import { User } from "../db/db.types.ts";
+import { Session, User } from "../db/db.types.ts";
 import { Miss } from "../common.ts";
 
 import * as std_cookie from "@std/http/cookie";
@@ -9,6 +9,7 @@ import { Shared } from "../shared.ts";
 export type SessionExport = {
 	session: {
 		readonly user: () => User | null;
+		readonly session: () => Session | null;
 		readonly set: (session_id: string) => void;
 		readonly logout: () => void;
 	};
@@ -21,12 +22,14 @@ export const session_middleware: router.Middleware<Shared, router.Method, never,
 		session_id_invalid: boolean;
 		session_id_logout: boolean;
 		user: null | User;
+		session: null | Session;
 	} = {
 		session_id: null,
 		session_id_new: null,
 		session_id_invalid: false,
 		session_id_logout: false,
 		user: null,
+		session: null,
 	};
 
 	const cookies = std_cookie.getCookies(ctx.request.headers);
@@ -36,8 +39,11 @@ export const session_middleware: router.Middleware<Shared, router.Method, never,
 		state.session_id = new TextDecoder().decode(buffer);
 	}
 
+	console.log(cookies);
+
 	if (state.session_id !== null) {
 		const session = await ctx.data.db.session_get(state.session_id);
+		console.log(session);
 		if (session instanceof Miss) {
 			state.session_id_invalid = true;
 		}
@@ -48,6 +54,7 @@ export const session_middleware: router.Middleware<Shared, router.Method, never,
 			}
 			else {
 				state.user = user;
+				state.session = session;
 			}
 		}
 	}
@@ -55,6 +62,9 @@ export const session_middleware: router.Middleware<Shared, router.Method, never,
 	ctx.ware.session = {
 		user() {
 			return state.user;
+		},
+		session() {
+			return state.session;
 		},
 		set(session_id) {
 			state.session_id_new = session_id;

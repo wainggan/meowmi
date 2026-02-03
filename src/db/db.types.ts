@@ -14,6 +14,7 @@ export type User = {
 	readonly id: number;
 	username: string;
 	password: string;
+	tokens: number;
 };
 
 /**
@@ -25,14 +26,6 @@ export type Session = {
 	readonly csrf: string;
 	readonly user_id: number;
 	readonly date_expire: number;
-};
-
-/**
-a breed of cat.
-*/
-export type CatDef = {
-	readonly id: number;
-	readonly name: string;
 };
 
 /**
@@ -96,8 +89,6 @@ export interface DB {
 	session_get(session_id: string): Promise<Session | Miss<internal | not_found>>;
 	session_delete(session_id: string): Promise<null | Miss<internal | not_found>>;
 
-	catdef_get(catdef_id: number): Promise<CatDef | Miss<internal | not_found>>;
-	
 	catinst_add(catdef_id: number, user_id: number): Promise<number | Miss<internal | not_found>>;
 	catinst_get(catinst_id: number): Promise<CatInst | Miss<internal | not_found>>;
 	catinst_set(catinst: CatInst): Promise<null | Miss<internal>>;

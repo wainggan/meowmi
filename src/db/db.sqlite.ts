@@ -1,5 +1,5 @@
 import { DatabaseSync } from "node:sqlite";
-import { DB, User, Session, CatDef, CatInst } from "./db.types.ts";
+import { DB, User, Session, CatInst } from "./db.types.ts";
 import { Miss } from "../common.ts";
 
 export class DBSql implements DB {
@@ -12,7 +12,8 @@ export class DBSql implements DB {
 			CREATE TABLE IF NOT EXISTS users (
 				id INTEGER PRIMARY KEY AUTOINCREMENT,
 				username TEXT UNIQUE NOT NULL,
-				password TEXT NOT NULL
+				password TEXT NOT NULL,
+				tokens INTEGER NOT NULL
 			);
 
 			CREATE TABLE IF NOT EXISTS sessions (
@@ -23,17 +24,11 @@ export class DBSql implements DB {
 				FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 			);
 
-			CREATE TABLE IF NOT EXISTS catdefs (
-				id INTEGER PRIMARY KEY AUTOINCREMENT,
-				name TEXT NOT NULL
-			);
-
 			CREATE TABLE IF NOT EXISTS catinsts (
 				id INTEGER PRIMARY KEY AUTOINCREMENT,
 				catdef_id INTEGER NOT NULL,
 				original_user_id INTEGER,
 				owner_user_id INTEGER NOT NULL,
-				FOREIGN KEY (catdef_id) REFERENCES catdefs(id) ON DELETE CASCADE,
 				FOREIGN KEY (original_user_id) REFERENCES users(id) ON DELETE SET NULL,
 				FOREIGN KEY (owner_user_id) REFERENCES users(id) ON DELETE CASCADE
 			);
@@ -47,10 +42,10 @@ export class DBSql implements DB {
 		try {
 			result = this.db.prepare(`
 				INSERT INTO users
-					(username, password)
+					(username, password, tokens)
 				VALUES
-					(?, ?);
-			`).run(username, password);
+					(?, ?, ?);
+			`).run(username, password, 5);
 		}
 		catch (_e) {
 			return new Miss('exists', `username '${username}' already exists`);
@@ -105,10 +100,11 @@ export class DBSql implements DB {
 				UPDATE users
 				SET
 					username = (?),
-					password = (?)
+					password = (?),
+					tokens = (?)
 				WHERE
 					id = (?);
-			`).run(user.username, user.password, user.id);
+			`).run(user.username, user.password, user.tokens, user.id);
 		}
 		catch (_e) {
 			return new Miss('conflict', `username '${user.username}' already exists`);
@@ -147,8 +143,9 @@ export class DBSql implements DB {
 
 		const session_id = crypto.randomUUID();
 		const csrf = crypto.randomUUID();
-		// 14 days
 		const time = now + 1000 * 60 * 60 * 60 * expires;
+
+		console.log(time, now);
 
 		try {
 			this.db.prepare(`
@@ -169,8 +166,7 @@ export class DBSql implements DB {
 		let result;
 		try {
 			result = this.db.prepare(`
-				SELECT users.* FROM sessions
-				JOIN users ON users.id = sessions.user_id
+				SELECT * FROM sessions
 				WHERE sessions.id = (?) AND sessions.date_expire > (?);
 			`).get(session_id, Date.now());
 		}
@@ -197,26 +193,6 @@ export class DBSql implements DB {
 		}
 
 		return null;
-	}
-
-	async catdef_get(catdef_id: number): Promise<CatDef | Miss<"internal" | "not_found">> {
-		let result;
-		
-		try {
-			result = this.db.prepare(`
-				SELECT * FROM catdefs
-				WHERE id = (?);
-			`).get(catdef_id);
-		}
-		catch (_e) {
-			return new Miss('internal', `unknown internal error`);
-		}
-
-		if (result === undefined) {
-			return new Miss('not_found', `catdef id ${catdef_id} does not exist`);
-		}
-
-		return result as CatDef;
 	}
 
 	async catinst_add(catdef_id: number, user_id: number): Promise<number | Miss<'internal' | 'not_found'>> {

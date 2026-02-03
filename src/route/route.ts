@@ -8,6 +8,7 @@ import { Shared } from "../shared.ts";
 import route_404 from "./route.404.tsx";
 import route_index from "./route.index.tsx";
 import route_user from "./route.user.tsx";
+import route_gacha from "./route.gacha.tsx";
 
 import { flash_middleware } from "./util.flash.tsx";
 import { session_middleware } from "./util.session.tsx";
@@ -45,6 +46,9 @@ route.get("/user/:username", flash_middleware, route_user.view);
 
 route.get("/login", flash_middleware, route_user.login);
 route.post("/login", session_middleware, flash_middleware, route_user.login_api);
+
+route.get("/gacha", session_middleware, flash_middleware, route_gacha.gacha);
+route.post("/gacha", session_middleware, flash_middleware, route_gacha.gacha_api);
 
 export default route;
 
