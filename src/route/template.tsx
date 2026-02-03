@@ -108,13 +108,20 @@ export const Navigation = (input: {}) => {
 };
 
 export const Flash = (input: { flash: { message: string, mood: 'ok' | 'err' } | null }) => {
-	const out = input.flash === null
-		? null
-		: (
-			<div class="flash">
+	let out;
+	
+	if (input.flash === null) {
+		out = null;
+	}
+	else {
+		const classes = `flash flash-${input.flash.mood}`;
+		out = (
+			<div class={ classes }>
 				{ input.flash.message }
 			</div>
 		);
+	}
+
 	return (
 		<>
 			{ out }
