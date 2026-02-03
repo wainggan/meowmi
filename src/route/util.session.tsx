@@ -42,7 +42,7 @@ export const session_middleware: router.Middleware<Shared, router.Method, never,
 			state.session_id_invalid = true;
 		}
 		else {
-			const user = await ctx.data.db.users_get_id(session.user_id);
+			const user = await ctx.data.db.user_get_id(session.user_id);
 			if (user instanceof Miss) {
 				state.session_id_invalid = true;
 			}

@@ -12,7 +12,7 @@ import { jsx, fragment } from "@parchii/jsx";
 import { render } from "@parchii/html";
 
 const view: router.Middleware<Shared, 'GET', 'username', FlashExport> = async ctx => {
-	const user = await ctx.data.db.users_get_name(ctx.extract.username);
+	const user = await ctx.data.db.user_get_name(ctx.extract.username);
 
 	let dom_inner, code: keyof typeof router.status_codes;
 
@@ -114,7 +114,7 @@ const login_api: router.Middleware<Shared, 'POST', never, FlashExport & SessionE
 				return ctx.build_redirect(ctx.url);
 			}
 
-			const user = await ctx.data.db.users_get_name(form_username);
+			const user = await ctx.data.db.user_get_name(form_username);
 			if (user instanceof Miss) {
 				if (user.type === 'not_found') {
 					ctx.ware.flash.set(user.message);
@@ -171,7 +171,7 @@ const login_api: router.Middleware<Shared, 'POST', never, FlashExport & SessionE
 			const password_hash_buffer = await crypto.subtle.digest('sha-256', password_buffer);
 			const password_hash = new TextDecoder().decode(password_hash_buffer);
 
-			const user_id = await ctx.data.db.users_new(form_username, password_hash);
+			const user_id = await ctx.data.db.user_new(form_username, password_hash);
 			if (user_id instanceof Miss) {
 				if (user_id.type === 'exists') {
 					ctx.ware.flash.set(`username '${form_username}' already exists.`);

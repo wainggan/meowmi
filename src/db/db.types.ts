@@ -58,30 +58,30 @@ export interface DB {
 	will be set to `password` without any adjustments. therefore, `password` should be hashed
 	before passing it into this function.
 	*/
-	users_new(username: string, password: string): Promise<number | Miss<internal | exists>>;
+	user_new(username: string, password: string): Promise<number | Miss<internal | exists>>;
 
 	/**
 	get a user from an id.
 	*/
-	users_get_id(user_id: number): Promise<User | Miss<internal | not_found>>;
+	user_get_id(user_id: number): Promise<User | Miss<internal | not_found>>;
 
 	/**
 	get a user from a username.
 	*/
-	users_get_name(username: string): Promise<User | Miss<internal | not_found>>;
+	user_get_name(username: string): Promise<User | Miss<internal | not_found>>;
 
 	/**
 	submit changes made to a user.
 	returns `null` if successful, and `Miss<'conflict'>` if `user.username` is already
 	by another user.
 	*/
-	users_set(user: User): Promise<null | Miss<internal | conflict>>;
+	user_set(user: User): Promise<null | Miss<internal | conflict>>;
 
 	/**
 	deletes a user.
 	returns `null` if successful, and `Miss<'not_found'>` if `user_id` is invalid.
 	*/
-	users_delete(user_id: number): Promise<null | Miss<internal | not_found>>;
+	user_delete(user_id: number): Promise<null | Miss<internal | not_found>>;
 
 	/**
 	create a new login session for the user corresponding to `user_id`. `expires` is

@@ -42,7 +42,7 @@ export class DBSql implements DB {
 
 	db: DatabaseSync;
 
-	async users_new(username: string, password: string): Promise<number | Miss<'internal' | 'exists'>> {
+	async user_new(username: string, password: string): Promise<number | Miss<'internal' | 'exists'>> {
 		let result;
 		try {
 			result = this.db.prepare(`
@@ -59,7 +59,7 @@ export class DBSql implements DB {
 		return result.lastInsertRowid as number;
 	}
 
-	async users_get_name(username: string): Promise<User | Miss<"internal" | "not_found">> {
+	async user_get_name(username: string): Promise<User | Miss<"internal" | "not_found">> {
 		let result;
 
 		try {
@@ -79,7 +79,7 @@ export class DBSql implements DB {
 		return result as User;
 	}
 
-	async users_get_id(user_id: number): Promise<User | Miss<"internal" | "not_found">> {
+	async user_get_id(user_id: number): Promise<User | Miss<"internal" | "not_found">> {
 		let result;
 
 		try {
@@ -99,7 +99,7 @@ export class DBSql implements DB {
 		return result as User;
 	}
 
-	async users_set(user: User): Promise<null | Miss<"internal" | "conflict">> {
+	async user_set(user: User): Promise<null | Miss<"internal" | "conflict">> {
 		try {
 			this.db.prepare(`
 				UPDATE users
@@ -117,7 +117,7 @@ export class DBSql implements DB {
 		return null;
 	}
 
-	async users_delete(user_id: number): Promise<null | Miss<"internal" | "not_found">> {
+	async user_delete(user_id: number): Promise<null | Miss<"internal" | "not_found">> {
 		try {
 			this.db.prepare(`
 				DELETE FROM users
