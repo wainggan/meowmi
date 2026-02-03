@@ -38,9 +38,17 @@ nav {
 .nav-btn {
 	background: #e9edf7;
 	border: none;
-	padding: 8px 14px;
 	border-radius: 10px;
+	
+	color: inherit;
+	font-family: inherit;
+	font-size: inherit;
 	font-weight: 500;
+	text-decoration: none;
+
+	padding: 8px 14px;
+	margin: 2px;
+	
 	cursor: pointer;
 }
 

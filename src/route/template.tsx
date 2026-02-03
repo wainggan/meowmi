@@ -43,35 +43,35 @@ export const Navigation = (input: {}) => {
 				<a href="/" class="nav-btn">Home</a>
 
 				<NavigationGroup name="News">
-					<button>Build Info</button>
-					<button>Events</button>
-					<button>Updates</button>
+					<a href="#" class="nav-btn">Build Info</a>
+					<a href="#" class="nav-btn">Events</a>
+					<a href="#" class="nav-btn">Updates</a>
 				</NavigationGroup>
 
 				<NavigationGroup name="CDS">
-					<button>Adoption</button>
-					<button>Gacha Pulls</button>
-					<button>Cat Shop</button>
+					<a href="#" class="nav-btn">Adoption</a>
+					<a href="#" class="nav-btn">Gacha Pulls</a>
+					<a href="#" class="nav-btn">Cat Shop</a>
 				</NavigationGroup>
 
 				<NavigationGroup name="Trades">
-					<button>Open Trades</button>
-					<button>Requests</button>
-					<button>Past Trades</button>
+					<a href="#" class="nav-btn">Open Trades</a>
+					<a href="#" class="nav-btn">Requests</a>
+					<a href="#" class="nav-btn">Past Trades</a>
 				</NavigationGroup>
 
 				<NavigationGroup name="Bag">
-					<button>Accessories</button>
-					<button>Brushes</button>
-					<button>Food</button>
-					<button>Toys</button>
+					<a href="#" class="nav-btn">Accessories</a>
+					<a href="#" class="nav-btn">Brushes</a>
+					<a href="#" class="nav-btn">Food</a>
+					<a href="#" class="nav-btn">Toys</a>
 				</NavigationGroup>
 
 				<NavigationGroup name="Cats">
-					<button>Owned Cats</button>
-					<button>Care</button>
-					<button>Feeding</button>
-					<button>Play</button>
+					<a href="#" class="nav-btn">Owned Cats</a>
+					<a href="#" class="nav-btn">Care</a>
+					<a href="#" class="nav-btn">Feeding</a>
+					<a href="#" class="nav-btn">Play</a>
 				</NavigationGroup>
 
 				<div class="spacer"></div>
@@ -87,10 +87,10 @@ export const Navigation = (input: {}) => {
 				</div>
 
 				<div class="menu-items">
-					<button>Account</button>
-					<button>Settings</button>
-					<button>Contact Us</button>
-					<button>Log Out</button>
+					<a href="#">Account</a>
+					<a href="#">Settings</a>
+					<a href="#">Contact Us</a>
+					<a href="#">Log Out</a>
 				</div>
 			</div>
 
