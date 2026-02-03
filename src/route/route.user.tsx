@@ -51,7 +51,7 @@ const view: router.Middleware<Shared, 'GET', 'username', FlashExport> = async ct
 	
 	const dom = (
 		<template.Base title="user">
-			<template.Flash message={ ctx.ware.flash.get() }/>
+			<template.Flash flash={ ctx.ware.flash.get() }/>
 			{ dom_inner }
 		</template.Base>
 	);
@@ -64,7 +64,7 @@ const view: router.Middleware<Shared, 'GET', 'username', FlashExport> = async ct
 const login: router.Middleware<Shared, 'GET', never, FlashExport> = async ctx => {
 	const dom = (
 		<template.Base title="login">
-			<template.Flash message={ ctx.ware.flash.get() }/>
+			<template.Flash flash={ ctx.ware.flash.get() }/>
 			
 	<div class="auth-wrap">
 			<h1>login</h1>
@@ -110,17 +110,17 @@ const login_api: router.Middleware<Shared, 'POST', never, FlashExport & SessionE
 				typeof form_username !== 'string' ||
 				typeof form_password !== 'string'
 			) {
-				ctx.ware.flash.set(`bad form`);
+				ctx.ware.flash.set(`bad form`, 'err');
 				return ctx.build_redirect(ctx.url);
 			}
 
 			const user = await ctx.data.db.user_get_name(form_username);
 			if (user instanceof Miss) {
 				if (user.type === 'not_found') {
-					ctx.ware.flash.set(user.message);
+					ctx.ware.flash.set(user.message, 'err');
 				}
 				else if (user.type === 'internal') {
-					ctx.ware.flash.set(user.message);
+					ctx.ware.flash.set(user.message, 'err');
 				}
 				else {
 					throw user.type satisfies never;
@@ -134,14 +134,14 @@ const login_api: router.Middleware<Shared, 'POST', never, FlashExport & SessionE
 			const password_hash = new TextDecoder().decode(password_hash_buffer);
 
 			if (password_hash !== user.password) {
-				ctx.ware.flash.set(`incorrect password`);
+				ctx.ware.flash.set(`incorrect password`, 'err');
 				return ctx.build_redirect(ctx.url);
 			}
 
 			const session_id = await ctx.data.db.session_new(user.id, 24 * 14);
 			if (session_id instanceof Miss) {
 				if (session_id.type === 'internal') {
-					ctx.ware.flash.set(`internal error`);
+					ctx.ware.flash.set(`internal error`, 'err');
 				}
 				else {
 					throw session_id.type satisfies never;
@@ -153,7 +153,7 @@ const login_api: router.Middleware<Shared, 'POST', never, FlashExport & SessionE
 			ctx.ware.session.set(session_id);
 
 			// success!
-			ctx.ware.flash.set(`successfully logged in!`);
+			ctx.ware.flash.set(`successfully logged in!`, 'ok');
 			return ctx.build_redirect(link.user_view(user.username));
 		}
 
@@ -167,24 +167,24 @@ const login_api: router.Middleware<Shared, 'POST', never, FlashExport & SessionE
 				typeof form_password !== 'string' ||
 				typeof form_password_again !== 'string'
 			) {
-				ctx.ware.flash.set(`bad form`);
+				ctx.ware.flash.set(`bad form`, 'err');
 				return ctx.build_redirect(ctx.url);
 			}
 
 			form_username = form_username.trim();
 
 			if (form_username.length < 4) {
-				ctx.ware.flash.set(`username must be 4 characters or longer`);
+				ctx.ware.flash.set(`username must be 4 characters or longer`, 'err');
 				return ctx.build_redirect(ctx.url);
 			}
 
 			if (form_password.length < 8) {
-				ctx.ware.flash.set(`password must be 8 characters or longer`);
+				ctx.ware.flash.set(`password must be 8 characters or longer`, 'err');
 				return ctx.build_redirect(ctx.url);
 			}
 
 			if (form_password !== form_password_again) {
-				ctx.ware.flash.set(`passwords do not match`);
+				ctx.ware.flash.set(`passwords do not match`, 'err');
 				return ctx.build_redirect(ctx.url);
 			}
 
@@ -195,10 +195,10 @@ const login_api: router.Middleware<Shared, 'POST', never, FlashExport & SessionE
 			const user_id = await ctx.data.db.user_new(form_username, password_hash);
 			if (user_id instanceof Miss) {
 				if (user_id.type === 'exists') {
-					ctx.ware.flash.set(`username '${form_username}' already exists.`);
+					ctx.ware.flash.set(`username '${form_username}' already exists.`, 'err');
 				}
 				else if (user_id.type === 'internal') {
-					ctx.ware.flash.set(`internal error`);
+					ctx.ware.flash.set(`internal error`, 'err');
 				}
 				else {
 					throw user_id.type satisfies never;
@@ -207,12 +207,12 @@ const login_api: router.Middleware<Shared, 'POST', never, FlashExport & SessionE
 				return ctx.build_redirect(ctx.url);
 			}
 
-			ctx.ware.flash.set(`successfully created account. please log in.`);
+			ctx.ware.flash.set(`successfully created account. please log in.`, 'ok');
 			return ctx.build_redirect(ctx.url);
 		}
 	}
 
-	ctx.ware.flash.set(`bad form`);
+	ctx.ware.flash.set(`bad form`, 'err');
 	return ctx.build_redirect(ctx.url);
 };
 

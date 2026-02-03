@@ -107,12 +107,12 @@ export const Navigation = (input: {}) => {
 	);
 };
 
-export const Flash = (input: { message: string | null }) => {
-	const out = input.message === null
+export const Flash = (input: { flash: { message: string, mood: 'ok' | 'err' } | null }) => {
+	const out = input.flash === null
 		? null
 		: (
 			<div class="flash">
-				{ input.message }
+				{ input.flash.message }
 			</div>
 		);
 	return (

@@ -43,7 +43,7 @@ const gacha: router.Middleware<{}, 'GET', never, SessionExport & FlashExport> = 
 
 	const dom = (
 		<template.Base title="index">
-			<template.Flash message={ ctx.ware.flash.get() }/>
+			<template.Flash flash={ ctx.ware.flash.get() }/>
 			
 			<h1>gacha</h1>
 			
@@ -61,12 +61,12 @@ const gacha_api: router.Middleware<Shared, 'POST', never, SessionExport & FlashE
 	const session = ctx.ware.session.session();
 
 	if (user === null || session === null) {
-		ctx.ware.flash.set(`you are not logged in.`);
+		ctx.ware.flash.set(`you are not logged in.`, 'err');
 		return ctx.build_redirect(ctx.url);
 	}
 
 	if (user.tokens <= 0) {
-		ctx.ware.flash.set(`you don't have enough tokens!`);
+		ctx.ware.flash.set(`you don't have enough tokens!`, 'err');
 		return ctx.build_redirect(ctx.url);
 	}
 
@@ -78,10 +78,10 @@ const gacha_api: router.Middleware<Shared, 'POST', never, SessionExport & FlashE
 	const catinst_id = await ctx.data.db.catinst_add(breed, user.id);
 	if (catinst_id instanceof Miss) {
 		if (catinst_id.type === 'not_found') {
-			ctx.ware.flash.set(`user no longer exists (???)`);
+			ctx.ware.flash.set(`user no longer exists (???)`, 'err');
 		}
 		else if (catinst_id.type === 'internal') {
-			ctx.ware.flash.set(`unknown internal error`);
+			ctx.ware.flash.set(`unknown internal error`, 'err');
 		}
 		else {
 			throw catinst_id.type satisfies never;
@@ -94,7 +94,7 @@ const gacha_api: router.Middleware<Shared, 'POST', never, SessionExport & FlashE
 
 	const result_update = await ctx.data.db.user_set(user);
 	if (result_update instanceof Miss) {
-		ctx.ware.flash.set(`unknown internal error`);
+		ctx.ware.flash.set(`unknown internal error`, 'err');
 		return ctx.build_redirect(ctx.url);
 	}
 

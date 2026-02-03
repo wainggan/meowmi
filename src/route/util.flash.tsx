@@ -6,21 +6,26 @@ import * as router from "@parchii/router";
 
 import { Shared } from "../shared.ts";
 
+type FlashMessage = {
+	message: string;
+	mood: 'ok' | 'err';
+};
+
 export type FlashExport = {
 	flash: {
-		readonly get: () => string | null;
-		readonly set: (message: string) => void;
+		readonly get: () => { message: string, mood: 'ok' | 'err' } | null;
+		readonly set: (message: string, mood: 'ok' | 'err') => void;
 	};
 };
 
 export const flash_middleware: router.Middleware<Shared, router.Method, string, {}, FlashExport> = async ctx => {
 	const state: {
-		message: string | null;
 		consumed: boolean;
-		outgoing: string | null;
+		message: FlashMessage | null;
+		outgoing: FlashMessage | null;
 	} = {
-		message: null,
 		consumed: false,
+		message: null,
 		outgoing: null,
 	};
 	
@@ -28,7 +33,14 @@ export const flash_middleware: router.Middleware<Shared, router.Method, string, 
 	if ('flash' in cookies) {
 		const base64 = cookies['flash'];
 		const buffer = Uint8Array.fromBase64(base64);
-		state.message = new TextDecoder().decode(buffer);
+		const str = new TextDecoder().decode(buffer);
+		const split = str.split('|');
+		if (split.length === 2 && (split[1] === 'ok' || split[1] === 'err')) {
+			state.message = {
+				message: split[0],
+				mood: split[1],
+			};
+		}
 	}
 
 	ctx.ware.flash = {
@@ -39,8 +51,11 @@ export const flash_middleware: router.Middleware<Shared, router.Method, string, 
 			}
 			return null;
 		},
-		set(message) {
-			state.outgoing = message;
+		set(message, mood) {
+			state.outgoing = {
+				message,
+				mood,
+			};
 		},
 	};
 	
@@ -56,7 +71,8 @@ export const flash_middleware: router.Middleware<Shared, router.Method, string, 
 	}
 
 	if (state.outgoing !== null) {
-		const buffer = new TextEncoder().encode(state.outgoing);
+		const str = `${state.outgoing.message}|${state.outgoing.mood}`;
+		const buffer = new TextEncoder().encode(str);
 		std_cookie.setCookie(response.headers, {
 			name: 'flash',
 			value: buffer.toBase64(),
