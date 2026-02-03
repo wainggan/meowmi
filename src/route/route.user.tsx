@@ -129,6 +129,15 @@ const login_api: router.Middleware<Shared, 'POST', never, FlashExport & SessionE
 				return ctx.build_redirect(ctx.url);
 			}
 
+			const password_buffer = new TextEncoder().encode(form_password);
+			const password_hash_buffer = await crypto.subtle.digest('sha-256', password_buffer);
+			const password_hash = new TextDecoder().decode(password_hash_buffer);
+
+			if (password_hash !== user.password) {
+				ctx.ware.flash.set(`incorrect password`);
+				return ctx.build_redirect(ctx.url);
+			}
+
 			const session_id = await ctx.data.db.session_new(user.id, 24 * 14);
 			if (session_id instanceof Miss) {
 				if (session_id.type === 'internal') {
@@ -149,7 +158,7 @@ const login_api: router.Middleware<Shared, 'POST', never, FlashExport & SessionE
 		}
 
 		case 'register': {
-			const form_username = form.get('username');
+			let form_username = form.get('username');
 			const form_password = form.get('password');
 			const form_password_again = form.get('password-again');
 
@@ -159,6 +168,18 @@ const login_api: router.Middleware<Shared, 'POST', never, FlashExport & SessionE
 				typeof form_password_again !== 'string'
 			) {
 				ctx.ware.flash.set(`bad form`);
+				return ctx.build_redirect(ctx.url);
+			}
+
+			form_username = form_username.trim();
+
+			if (form_username.length < 4) {
+				ctx.ware.flash.set(`username must be 4 characters or longer`);
+				return ctx.build_redirect(ctx.url);
+			}
+
+			if (form_password.length < 8) {
+				ctx.ware.flash.set(`password must be 8 characters or longer`);
 				return ctx.build_redirect(ctx.url);
 			}
 
