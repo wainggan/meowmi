@@ -7,7 +7,6 @@ import { Miss } from "../common.ts";
 
 /**
 representation of a user.
-all fields except `id` are freely editable.
 `username` should be unique, and `password` should
 always be hashed for security.
 */
@@ -17,11 +16,35 @@ export type User = {
 	password: string;
 };
 
+/**
+representation of a login session.
+valid while `Date.now() < date_expire`.
+*/
 export type Session = {
 	readonly id: string;
 	readonly csrf: string;
 	readonly user_id: number;
 	readonly date_expire: number;
+};
+
+/**
+a breed of cat.
+*/
+export type CatDef = {
+	readonly id: number;
+	readonly name: string;
+};
+
+/**
+an instance of a cat.
+*/
+export type CatInst = {
+	readonly id: number;
+	readonly catdef_id: number;
+	/** original owner */
+	readonly original_user_id: number;
+	/** current owner */
+	user_id: number;
 };
 
 type internal = 'internal';
@@ -31,37 +54,53 @@ type conflict = 'conflict';
 
 export interface DB {
 	/**
-	creates a new user.
-	@arg username username to use.
-	@arg password password to use. this should be hashed before inserting.
+	creates a new user. the user's username will be set to `username`, and their password
+	will be set to `password` without any adjustments. therefore, `password` should be hashed
+	before passing it into this function.
 	*/
 	users_new(username: string, password: string): Promise<number | Miss<internal | exists>>;
 
 	/**
-	get a user from a username.
-	@arg user_id username to search for.
+	get a user from an id.
 	*/
 	users_get_id(user_id: number): Promise<User | Miss<internal | not_found>>;
 
 	/**
 	get a user from a username.
-	@arg username username to search for.
 	*/
 	users_get_name(username: string): Promise<User | Miss<internal | not_found>>;
 
 	/**
 	submit changes made to a user.
-	@arg user user to be changed.
+	returns `null` if successful, and `Miss<'conflict'>` if `user.username` is already
+	by another user.
 	*/
 	users_set(user: User): Promise<null | Miss<internal | conflict>>;
 
 	/**
-	create a new login session
-	@arg user_id id of the user being logged in
-	@arg expires how long the session is valid for, in hours
+	deletes a user.
+	returns `null` if successful, and `Miss<'not_found'>` if `user_id` is invalid.
+	*/
+	users_delete(user_id: number): Promise<null | Miss<internal | not_found>>;
+
+	/**
+	create a new login session for the user corresponding to `user_id`. `expires` is
+	how long the session will be valid for, in hours.
+	returns a session id `string`.
 	*/
 	session_new(user_id: number, expires: number): Promise<string | Miss<internal>>;
+
+	/**
+	get a session from a session id..
+	*/
 	session_get(session_id: string): Promise<Session | Miss<internal | not_found>>;
 	session_delete(session_id: string): Promise<null | Miss<internal | not_found>>;
+
+	catdef_get(catdef_id: number): Promise<CatDef | Miss<internal | not_found>>;
+	
+	catinst_add(catdef_id: number, user_id: number): Promise<number | Miss<internal | not_found>>;
+	catinst_get(catinst_id: number): Promise<CatInst | Miss<internal | not_found>>;
+	catinst_set(catinst: CatInst): Promise<null | Miss<internal>>;
+	catinst_delete(catinst_id: number): Promise<null | Miss<internal | not_found>>;
 }
 

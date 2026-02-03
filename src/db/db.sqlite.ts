@@ -1,5 +1,5 @@
 import { DatabaseSync } from "node:sqlite";
-import { DB, User, Session } from "./db.types.ts";
+import { DB, User, Session, CatDef, CatInst } from "./db.types.ts";
 import { Miss } from "../common.ts";
 
 export class DBSql implements DB {
@@ -7,18 +7,35 @@ export class DBSql implements DB {
 		this.db = db;
 
 		this.db.exec(`
+			PRAGMA foreign_keys = ON;
+			
 			CREATE TABLE IF NOT EXISTS users (
 				id INTEGER PRIMARY KEY AUTOINCREMENT,
-				username TEXT UNIQUE,
-				password TEXT
+				username TEXT UNIQUE NOT NULL,
+				password TEXT NOT NULL
 			);
 
 			CREATE TABLE IF NOT EXISTS sessions (
 				id TEXT PRIMARY KEY,
 				csrf TEXT NOT NULL,
 				user_id INTEGER NOT NULL,
-				date_expire INTEGER NUL NULL,
+				date_expire INTEGER NOT NULL,
 				FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+			);
+
+			CREATE TABLE IF NOT EXISTS catdefs (
+				id INTEGER PRIMARY KEY AUTOINCREMENT,
+				name TEXT NOT NULL
+			);
+
+			CREATE TABLE IF NOT EXISTS catinsts (
+				id INTEGER PRIMARY KEY AUTOINCREMENT,
+				catdef_id INTEGER NOT NULL,
+				original_user_id INTEGER,
+				owner_user_id INTEGER NOT NULL,
+				FOREIGN KEY (catdef_id) REFERENCES catdefs(id) ON DELETE CASCADE,
+				FOREIGN KEY (original_user_id) REFERENCES users(id) ON DELETE SET NULL,
+				FOREIGN KEY (owner_user_id) REFERENCES users(id) ON DELETE CASCADE
 			);
 		`);
 	}
@@ -100,6 +117,20 @@ export class DBSql implements DB {
 		return null;
 	}
 
+	async users_delete(user_id: number): Promise<null | Miss<"internal" | "not_found">> {
+		try {
+			this.db.prepare(`
+				DELETE FROM users
+				WHERE id = (?);
+			`).run(user_id);
+		}
+		catch (_e) {
+			return new Miss('internal', `unknown internal error`);
+		}
+
+		return null;
+	}
+
 	async session_new(user_id: number, expires: number): Promise<string | Miss<'internal'>> {
 		const now = Date.now();
 
@@ -163,6 +194,95 @@ export class DBSql implements DB {
 		}
 		catch (_e) {
 			return new Miss('not_found', `session does not exist`);
+		}
+
+		return null;
+	}
+
+	async catdef_get(catdef_id: number): Promise<CatDef | Miss<"internal" | "not_found">> {
+		let result;
+		
+		try {
+			result = this.db.prepare(`
+				SELECT * FROM catdefs
+				WHERE id = (?);
+			`).get(catdef_id);
+		}
+		catch (_e) {
+			return new Miss('internal', `unknown internal error`);
+		}
+
+		if (result === undefined) {
+			return new Miss('not_found', `catdef id ${catdef_id} does not exist`);
+		}
+
+		return result as CatDef;
+	}
+
+	async catinst_add(catdef_id: number, user_id: number): Promise<number | Miss<'internal' | 'not_found'>> {
+		let result;
+
+		try {
+			result = this.db.prepare(`
+				INSERT INTO catinsts
+					(catdef_id, original_user_id, owner_user_id)
+				VALUES
+					(?, ?, ?);
+			`).run(catdef_id, user_id, user_id);
+		}
+		catch (_e) {
+			return new Miss('internal', `unknown internal error`);
+		}
+
+		return result.lastInsertRowid as number;
+	}
+
+	async catinst_get(catinst_id: number): Promise<CatInst | Miss<"internal" | "not_found">> {
+		let result;
+
+		try {
+			result = this.db.prepare(`
+				SELECT * FROM catinsts
+				WHERE id = (?);
+			`).get(catinst_id);
+		}
+		catch (_e) {
+			return new Miss('internal', `unknown internal error`);
+		}
+
+		if (result === undefined) {
+			return new Miss('not_found', `catinst id ${catinst_id} does not exist`);
+		}
+
+		return result as CatInst;
+	}
+
+	async catinst_set(catinst: CatInst): Promise<null | Miss<"internal">> {
+		try {
+			this.db.prepare(`
+				UPDATE catinsts
+				SET
+					user_id = (?)
+				WHERE
+					id = (?);
+			`).run(catinst.user_id, catinst.id);
+		}
+		catch (_e) {
+			return new Miss('internal', `unknown internal error`);
+		}
+
+		return null;
+	}
+
+	async catinst_delete(catinst_id: number): Promise<null | Miss<"internal" | "not_found">> {
+		try {
+			this.db.prepare(`
+				DELETE FROM catinsts
+				WHERE id = (?);
+			`).run(catinst_id);
+		}
+		catch (_e) {
+			return new Miss('internal', `unknown internal error`);
 		}
 
 		return null;
