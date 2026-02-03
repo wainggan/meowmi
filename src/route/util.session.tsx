@@ -39,11 +39,8 @@ export const session_middleware: router.Middleware<Shared, router.Method, never,
 		state.session_id = new TextDecoder().decode(buffer);
 	}
 
-	console.log(cookies);
-
 	if (state.session_id !== null) {
 		const session = await ctx.data.db.session_get(state.session_id);
-		console.log(session);
 		if (session instanceof Miss) {
 			state.session_id_invalid = true;
 		}

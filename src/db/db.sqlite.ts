@@ -145,8 +145,6 @@ export class DBSql implements DB {
 		const csrf = crypto.randomUUID();
 		const time = now + 1000 * 60 * 60 * 60 * expires;
 
-		console.log(time, now);
-
 		try {
 			this.db.prepare(`
 				INSERT INTO sessions
