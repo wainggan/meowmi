@@ -50,7 +50,7 @@ export const Navigation = (input: {}) => {
 
 				<NavigationGroup name="CDS">
 					<a href="#" class="nav-btn">Adoption</a>
-					<a href="#" class="nav-btn">Gacha Pulls</a>
+					<a href="/gacha" class="nav-btn">Gacha Pulls</a>
 					<a href="#" class="nav-btn">Cat Shop</a>
 				</NavigationGroup>
 
