@@ -4,12 +4,15 @@ various helpful jsx 'template' components
 
 import { jsx, fragment } from "@parchii/jsx";
 import { User } from "../db/db.types.ts";
+import * as db_util from "../db/db.util.ts";
 
 export const Base = (input: { title: string, user: User | null }, children: unknown[]) => {
+	const settings = db_util.user_settings_extract(input.user);
+
 	return (
 		<>
 			{ "<!doctype html>" }
-			<html lang="en">
+			<html lang="en" data-theme={ settings.theme }>
 			<head>
 				<meta charset="utf-8" />
 				<meta name="viewport" content="width=device-width,initial-scale=1.0" />

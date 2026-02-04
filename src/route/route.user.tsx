@@ -10,6 +10,7 @@ import { SessionExport } from "./util.session.tsx";
 
 import { jsx, fragment } from "@parchii/jsx";
 import { render } from "@parchii/html";
+import * as db_util from "../db/db.util.ts";
 
 const view: router.Middleware<Shared, 'GET', 'username', SessionExport & FlashExport> = async ctx => {
 	const loggedin = ctx.ware.session.user();
@@ -220,7 +221,9 @@ const login_api: router.Middleware<Shared, 'POST', never, FlashExport & SessionE
 			const password_hash_buffer = await crypto.subtle.digest('sha-256', password_buffer);
 			const password_hash = new TextDecoder().decode(password_hash_buffer);
 
-			const user_id = await ctx.data.db.user_new(form_username, password_hash);
+			const settings = db_util.user_settings_pack(db_util.user_settings_default());
+
+			const user_id = await ctx.data.db.user_new(form_username, password_hash, settings);
 			if (user_id instanceof Miss) {
 				if (user_id.type === 'exists') {
 					ctx.ware.flash.set(`username '${form_username}' already exists.`, 'err');

@@ -15,7 +15,17 @@ export type User = {
 	readonly id: number;
 	username: string;
 	password: string;
+	settings: string;
 	tokens: number;
+};
+
+/**
+user settings.
+*/
+export type UserSettings = {
+	theme:
+		| 'light'
+		| 'dark';
 };
 
 /**
@@ -52,7 +62,7 @@ export interface DB {
 	will be set to `password` without any adjustments. therefore, `password` should be hashed
 	before passing it into this function.
 	*/
-	user_new(username: string, password: string): Promise<number | Miss<internal | exists>>;
+	user_new(username: string, password: string, settings: string): Promise<number | Miss<internal | exists>>;
 
 	/**
 	get a user from an id.

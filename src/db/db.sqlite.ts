@@ -13,6 +13,7 @@ export class DBSql implements DB {
 				id INTEGER PRIMARY KEY AUTOINCREMENT,
 				username TEXT UNIQUE NOT NULL,
 				password TEXT NOT NULL,
+				settings TEXT NOT NULL,
 				tokens INTEGER NOT NULL
 			);
 
@@ -37,15 +38,15 @@ export class DBSql implements DB {
 
 	db: DatabaseSync;
 
-	async user_new(username: string, password: string): Promise<number | Miss<'internal' | 'exists'>> {
+	async user_new(username: string, password: string, settings: string): Promise<number | Miss<'internal' | 'exists'>> {
 		let result;
 		try {
 			result = this.db.prepare(`
 				INSERT INTO users
-					(username, password, tokens)
+					(username, password, settings, tokens)
 				VALUES
-					(?, ?, ?);
-			`).run(username, password, 5);
+					(?, ?, ?, ?);
+			`).run(username, password, settings, 5);
 		}
 		catch (_e) {
 			return new Miss('exists', `username '${username}' already exists`);
