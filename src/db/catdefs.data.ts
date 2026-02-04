@@ -19,13 +19,19 @@ type CatDefLoot = {
 };
 
 const map = {
-	1: {
-		name: 'basic',
+	0: {
+		name: "basic",
 		rarity: 'common',
 	},
-} as const satisfies Record<number, CatDef>;
+	1: {
+		name: "science",
+		rarity: 'common',
+	},
+} as const satisfies {
+	[key: number]: CatDef;
+};
 
-const keys = Object.keys(map).map(x => Number(x)) as unknown as readonly (keyof typeof map)[];
+const keys = Object.keys(map).map(x => Number(x)) as (keyof typeof map)[];
 
 const loot = {
 	base: {

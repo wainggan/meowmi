@@ -11,7 +11,7 @@ import { render } from "@parchii/html";
 import { FlashExport } from "./util.flash.tsx";
 import { SessionExport } from "./util.session.tsx";
 import { Shared } from "../shared.ts";
-import catdefs from "../db/catdefs.ts";
+import * as catdefs_util from "../db/catdefs.util.ts";
 import { Miss } from "../common.ts";
 
 const gacha: router.Middleware<{}, 'GET', never, SessionExport & FlashExport> = async ctx => {
@@ -70,10 +70,7 @@ const gacha_api: router.Middleware<Shared, 'POST', never, SessionExport & FlashE
 		return ctx.build_redirect(ctx.url);
 	}
 
-	const breed = catdefs.keys[Math.random() * catdefs.keys.length | 0];
-	if (breed === undefined) {
-		throw new Error(`idk`);
-	}
+	const breed = catdefs_util.select('base');
 
 	const catinst_id = await ctx.data.db.catinst_add(breed, user.id);
 	if (catinst_id instanceof Miss) {
