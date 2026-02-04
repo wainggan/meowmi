@@ -99,6 +99,7 @@ export const session_middleware: router.Middleware<Shared, router.Method, never,
 	else if (state.session_id !== null) {
 		if (state.session_id_logout) {
 			await ctx.data.db.session_delete(state.session_id);
+			state.session_id_invalid = true;
 		}
 
 		if (state.session_id_invalid) {
