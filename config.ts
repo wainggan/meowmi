@@ -8,6 +8,12 @@ const config: import("./src/config.types.ts").default = {
 		// where the database is located
 		path: './.local/db.sql',
 	},
+	verbose: {
+		// print server requests to stdio
+		requests: true,
+		// print database logs to stdio
+		database: true,
+	},
 };
 
 export default config;

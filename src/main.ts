@@ -11,7 +11,6 @@ const db = new DBSql(new DatabaseSync(config.db.path));
 const app = application({
 	data: {
 		db,
-		config,
 	},
 	route,
 	stdio: true,

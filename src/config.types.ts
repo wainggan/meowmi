@@ -6,6 +6,10 @@ type Config = {
 	readonly db: {
 		readonly path: string;
 	};
+	readonly verbose: {
+		readonly requests: boolean;
+		readonly database: boolean;
+	};
 };
 export default Config;
 
