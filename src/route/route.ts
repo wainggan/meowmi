@@ -51,6 +51,9 @@ route.get("/login", session_middleware, flash_middleware, route_user.login);
 route.post("/login", session_middleware, flash_middleware, route_user.login_api);
 route.get("/logout", session_middleware, flash_middleware, route_user.logout);
 
+route.get("/settings", session_middleware, force_session_middleware, flash_middleware, route_user.settings);
+route.post("/settings", session_middleware, force_session_middleware, flash_middleware, route_user.settings_api);
+
 route.get("/gacha", session_middleware, force_session_middleware, flash_middleware, route_gacha.gacha);
 route.post("/gacha", session_middleware, force_session_middleware, flash_middleware, route_gacha.gacha_api);
 

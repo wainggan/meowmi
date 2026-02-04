@@ -104,10 +104,11 @@ export class DBSql implements DB {
 				SET
 					username = (?),
 					password = (?),
+					settings = (?),
 					tokens = (?)
 				WHERE
 					id = (?);
-			`).run(user.username, user.password, user.tokens, user.id);
+			`).run(user.username, user.password, user.settings, user.tokens, user.id);
 		}
 		catch (_e) {
 			return new Miss('conflict', `username '${user.username}' already exists`);

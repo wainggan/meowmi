@@ -19,13 +19,13 @@ export type User = {
 	tokens: number;
 };
 
+export const themes_list = ['light', 'dark'] as const;
+
 /**
 user settings.
 */
 export type UserSettings = {
-	theme:
-		| 'light'
-		| 'dark';
+	theme: (typeof themes_list)[number];
 };
 
 /**

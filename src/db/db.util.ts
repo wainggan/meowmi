@@ -1,4 +1,4 @@
-import { User, UserSettings } from "./db.types.ts";
+import { themes_list, User, UserSettings } from "./db.types.ts";
 
 export const user_settings_extract = (user: User | null): UserSettings => {
 	const out = user_settings_default();
@@ -17,5 +17,9 @@ export const user_settings_default = (): UserSettings => {
 	return {
 		theme: 'dark',
 	};
+};
+
+export const settings_theme_check = (check: string): check is (typeof themes_list)[number] => {
+	return themes_list.includes(check as (typeof themes_list)[number]);
 };
 

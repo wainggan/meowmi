@@ -6,11 +6,12 @@ import { Miss } from "../common.ts";
 import link from "./link.ts";
 
 import { FlashExport } from "./util.flash.tsx";
-import { SessionExport } from "./util.session.tsx";
+import { ForceSessionExport, SessionExport } from "./util.session.tsx";
 
 import { jsx, fragment } from "@parchii/jsx";
 import { render } from "@parchii/html";
 import * as db_util from "../db/db.util.ts";
+import { themes_list } from "../db/db.types.ts";
 
 const view: router.Middleware<Shared, 'GET', 'username', SessionExport & FlashExport> = async ctx => {
 	const loggedin = ctx.ware.session.user();
@@ -264,10 +265,102 @@ const logout: router.Middleware<Shared, 'GET', never, SessionExport> = async ctx
 	return ctx.build_response(str, 'ok', 'html');
 };
 
+const settings: router.Middleware<Shared, 'GET', never, ForceSessionExport & FlashExport> = async ctx => {
+	const user = ctx.ware.force_session.user();
+
+	const settings = db_util.user_settings_extract(user);
+
+	const dom = (
+		<template.Base title="login" user={ user }>
+			<template.Flash flash={ ctx.ware.flash.get() }/>
+			
+			<div class="auth-wrap">
+				<h1>settings</h1>
+
+				<h2>profile</h2>
+
+				<form action="" method="post" enctype="multipart/form-data">
+					<input type="hidden" name="which" value="profile"/>
+
+					<select name="theme">
+						{
+							...themes_list.map(x => <option value={ x } selected={ x === settings.theme }>{ x }</option>)
+						}
+					</select>
+					
+					<button type="submit">submit</button>
+				</form>
+
+				<h2>account</h2>
+
+				<form action="" method="post" enctype="multipart/form-data">
+					<input type="hidden" name="which" value="account"/>
+
+					<input type="text" name="username"/>
+					
+					<input type="password" name="password"/>
+					<input type="password" name="password-again"/>
+					
+					<button type="submit">submit</button>
+				</form>
+			</div>
+		</template.Base>
+	);
+
+	const str = render(dom);
+
+	return ctx.build_response(str, 'ok', 'html');
+};
+
+const settings_api: router.Middleware<Shared, 'POST', never, FlashExport & ForceSessionExport> = async ctx => {
+	const user = ctx.ware.force_session.user();
+
+	// parse form
+	const form = await ctx.request.formData();
+
+	const form_which = form.get('which');
+
+	switch (form_which) {
+		case 'profile': {
+			const form_theme = form.get('theme');
+
+			if (typeof form_theme !== 'string') {
+				ctx.ware.flash.set(`bad form`, 'err');
+				return ctx.build_redirect(ctx.url);
+			}
+
+			const settings = db_util.user_settings_extract(user);
+
+			if (!db_util.settings_theme_check(form_theme)) {
+				ctx.ware.flash.set(`invalid theme`, 'err');
+				return ctx.build_redirect(ctx.url);
+			}
+
+			settings.theme = form_theme;
+
+			user.settings = db_util.user_settings_pack(settings);
+
+			const result = await ctx.data.db.user_set(user);
+			if (result instanceof Miss) {
+				ctx.ware.flash.set(`unknown internal error`, 'err');
+				return ctx.build_redirect(ctx.url);
+			}
+
+			ctx.ware.flash.set(`successfully updated profile settings!`, 'ok');
+			return ctx.build_redirect(ctx.url);
+		}
+	}
+
+	ctx.ware.flash.set(`bad form`, 'err');
+	return ctx.build_redirect(ctx.url);
+};
+
 export default {
 	view,
 	login,
 	login_api,
 	logout,
+	settings,
+	settings_api,
 };
 

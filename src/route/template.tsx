@@ -77,6 +77,8 @@ export const Navigation = (input: { user: User | null }) => {
 					<a href="#" class="nav-btn">Play</a>
 				</NavigationGroup>
 
+				<a href="/settings" class="nav-btn">Settings</a>
+
 				<div class="spacer"></div>
 
 				{
