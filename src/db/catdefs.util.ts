@@ -8,8 +8,8 @@ export const select = (table: keyof typeof catdefs.loot): keyof typeof catdefs.m
 	let total = select_mem.get(table);
 	if (total === undefined) {
 		total = 0;
-		for (const i in catdefs.keys) {
-			const ii = Number(i) as (typeof catdefs.keys)[number];
+		for (let i = 0; i < catdefs.keys.length; i++) {
+			const ii = catdefs.keys[i];
 			const a = catdefs.map[ii];
 			total += loot.rarities[a.rarity];
 		}
@@ -17,8 +17,8 @@ export const select = (table: keyof typeof catdefs.loot): keyof typeof catdefs.m
 	}
 	
 	let value = Math.random() * total | 0;
-	for (const i in catdefs.keys) {
-		const ii = Number(i) as (typeof catdefs.keys)[number];
+	for (let i = 0; i < catdefs.keys.length; i++) {
+		const ii = catdefs.keys[i];
 		const a = catdefs.map[ii];
 		value -= loot.rarities[a.rarity];
 		if (value <= 0) {
