@@ -30,6 +30,7 @@ export class DBSql implements DB {
 				catdef_id INTEGER NOT NULL,
 				original_user_id INTEGER,
 				owner_user_id INTEGER NOT NULL,
+				name TEXT NOT NULL,
 				FOREIGN KEY (original_user_id) REFERENCES users(id) ON DELETE SET NULL,
 				FOREIGN KEY (owner_user_id) REFERENCES users(id) ON DELETE CASCADE
 			);
@@ -206,10 +207,10 @@ export class DBSql implements DB {
 		try {
 			result = this.db.prepare(`
 				INSERT INTO catinsts
-					(catdef_id, original_user_id, owner_user_id)
+					(catdef_id, original_user_id, owner_user_id, name)
 				VALUES
-					(?, ?, ?);
-			`).run(catdef_id, user_id, user_id);
+					(?, ?, ?, ?);
+			`).run(catdef_id, user_id, user_id, "cat");
 		}
 		catch (e) {
 			console.error(e);

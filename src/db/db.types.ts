@@ -49,6 +49,8 @@ export type CatInst = {
 	readonly original_user_id: number;
 	/** current owner */
 	owner_user_id: number;
+	/** nickname */
+	name: string;
 };
 
 type internal = 'internal';

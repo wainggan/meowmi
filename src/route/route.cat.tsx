@@ -2,7 +2,7 @@
 import * as router from "@parchii/router";
 import * as template from "./template.tsx";
 
-import { jsx } from "@parchii/jsx";
+import { jsx, fragment } from "@parchii/jsx";
 import { render } from "@parchii/html";
 
 import { FlashExport } from "./util.flash.tsx";
@@ -11,24 +11,61 @@ import { Shared } from "../shared.ts";
 import { Miss } from "../common.ts";
 import catdefs from "../db/catdefs.data.ts";
 
-const cat_list: router.Middleware<Shared, 'GET', never, ForceSessionExport & FlashExport> = async ctx => {
+const cat_view: router.Middleware<Shared, 'GET', never, ForceSessionExport & FlashExport> = async ctx => {
 	const user = ctx.ware.force_session.user();
-	
+
+	const extract_catinst_id = ctx.url.searchParams.get('view');
+	let catinst_id = null;
+	if (extract_catinst_id !== null) {
+		catinst_id = Number(extract_catinst_id);
+	}
+
+	let catinst = null;
+	if (catinst_id !== null) {
+		catinst = await ctx.data.db.catinst_get(catinst_id);
+		if (catinst instanceof Miss) {
+			return undefined;
+		}
+		if (user.id !== catinst.owner_user_id) {
+			catinst = null;
+		}
+	}
+
 	const list = await ctx.data.db.catinst_list_user(user.id, 40, 0);
 	if (list instanceof Miss) {
 		return undefined;
 	}
-	
+
+	let dom_catinst = null;
+	if (catinst !== null) {
+		const breed = catdefs.map[catinst.catdef_id];
+		dom_catinst = (
+			<>
+				<li>{ catinst.name }</li>
+				<li>{ breed.name } ({ breed.rarity })</li>
+			</>
+		);
+	}	
+
 	const dom = (
 		<template.Base title="your cats" user={ user }>
-			<h1>cats</h1>
-
 			<template.Flash flash={ ctx.ware.flash.get() }/>
 			
+			<h1>cat</h1>
+			
+			<ul>
+				{ dom_catinst }
+			</ul>
+
 			<ul>
 				{
 					...list.values()
-						.map(x => <li><a href={ `/cat/${x.id}` }>{ x.id }</a></li>)
+						.map(x => {
+							const breed = catdefs.map[x.catdef_id];
+							const url = new URL(ctx.url);
+							url.searchParams.set('view', x.id.toString());
+							return <li><a href={ url.href }>{ x.name } ({ breed.name })</a></li>;
+						})
 						.toArray()
 				}
 			</ul>
@@ -40,39 +77,7 @@ const cat_list: router.Middleware<Shared, 'GET', never, ForceSessionExport & Fla
 	return ctx.build_response(str, 'ok', 'html');
 };
 
-const cat_view: router.Middleware<Shared, 'GET', 'id', ForceSessionExport & FlashExport> = async ctx => {
-	const user = ctx.ware.force_session.user();
-	
-	const catinst = await ctx.data.db.catinst_get(Number(ctx.extract.id));
-	if (catinst instanceof Miss) {
-		return undefined;
-	}
-
-	if (user.id !== catinst.owner_user_id) {
-		return undefined;
-	}
-
-	const breed = catdefs.map[catinst.catdef_id];
-
-	const dom = (
-		<template.Base title="your cats" user={ user }>
-			<h1>cat</h1>
-
-			<template.Flash flash={ ctx.ware.flash.get() }/>
-			
-			<p>
-				{ breed.name } ({ breed.rarity })
-			</p>
-		</template.Base>
-	);
-
-	const str = render(dom);
-
-	return ctx.build_response(str, 'ok', 'html');
-};
-
 export default {
-	cat_list,
 	cat_view,
 };
 

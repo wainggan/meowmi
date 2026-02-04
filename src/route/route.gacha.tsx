@@ -73,7 +73,7 @@ const gacha_api: router.Middleware<Shared, 'POST', never, ForceSessionExport & F
 		return ctx.build_redirect(ctx.url);
 	}
 
-	return ctx.build_redirect(`/cat/${catinst_id}`);
+	return ctx.build_redirect(`/cat?view=${catinst_id}`);
 };
 
 export default {
