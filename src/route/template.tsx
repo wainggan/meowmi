@@ -68,7 +68,7 @@ export const Navigation = (input: {}) => {
 				</NavigationGroup>
 
 				<NavigationGroup name="Cats">
-					<a href="#" class="nav-btn">Owned Cats</a>
+					<a href="/cat" class="nav-btn">Owned Cats</a>
 					<a href="#" class="nav-btn">Care</a>
 					<a href="#" class="nav-btn">Feeding</a>
 					<a href="#" class="nav-btn">Play</a>

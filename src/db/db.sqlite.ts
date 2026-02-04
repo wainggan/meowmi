@@ -63,7 +63,8 @@ export class DBSql implements DB {
 				WHERE username = (?);
 			`).get(username);
 		}
-		catch (_e) {
+		catch (e) {
+			console.error(e);
 			return new Miss('internal', `unknown internal error`);
 		}
 
@@ -83,7 +84,8 @@ export class DBSql implements DB {
 				WHERE id = (?);
 			`).get(user_id);
 		}
-		catch (_e) {
+		catch (e) {
+			console.error(e);
 			return new Miss('internal', `unknown internal error`);
 		}
 
@@ -120,7 +122,8 @@ export class DBSql implements DB {
 				WHERE id = (?);
 			`).run(user_id);
 		}
-		catch (_e) {
+		catch (e) {
+			console.error(e);
 			return new Miss('internal', `unknown internal error`);
 		}
 
@@ -162,13 +165,15 @@ export class DBSql implements DB {
 
 	async session_get(session_id: string): Promise<Session | Miss<'internal' | 'not_found'>> {
 		let result;
+
 		try {
 			result = this.db.prepare(`
 				SELECT * FROM sessions
 				WHERE sessions.id = (?) AND sessions.date_expire > (?);
 			`).get(session_id, Date.now());
 		}
-		catch (_e) {
+		catch (e) {
+			console.error(e);
 			return new Miss('internal', `unknown internal error`);
 		}
 
@@ -204,7 +209,8 @@ export class DBSql implements DB {
 					(?, ?, ?);
 			`).run(catdef_id, user_id, user_id);
 		}
-		catch (_e) {
+		catch (e) {
+			console.error(e);
 			return new Miss('internal', `unknown internal error`);
 		}
 
@@ -220,7 +226,8 @@ export class DBSql implements DB {
 				WHERE id = (?);
 			`).get(catinst_id);
 		}
-		catch (_e) {
+		catch (e) {
+			console.error(e);
 			return new Miss('internal', `unknown internal error`);
 		}
 
@@ -236,12 +243,13 @@ export class DBSql implements DB {
 			this.db.prepare(`
 				UPDATE catinsts
 				SET
-					user_id = (?)
+					owner_user_id = (?)
 				WHERE
 					id = (?);
-			`).run(catinst.user_id, catinst.id);
+			`).run(catinst.owner_user_id, catinst.id);
 		}
-		catch (_e) {
+		catch (e) {
+			console.error(e);
 			return new Miss('internal', `unknown internal error`);
 		}
 
@@ -255,11 +263,30 @@ export class DBSql implements DB {
 				WHERE id = (?);
 			`).run(catinst_id);
 		}
-		catch (_e) {
+		catch (e) {
+			console.error(e);
 			return new Miss('internal', `unknown internal error`);
 		}
 
 		return null;
+	}
+
+	async catinst_list_user(user_id: number, limit: number, offset: number): Promise<CatInst[] | Miss<"internal" | "not_found">> {
+		let result;
+
+		try {
+			result = this.db.prepare(`
+				SELECT * FROM catinsts
+				WHERE owner_user_id = (?)
+				LIMIT (?) OFFSET (?);
+			`).all(user_id, limit, offset);
+		}
+		catch (e) {
+			console.error(e);
+			return new Miss('internal', `unknown internal error`);
+		}
+
+		return result as CatInst[];
 	}
 }
 

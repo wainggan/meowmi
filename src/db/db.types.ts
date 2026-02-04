@@ -4,6 +4,7 @@ this makes it easier to find api problems.
 */
 
 import { Miss } from "../common.ts";
+import catdefs from "./catdefs.data.ts";
 
 /**
 representation of a user.
@@ -33,11 +34,11 @@ an instance of a cat.
 */
 export type CatInst = {
 	readonly id: number;
-	readonly catdef_id: number;
+	readonly catdef_id: keyof typeof catdefs.map;
 	/** original owner */
 	readonly original_user_id: number;
 	/** current owner */
-	user_id: number;
+	owner_user_id: number;
 };
 
 type internal = 'internal';
@@ -89,9 +90,10 @@ export interface DB {
 	session_get(session_id: string): Promise<Session | Miss<internal | not_found>>;
 	session_delete(session_id: string): Promise<null | Miss<internal | not_found>>;
 
-	catinst_add(catdef_id: number, user_id: number): Promise<number | Miss<internal | not_found>>;
+	catinst_add(catdef_id: keyof typeof catdefs.map, user_id: number): Promise<number | Miss<internal | not_found>>;
 	catinst_get(catinst_id: number): Promise<CatInst | Miss<internal | not_found>>;
 	catinst_set(catinst: CatInst): Promise<null | Miss<internal>>;
 	catinst_delete(catinst_id: number): Promise<null | Miss<internal | not_found>>;
+	catinst_list_user(user_id: number, limit: number, offset: number): Promise<CatInst[] | Miss<internal | not_found>>;
 }
 

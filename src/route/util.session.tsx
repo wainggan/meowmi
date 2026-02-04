@@ -3,8 +3,12 @@ import * as router from "@parchii/router";
 import { Session, User } from "../db/db.types.ts";
 import { Miss } from "../common.ts";
 
+import { jsx } from "@parchii/jsx";
+import * as template from "./template.tsx";
+
 import * as std_cookie from "@std/http/cookie";
 import { Shared } from "../shared.ts";
+import { render } from "@parchii/html";
 
 export type SessionExport = {
 	session: {
@@ -12,6 +16,13 @@ export type SessionExport = {
 		readonly session: () => Session | null;
 		readonly set: (session_id: string) => void;
 		readonly logout: () => void;
+	};
+};
+
+export type ForceSessionExport = {
+	force_session: {
+		readonly user: () => User;
+		readonly session: () => Session;
 	};
 };
 
@@ -102,6 +113,39 @@ export const session_middleware: router.Middleware<Shared, router.Method, never,
 			});
 		}
 	}
+
+	return response;
+};
+
+export const force_session_middleware: router.Middleware<Shared, router.Method, never, SessionExport, ForceSessionExport> = async ctx => {
+	const user = ctx.ware.session.user();
+	const session = ctx.ware.session.session();
+
+	if (user === null || session === null) {
+		const dom = (
+			<template.Base title="error">
+				<h1>error</h1>
+				<p>
+					you must be logged in to see this.
+				</p>
+			</template.Base>
+		);
+
+		const str = render(dom);
+
+		return ctx.build_response(str, 'unauthorized', 'html');
+	}
+
+	ctx.ware.force_session = {
+		user() {
+			return user;
+		},
+		session() {
+			return session;
+		}
+	};
+
+	const response = await ctx.next();
 
 	return response;
 };

@@ -1,5 +1,5 @@
 /*
-page used fir gacha.
+page used for gacha.
 */
 
 import * as router from "@parchii/router";

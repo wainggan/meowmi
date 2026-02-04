@@ -9,9 +9,10 @@ import route_404 from "./route.404.tsx";
 import route_index from "./route.index.tsx";
 import route_user from "./route.user.tsx";
 import route_gacha from "./route.gacha.tsx";
+import route_cat from "./route.cat.tsx";
 
 import { flash_middleware } from "./util.flash.tsx";
-import { session_middleware } from "./util.session.tsx";
+import { force_session_middleware, session_middleware } from "./util.session.tsx";
 
 const route = new router.Router<Shared>();
 
@@ -49,6 +50,9 @@ route.post("/login", session_middleware, flash_middleware, route_user.login_api)
 
 route.get("/gacha", session_middleware, flash_middleware, route_gacha.gacha);
 route.post("/gacha", session_middleware, flash_middleware, route_gacha.gacha_api);
+
+route.get("/cat", session_middleware, force_session_middleware, flash_middleware, route_cat.cat_list);
+route.get("/cat/:id", session_middleware, force_session_middleware, flash_middleware, route_cat.cat_view);
 
 export default route;
 
