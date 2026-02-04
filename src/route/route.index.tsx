@@ -7,10 +7,13 @@ import * as template from "./template.tsx";
 
 import { jsx } from "@parchii/jsx";
 import { render } from "@parchii/html";
+import { SessionExport } from "./util.session.tsx";
 
-const index: router.Middleware<{}, 'GET', never> = async ctx => {
+const index: router.Middleware<{}, 'GET', never, SessionExport> = async ctx => {
+	const user = ctx.ware.session.user();
+
 	const dom = (
-		<template.Base title="index">
+		<template.Base title="index" user={ user }>
 			<main>
 				<div class="hero">
 					NEWS TICKER ART

@@ -11,7 +11,9 @@ import { SessionExport } from "./util.session.tsx";
 import { jsx, fragment } from "@parchii/jsx";
 import { render } from "@parchii/html";
 
-const view: router.Middleware<Shared, 'GET', 'username', FlashExport> = async ctx => {
+const view: router.Middleware<Shared, 'GET', 'username', SessionExport & FlashExport> = async ctx => {
+	const loggedin = ctx.ware.session.user();
+
 	const user = await ctx.data.db.user_get_name(ctx.extract.username);
 
 	let dom_inner, code: keyof typeof router.status_codes;
@@ -50,7 +52,7 @@ const view: router.Middleware<Shared, 'GET', 'username', FlashExport> = async ct
 	}
 	
 	const dom = (
-		<template.Base title="user">
+		<template.Base title="user" user={ loggedin }>
 			<template.Flash flash={ ctx.ware.flash.get() }/>
 			{ dom_inner }
 		</template.Base>
@@ -61,41 +63,67 @@ const view: router.Middleware<Shared, 'GET', 'username', FlashExport> = async ct
 	return ctx.build_response(src, code, 'html');
 };
 
-const login: router.Middleware<Shared, 'GET', never, FlashExport> = async ctx => {
+const login: router.Middleware<Shared, 'GET', never, SessionExport & FlashExport> = async ctx => {
+	const user = ctx.ware.session.user();
+
+	if (user !== null) {
+		const dom = (
+			<template.Base title="login" user={ user }>
+				<template.Flash flash={ ctx.ware.flash.get() }/>
+				
+				<div class="auth-wrap">
+					<h1>login</h1>
+					<p>
+						you are already logged in!
+					</p>
+				</div>
+			</template.Base>
+		);
+
+		const str = render(dom);
+
+		return ctx.build_response(str, 'ok', 'html');
+	}
+
 	const dom = (
-		<template.Base title="login">
+		<template.Base title="login" user={ user satisfies null }>
 			<template.Flash flash={ ctx.ware.flash.get() }/>
 			
-	<div class="auth-wrap">
-			<h1>login</h1>
+			<div class="auth-wrap">
+				<h1>login</h1>
 
-			<form action="" method="post" enctype="multipart/form-data">
-				<input type="hidden" name="which" value="login"/>
-				<input type="text" name="username"/>
-				<input type="password" name="password"/>
-				<button type="submit">login</button>
-			</form>
+				<form action="" method="post" enctype="multipart/form-data">
+					<input type="hidden" name="which" value="login"/>
+					<input type="text" name="username"/>
+					<input type="password" name="password"/>
+					<button type="submit">login</button>
+				</form>
 
-			<h1>register</h1>
+				<h1>register</h1>
 
-			<form action="" method="post" enctype="multipart/form-data">
-				<input type="hidden" name="which" value="register"/>
-				<input type="text" name="username"/>
-				<input type="password" name="password"/>
-				<input type="password" name="password-again"/>
-				<button type="submit">register</button>
-			</form>
-
-		</div>
+				<form action="" method="post" enctype="multipart/form-data">
+					<input type="hidden" name="which" value="register"/>
+					<input type="text" name="username"/>
+					<input type="password" name="password"/>
+					<input type="password" name="password-again"/>
+					<button type="submit">register</button>
+				</form>
+			</div>
 		</template.Base>
 	);
 
-	const src = render(dom);
+	const str = render(dom);
 
-	return ctx.build_response(src, 'ok', 'html');
+	return ctx.build_response(str, 'ok', 'html');
 };
 
 const login_api: router.Middleware<Shared, 'POST', never, FlashExport & SessionExport> = async ctx => {
+	const user = ctx.ware.session.user();
+	if (user !== null) {
+		ctx.ware.flash.set(`already logged in`, 'err');
+		return ctx.build_redirect(ctx.url);
+	}
+
 	// parse form
 	const form = await ctx.request.formData();
 
@@ -216,9 +244,27 @@ const login_api: router.Middleware<Shared, 'POST', never, FlashExport & SessionE
 	return ctx.build_redirect(ctx.url);
 };
 
+const logout: router.Middleware<Shared, 'GET', never, SessionExport> = async ctx => {
+	ctx.ware.session.logout();
+	
+	const dom = (
+		<template.Base title="logout" user={ null }>
+			<h1>logout</h1>
+			<p>
+				you have been logged out.
+			</p>
+		</template.Base>
+	);
+
+	const str = render(dom);
+
+	return ctx.build_response(str, 'ok', 'html');
+};
+
 export default {
 	view,
 	login,
 	login_api,
+	logout,
 };
 

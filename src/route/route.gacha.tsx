@@ -5,49 +5,33 @@ page used for gacha.
 import * as router from "@parchii/router";
 import * as template from "./template.tsx";
 
-import { jsx, fragment } from "@parchii/jsx";
+import { jsx } from "@parchii/jsx";
 import { render } from "@parchii/html";
 
 import { FlashExport } from "./util.flash.tsx";
-import { SessionExport } from "./util.session.tsx";
+import { ForceSessionExport, SessionExport } from "./util.session.tsx";
 import { Shared } from "../shared.ts";
 import * as catdefs_util from "../db/catdefs.util.ts";
 import { Miss } from "../common.ts";
 
-const gacha: router.Middleware<{}, 'GET', never, SessionExport & FlashExport> = async ctx => {
-	const user = ctx.ware.session.user();
-	const session = ctx.ware.session.session();
-
-	let dom_inner;
-	if (user !== null && session !== null) {
-		dom_inner = (
-			<>
-				<div>
-					you have { user.tokens } tokens.
-				</div>
-				
-				<form action="" method="post" enctype="application/x-www-form-urlencoded">
-					<input type="hidden" name="csrf" value={ session.csrf }/>
-					<button type="submit">roll (-1 token)</button>
-				</form>
-			</>
-		);
-	}
-	else {
-		dom_inner = (
-			<div>
-				you must be logged in to roll.
-			</div>
-		);
-	}
+const gacha: router.Middleware<{}, 'GET', never, ForceSessionExport & FlashExport> = async ctx => {
+	const user = ctx.ware.force_session.user();
+	const session = ctx.ware.force_session.session();
 
 	const dom = (
-		<template.Base title="index">
+		<template.Base title="index" user={ user }>
 			<template.Flash flash={ ctx.ware.flash.get() }/>
 			
 			<h1>gacha</h1>
 			
-			{ dom_inner }
+			<div>
+				you have { user.tokens } tokens.
+			</div>
+			
+			<form action="" method="post" enctype="application/x-www-form-urlencoded">
+				<input type="hidden" name="csrf" value={ session.csrf }/>
+				<button type="submit">roll (-1 token)</button>
+			</form>
 		</template.Base>
 	);
 

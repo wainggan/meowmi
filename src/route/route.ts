@@ -16,7 +16,7 @@ import { force_session_middleware, session_middleware } from "./util.session.tsx
 
 const route = new router.Router<Shared>();
 
-route.set_404(route_error.not_found);
+route.set_404(session_middleware, route_error.not_found);
 
 route.set_static(async ctx => {
 	const parts = "./" + ctx.url_parts.slice(1).join("/");
@@ -41,16 +41,17 @@ route.get("/ping", async (ctx) => {
 	return ctx.build_response("meow", "ok", "txt");
 });
 
-route.get("/unauthorized", route_error.unauthorized);
+route.get("/unauthorized", session_middleware, route_error.unauthorized);
 
-route.get("/", route_index.index);
+route.get("/", session_middleware, route_index.index);
 
-route.get("/user/:username", flash_middleware, route_user.view);
+route.get("/user/:username", session_middleware, flash_middleware, route_user.view);
 
-route.get("/login", flash_middleware, route_user.login);
+route.get("/login", session_middleware, flash_middleware, route_user.login);
 route.post("/login", session_middleware, flash_middleware, route_user.login_api);
+route.get("/logout", session_middleware, flash_middleware, route_user.logout);
 
-route.get("/gacha", session_middleware, flash_middleware, route_gacha.gacha);
+route.get("/gacha", session_middleware, force_session_middleware, flash_middleware, route_gacha.gacha);
 route.post("/gacha", session_middleware, flash_middleware, route_gacha.gacha_api);
 
 route.get("/cat", session_middleware, force_session_middleware, flash_middleware, route_cat.cat_list);

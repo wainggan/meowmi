@@ -5,12 +5,16 @@
 import * as router from "@parchii/router";
 import * as template from "./template.tsx";
 
+import { SessionExport } from "./util.session.tsx";
+
 import { jsx } from "@parchii/jsx";
 import { render } from "@parchii/html";
 
-const not_found: router.Middleware<{}, router.Method, never> = async ctx => {
+const not_found: router.Middleware<{}, router.Method, never, SessionExport> = async ctx => {
+	const user = ctx.ware.session.user();
+
 	const dom = (
-		<template.Base title="index">
+		<template.Base title="index" user={ user }>
 			<h1>404</h1>
 			<p>
 				not found!
@@ -23,12 +27,15 @@ const not_found: router.Middleware<{}, router.Method, never> = async ctx => {
 	return ctx.build_response(src, 'not_found', 'html');
 };
 
-const unauthorized: router.Middleware<{}, router.Method, never> = async ctx => {
+const unauthorized: router.Middleware<{}, router.Method, never, SessionExport> = async ctx => {
+	const user = ctx.ware.session.user();
+
 	const dom = (
-		<template.Base title="index">
+		<template.Base title="index" user={ user }>
 			<h1>unauthorized</h1>
 			<p>
-				you must be logged in to see that page!
+				you are not authorized to see that page.
+				{ user === null ? 'perhaps you are not logged in?' : '' }
 			</p>
 		</template.Base>
 	);

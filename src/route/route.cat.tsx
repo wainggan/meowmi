@@ -20,7 +20,7 @@ const cat_list: router.Middleware<Shared, 'GET', never, ForceSessionExport & Fla
 	}
 	
 	const dom = (
-		<template.Base title="your cats">
+		<template.Base title="your cats" user={ user }>
 			<h1>cats</h1>
 
 			<template.Flash flash={ ctx.ware.flash.get() }/>
@@ -55,7 +55,7 @@ const cat_view: router.Middleware<Shared, 'GET', 'id', ForceSessionExport & Flas
 	const breed = catdefs.map[catinst.catdef_id];
 
 	const dom = (
-		<template.Base title="your cats">
+		<template.Base title="your cats" user={ user }>
 			<h1>cat</h1>
 
 			<template.Flash flash={ ctx.ware.flash.get() }/>

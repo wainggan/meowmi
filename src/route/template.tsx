@@ -3,8 +3,9 @@ various helpful jsx 'template' components
 */
 
 import { jsx, fragment } from "@parchii/jsx";
+import { User } from "../db/db.types.ts";
 
-export const Base = (input: { title: string }, children: unknown[]) => {
+export const Base = (input: { title: string, user: User | null }, children: unknown[]) => {
 	return (
 		<>
 			{ "<!doctype html>" }
@@ -16,7 +17,7 @@ export const Base = (input: { title: string }, children: unknown[]) => {
 				<title>{ input.title }</title>
 			</head>
 			<body>
-				<Navigation/>
+				<Navigation user={ input.user }/>
 				{ ...children }
 			</body>
 			</html>
@@ -35,8 +36,7 @@ export const NavigationGroup = (input: { name: string }, children: unknown[]) =>
 	);
 };
 
-export const Navigation = (input: {}) => {
-	input;
+export const Navigation = (input: { user: User | null }) => {
 	return (
 		<>
 			<nav>
@@ -76,7 +76,12 @@ export const Navigation = (input: {}) => {
 
 				<div class="spacer"></div>
 
-				<a href="/login" class="nav-btn">Login</a>
+				{
+					input.user === null
+					? <a href="/login" class="nav-btn">Login</a>
+					: <a href="/logout" class="nav-btn">Logout</a>
+				}
+				
 				<button class="nav-btn" onclick="toggleMenu()">☰</button>
 			</nav>
 
