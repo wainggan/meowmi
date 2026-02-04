@@ -5,7 +5,7 @@ gathers together all our middleware and exports a `Router`.
 import * as router from "@parchii/router";
 import { Shared } from "../shared.ts";
 
-import route_404 from "./route.404.tsx";
+import route_error from "./route.error.tsx";
 import route_index from "./route.index.tsx";
 import route_user from "./route.user.tsx";
 import route_gacha from "./route.gacha.tsx";
@@ -16,7 +16,7 @@ import { force_session_middleware, session_middleware } from "./util.session.tsx
 
 const route = new router.Router<Shared>();
 
-route.set_404(route_404);
+route.set_404(route_error.not_found);
 
 route.set_static(async ctx => {
 	const parts = "./" + ctx.url_parts.slice(1).join("/");
@@ -40,6 +40,8 @@ route.set_static(async ctx => {
 route.get("/ping", async (ctx) => {
 	return ctx.build_response("meow", "ok", "txt");
 });
+
+route.get("/unauthorized", route_error.unauthorized);
 
 route.get("/", route_index.index);
 
