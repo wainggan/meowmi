@@ -3,8 +3,8 @@ import { DB, User, Session, CatInst } from "./db.types.ts";
 import { Miss } from "../common.ts";
 
 export class DBSql implements DB {
-	constructor(db: DatabaseSync) {
-		this.db = db;
+	constructor(path: string) {
+		this.db = new DatabaseSync(path + '/db.sql');
 
 		this.db.exec(`
 			PRAGMA foreign_keys = ON;

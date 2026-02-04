@@ -4,16 +4,19 @@ import route from "./route/route.ts";
 import config from "../config.ts";
 
 import { DBSql } from "./db/db.sqlite.ts";
-import { DatabaseSync } from "node:sqlite";
 
-const db = new DBSql(new DatabaseSync(config.db.path));
+Deno.mkdir(config.db.path, {
+	recursive: true,
+});
+
+const db = new DBSql(config.db.path);
 
 const app = application({
 	data: {
 		db,
 	},
 	route,
-	stdio: true,
+	stdio: config.verbose.requests,
 });
 
 Deno.serve(app);
