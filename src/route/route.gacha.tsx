@@ -9,7 +9,7 @@ import { jsx } from "@parchii/jsx";
 import { render } from "@parchii/html";
 
 import { FlashExport } from "./util.flash.tsx";
-import { ForceSessionExport, SessionExport } from "./util.session.tsx";
+import { ForceSessionExport } from "./util.session.tsx";
 import { Shared } from "../shared.ts";
 import * as catdefs_util from "../db/catdefs.util.ts";
 import { Miss } from "../common.ts";
@@ -40,14 +40,8 @@ const gacha: router.Middleware<{}, 'GET', never, ForceSessionExport & FlashExpor
 	return ctx.build_response(src, 'ok', 'html');
 };
 
-const gacha_api: router.Middleware<Shared, 'POST', never, SessionExport & FlashExport> = async ctx => {
-	const user = ctx.ware.session.user();
-	const session = ctx.ware.session.session();
-
-	if (user === null || session === null) {
-		ctx.ware.flash.set(`you are not logged in.`, 'err');
-		return ctx.build_redirect(ctx.url);
-	}
+const gacha_api: router.Middleware<Shared, 'POST', never, ForceSessionExport & FlashExport> = async ctx => {
+	const user = ctx.ware.force_session.user();
 
 	if (user.tokens <= 0) {
 		ctx.ware.flash.set(`you don't have enough tokens!`, 'err');
