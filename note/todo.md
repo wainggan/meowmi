@@ -3,12 +3,13 @@
 ## server
 
 - [ ] users
-	- [ ] create
-	- [ ] sessions
-	- [ ] edit
-- [ ] cats
-	- [ ] create
-	- [ ] edit
+	- [x] create
+	- [x] sessions
+	- [x] edit
+- [x] cats
+	- [x] create
+	- [x] edit
+- [ ] trades
 
 ## client
 
