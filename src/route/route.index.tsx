@@ -17,12 +17,12 @@ const index: router.Middleware<{}, 'GET', never, SessionExport> = async ctx => {
 
 	const dom = (
 		<template.Base title="index" user={ user }>
-			<main>
-				<div class="hero">
+			<div class="content-hero">
+				<main>
 					<div class="splash">{ splash }</div>
 					NEWS TICKER ART
-				</div>
-			</main>
+				</main>
+			</div>
 
 			<div class="carousel-wrap">
 				<div class="carousel">

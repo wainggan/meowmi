@@ -20,8 +20,12 @@ export const Base = (input: { title: string, user: User | null }, children: unkn
 				<title>{ input.title }</title>
 			</head>
 			<body>
-				<Navigation user={ input.user }/>
-				{ ...children }
+				<div class="app">
+					<Navigation user={ input.user }/>
+					<div class="app-content">
+						{ ...children }
+					</div>
+				</div>
 			</body>
 			</html>
 		</>
@@ -31,8 +35,8 @@ export const Base = (input: { title: string, user: User | null }, children: unkn
 export const NavigationGroup = (input: { name: string }, children: unknown[]) => {
 	return (
 		<div class="nav-group">
-			<button class="nav-btn">{ input.name }</button>
-			<div class="dropdown">
+			<button class="button">{ input.name }</button>
+			<div class="nav-dropdown">
 				{ ...children }
 			</div>
 		</div>
@@ -42,52 +46,52 @@ export const NavigationGroup = (input: { name: string }, children: unknown[]) =>
 export const Navigation = (input: { user: User | null }) => {
 	return (
 		<>
-			<nav>
-				<a href="/" class="nav-btn">Home</a>
+			<nav class="app-nav">
+				<a href="/" class="button">Home</a>
 
 				<NavigationGroup name="News">
-					<a href="#" class="nav-btn">Build Info</a>
-					<a href="#" class="nav-btn">Events</a>
-					<a href="#" class="nav-btn">Updates</a>
+					<a href="#" class="button">Build Info</a>
+					<a href="#" class="button">Events</a>
+					<a href="#" class="button">Updates</a>
 				</NavigationGroup>
 
 				<NavigationGroup name="CDS">
-					<a href="#" class="nav-btn">Adoption</a>
-					<a href="/gacha" class="nav-btn">Gacha Pulls</a>
-					<a href="#" class="nav-btn">Cat Shop</a>
+					<a href="#" class="button">Adoption</a>
+					<a href="/gacha" class="button">Gacha Pulls</a>
+					<a href="#" class="button">Cat Shop</a>
 				</NavigationGroup>
 
 				<NavigationGroup name="Trades">
-					<a href="#" class="nav-btn">Open Trades</a>
-					<a href="#" class="nav-btn">Requests</a>
-					<a href="#" class="nav-btn">Past Trades</a>
+					<a href="#" class="button">Open Trades</a>
+					<a href="#" class="button">Requests</a>
+					<a href="#" class="button">Past Trades</a>
 				</NavigationGroup>
 
 				<NavigationGroup name="Bag">
-					<a href="#" class="nav-btn">Accessories</a>
-					<a href="#" class="nav-btn">Brushes</a>
-					<a href="#" class="nav-btn">Food</a>
-					<a href="#" class="nav-btn">Toys</a>
+					<a href="#" class="button">Accessories</a>
+					<a href="#" class="button">Brushes</a>
+					<a href="#" class="button">Food</a>
+					<a href="#" class="button">Toys</a>
 				</NavigationGroup>
 
 				<NavigationGroup name="Cats">
-					<a href="/cat" class="nav-btn">Owned Cats</a>
-					<a href="#" class="nav-btn">Care</a>
-					<a href="#" class="nav-btn">Feeding</a>
-					<a href="#" class="nav-btn">Play</a>
+					<a href="/cat" class="button">Owned Cats</a>
+					<a href="#" class="button">Care</a>
+					<a href="#" class="button">Feeding</a>
+					<a href="#" class="button">Play</a>
 				</NavigationGroup>
 
-				<a href="/settings" class="nav-btn">Settings</a>
+				<a href="/settings" class="button">Settings</a>
 
-				<div class="spacer"></div>
+				<div class="nav-spacer"></div>
 
 				{
 					input.user === null
-					? <a href="/login" class="nav-btn">Login</a>
-					: <a href="/logout" class="nav-btn">Logout</a>
+					? <a href="/login" class="button">Login</a>
+					: <a href="/logout" class="button">Logout</a>
 				}
 				
-				<button class="nav-btn" onclick="toggleMenu()">☰</button>
+				<button class="button" onclick="toggleMenu()">☰</button>
 			</nav>
 
 			<div id="menu" class="side-menu">

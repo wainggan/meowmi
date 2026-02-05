@@ -36,7 +36,7 @@ const cat_view: router.Middleware<Shared, 'GET', never, ForceSessionExport & Fla
 		return undefined;
 	}
 
-	let dom_catinst = null;
+	let dom_catinst = null;dom_catinst;
 	if (catinst !== null) {
 		const breed = catdefs.map[catinst.catdef_id];
 		dom_catinst = (
@@ -47,28 +47,28 @@ const cat_view: router.Middleware<Shared, 'GET', never, ForceSessionExport & Fla
 		);
 	}	
 
+	const a = list.values()
+		.map(x => {
+			const breed = catdefs.map[x.catdef_id];
+			const url = new URL(ctx.url);
+			url.searchParams.set('view', x.id.toString());
+			return <li><a href={ url.href }>{ x.name } ({ breed.name })</a></li>;
+		})
+		.toArray();
+	a;
+
 	const dom = (
 		<template.Base title="your cats" user={ user }>
 			<template.Flash flash={ ctx.ware.flash.get() }/>
 			
-			<h1>cat</h1>
-			
-			<ul>
-				{ dom_catinst }
-			</ul>
+			<div class="layout--split">
+				<div class="layout--split-left">
 
-			<ul>
-				{
-					...list.values()
-						.map(x => {
-							const breed = catdefs.map[x.catdef_id];
-							const url = new URL(ctx.url);
-							url.searchParams.set('view', x.id.toString());
-							return <li><a href={ url.href }>{ x.name } ({ breed.name })</a></li>;
-						})
-						.toArray()
-				}
-			</ul>
+				</div>
+				<div class="layout--split-right">
+
+				</div>
+			</div>
 		</template.Base>
 	);
 
