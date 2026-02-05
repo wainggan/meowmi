@@ -47,5 +47,6 @@ export const splashtext: readonly string[] = [
 	`X3`,
 	`3:`,
 	`m30\\/\\/`,
+	`made with catfeine`,
 ];
 
