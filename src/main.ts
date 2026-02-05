@@ -11,6 +11,8 @@ Deno.mkdir(config.db.path, {
 
 const db = new DBSql(config.db.path);
 
+import('../playground.jsx');
+
 const app = application({
 	data: {
 		db,
