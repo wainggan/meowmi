@@ -198,16 +198,24 @@ nav {
 
 .hero .splash {
 	position: absolute;
-	top: 0;
-	right: 0;
+	top: 100%;
+	max-width: 100%;
 
-	transform: translateX(50%) rotate(6deg) translate(-7rem, 2rem);
+	/* transform: translateX(50%) rotate(6deg) translate(-7rem, 2rem); */
 
 	color: inherit;
-	font-size: 1rem;
+	font-size: 1.5rem;
 	font-weight: normal;
 
 	user-select: none;
+}
+
+.hero .splash::before {
+	content: "\"";
+}
+
+.hero .splash::after {
+	content: "\"";
 }
 
 
