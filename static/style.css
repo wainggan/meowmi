@@ -180,6 +180,7 @@ nav {
 .hero {
 	display: flex;
 
+	position: relative;
 	width: 95%;
 	max-width: 1200px;
 	height: 420px;
@@ -193,6 +194,20 @@ nav {
 	color: var(--color-text-main-layer);
 	font-size: 46px;
 	font-weight: bold;
+}
+
+.hero .splash {
+	position: absolute;
+	top: 0;
+	right: 0;
+
+	transform: translateX(50%) rotate(6deg) translate(-7rem, 2rem);
+
+	color: inherit;
+	font-size: 1rem;
+	font-weight: normal;
+
+	user-select: none;
 }
 
 
