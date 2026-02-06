@@ -39,12 +39,18 @@ export type Session = {
 	readonly date_expire: number;
 };
 
+export type CatDef = {
+	readonly id: number;
+	readonly name: string;
+	readonly rarity: number;
+};
+
 /**
 an instance of a cat.
 */
 export type CatInst = {
 	readonly id: number;
-	readonly catdef_id: keyof typeof catdefs.map;
+	readonly catdef_id: number;
 	/** original owner */
 	readonly original_user_id: number;
 	/** current owner */

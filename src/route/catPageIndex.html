@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <link rel="stylesheet" href="catPage.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cats UI</title>
+</head>
+<script src="catPage.js" defer></script>
+<body>
+
+  <section class="layout">
+
+    <!-- cat list (left) -->
+    <aside class="left">
+      <div class="left-top">
+        <div class="label">Cats</div>
+        <div class="search">
+          <input id="search" type="text" placeholder="search cats by name or nickname…" />
+        </div>
+      </div>
+
+      <div id="catList" class="cat-list"></div>
+    </aside>
+
+    <!-- cat window (right)-->
+    <aside class="right" aria-live="polite">
+      <div class="viewer-top">
+        <div class="name-block">
+          <div class="name-line" id="nameLine">
+            <div id="catName" class="cat-name">Select a cat</div>
+            <button id="editBtn" class="edit-btn" type="button" style="display:none;">nickname</button>
+          </div>
+
+          <div class="name-edit" id="nameEdit">
+            <input id="nickInput" type="text" maxlength="24" placeholder="enter nickname…" />
+            <button id="saveNick" class="small-btn" type="button">Save</button>
+            <button id="cancelNick" class="small-btn secondary" type="button">Cancel</button>
+          </div>
+
+          <div class="meta-line" id="metaLine" style="display:none;">
+            <span id="catTypeText">type: —</span>
+            <span>•</span>
+            <span id="catIdText">id: —</span>
+          </div>
+        </div>
+
+        <span id="rarityPill" class="pill" style="display:none;">—</span>
+      </div>
+
+      <div class="viewer-body">
+        <div id="photo" class="photo">CAT PICTURE PLACEHOLDER</div>
+
+        <div class="info">
+          <div class="info-row">
+            <div class="k">Name</div>
+            <div class="v" id="nameValue">—</div>
+          </div>
+          <div class="info-row">
+            <div class="k">Nickname</div>
+            <div class="v" id="nickValue">—</div>
+          </div>
+          <div class="info-row">
+            <div class="k">Type</div>
+            <div class="v" id="typeValue">—</div>
+          </div>
+        </div>
+
+        <div class="empty" id="hint">
+          Click a cat on the left to open the viewer.
+        </div>
+      </div>
+    </aside>
+  </section>
+</body>
+</html>
+
+

@@ -1,4 +1,8 @@
 {
+	"workspace": [
+		"./src",
+		"./web"
+	],
 	"compilerOptions": {
 		"strict": true,
 
@@ -14,11 +18,24 @@
 	},
 	"tasks": {
 		"check": "deno check && deno run -A jsr:@cunarist/deno-circular-deps src/main.ts",
-		"run": "deno task check && deno run --allow-net --allow-read --allow-write src/main.ts",
-		"dev": "deno run --allow-net --allow-read --allow-write --check=all --watch src/main.ts"
+		"build": {
+			"command": "shopt -u failglob && shopt -s nullglob && deno bundle --check --platform browser --outdir static/script web/*.ts web/*.js web/*.tsx web/*.jsx"
+		},
+		"build-watch": {
+			"command": "shopt -u failglob && shopt -s nullglob && deno bundle --check --platform browser --outdir static/script --watch web/*.ts web/*.js web/*.tsx web/*.jsx"
+		},
+		"run": {
+			"dependencies": ["check", "build"],
+			"command": "deno run --allow-net --allow-read --allow-write src/main.ts"
+		},
+		"dev": {
+			"dependencies": ["check"],
+			"command": "deno run --allow-net --allow-read --allow-write --check=all --watch src/main.ts & deno task build-watch"
+		}
 	},
 	"imports": {
 		"@parchii/html": "https://raw.githubusercontent.com/wainggan/raas/refs/heads/main/html.ts",
+		"@parchii/html_dom": "https://raw.githubusercontent.com/wainggan/raas/refs/heads/main/html_dom.ts",
 		"@parchii/jsx": "https://raw.githubusercontent.com/wainggan/raas/refs/heads/main/jsx.ts",
 		"@parchii/router": "https://raw.githubusercontent.com/wainggan/raas/refs/heads/main/router.ts",
 		"@parchii/application": "https://raw.githubusercontent.com/wainggan/raas/refs/heads/main/application.ts",
