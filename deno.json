@@ -19,10 +19,10 @@
 	"tasks": {
 		"check": "deno check && deno run -A jsr:@cunarist/deno-circular-deps src/main.ts",
 		"build": {
-			"command": "shopt -u failglob && shopt -s nullglob && deno bundle --check --platform browser --outdir static/script web/*.ts web/*.js"
+			"command": "shopt -u failglob && shopt -s nullglob && deno bundle --check --platform browser --outdir static/script web/*.ts web/*.js web/*.tsx web/*.jsx"
 		},
 		"build-watch": {
-			"command": "shopt -u failglob && shopt -s nullglob && deno bundle --check --platform browser --outdir static/script --watch web/*.ts web/*.js"
+			"command": "shopt -u failglob && shopt -s nullglob && deno bundle --check --platform browser --outdir static/script --watch web/*.ts web/*.js web/*.tsx web/*.jsx"
 		},
 		"run": {
 			"dependencies": ["check", "build"],
@@ -35,6 +35,7 @@
 	},
 	"imports": {
 		"@parchii/html": "https://raw.githubusercontent.com/wainggan/raas/refs/heads/main/html.ts",
+		"@parchii/html_dom": "https://raw.githubusercontent.com/wainggan/raas/refs/heads/main/html_dom.ts",
 		"@parchii/jsx": "https://raw.githubusercontent.com/wainggan/raas/refs/heads/main/jsx.ts",
 		"@parchii/router": "https://raw.githubusercontent.com/wainggan/raas/refs/heads/main/router.ts",
 		"@parchii/application": "https://raw.githubusercontent.com/wainggan/raas/refs/heads/main/application.ts",

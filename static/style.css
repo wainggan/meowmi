@@ -519,6 +519,94 @@ body {
 	flex: 1;
 }
 
+.catpage--left--list {
+	display: flex;
+	gap: 10px;
+	flex-direction: column;
+	
+	padding: 10px;
+	overflow: auto;
+}
+
+.catpage--left--list--row {
+	display: flex;
+	gap: 12px;
+	align-items: center;
+
+	padding: 12px;
+
+	background: rgba(255,255,255,.03);
+	border: 1px solid rgba(255,255,255,.08);
+	border-radius: 14px;
+
+	transition:
+		transform .08s ease,
+		border-color .12s ease,
+		background .12s ease;
+
+	cursor: pointer;
+}
+.catpage--left--list--row:hover{
+	background: rgba(138, 160, 255, 0.08);
+	border-color: rgba(138, 160, 255, 0.35);
+	
+	transform: translateY(-1px);
+}
+.catpage--left--list--row.active{
+	background: rgba(138, 160, 255, 0.14);
+	border-color: rgba(138, 160, 255, 0.65);
+}
+
+.catpage--left--list--row > .-thumb {
+	flex: 0 0 auto;
+
+	display: grid;
+	place-items:center;
+	
+	width: 42px;
+	height: 42px;
+
+	background:
+		linear-gradient(135deg, rgba(138, 160, 255, 0.35), rgba(255, 107, 147, 0.25)),
+		rgba(255, 255, 255, 0.06);
+	border: 1px solid rgba(255, 255, 255, 0.10);
+	border-radius: 12px;
+
+	color: rgba(255, 255, 255, 0.85);
+	font-weight: 900;
+
+	user-select:none;
+}
+
+.catpage--left--list--row > .-main {
+	flex: 1;
+
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.catpage--left--list--row > .-main > .-main--name {
+	overflow: hidden;
+
+	font-weight: 900;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.catpage--left--list--row > .-main > .-main--sub {
+	overflow: hidden;
+
+	color: var(--color-text-main-layer);
+	font-size: 12px;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.catpage--left--list--row > .-pill {
+	flex: 0 0 auto;
+}
+
 .catpage--right--top {
 	display: flex;
 	gap: 10px;

@@ -60,6 +60,8 @@ const cat_view: router.Middleware<Shared, 'GET', never, ForceSessionExport & Fla
 	const dom = (
 		<template.Base title="your cats" user={ user }>
 			<template.Flash flash={ ctx.ware.flash.get() }/>
+
+			<script src="/static/script/catpage.js" defer></script>
 			
 			<div class="layout-split">
 				<div class="layout-split--left">
@@ -67,6 +69,8 @@ const cat_view: router.Middleware<Shared, 'GET', never, ForceSessionExport & Fla
 						<h1>cats</h1>
 						<input id="search" class="input-text catpage--left--top--search" type="search" placeholder="search cats by name or nickname..."/>
 					</div>
+
+					<div id="list" class="catpage--left--list"></div>
 				</div>
 
 				<div class="layout-split--right">
@@ -79,16 +83,16 @@ const cat_view: router.Middleware<Shared, 'GET', never, ForceSessionExport & Fla
 								<button id="name_line" class="button catpage--right--top--block--name_line--edit">nickname</button>
 							</div>
 
-							<div class="catpage--right--top--block--name_edit" hidden>
+							<div id="name_edit" class="catpage--right--top--block--name_edit" hidden>
 								<input id="name_edit_input" type="text" maxlength="24" placeholder="enter nickname..."/>
 								<button id="name_edit_save" class="button" type="button">save</button>
 								<button id="name_edit_cancel" class="button secondary" type="button">cancel</button>
 							</div>
 
 							<div id="meta_line" class="catpage--right--top--block--meta_line">
-								<span id="meta_line_text_type">type: —</span>
+								<span id="meta_line_type">type: —</span>
 								<span>•</span>
-								<span id="meta_line_text_id">id: —</span>
+								<span id="meta_line_id">id: —</span>
 							</div>
 						</div>
 						
@@ -115,7 +119,7 @@ const cat_view: router.Middleware<Shared, 'GET', never, ForceSessionExport & Fla
 							</div>
 						</div>
 
-						<div class="catpage--right--body--empty" id="hint">
+						<div id="hint" class="catpage--right--body--empty">
 							click a cat on the left to open the viewer.
 						</div>
 					</div>
