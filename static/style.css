@@ -17,8 +17,8 @@ html {
 	--color-background-contrast: #999;
 	--color-background-contrast-layer: #bbb;
 
-	--color-accent-accent-a: #8aa0ff;
-	--color-accent-accent-b: #ff6b93;
+	--color-accent-a: #8aa0ff;
+	--color-accent-b: #ff6b93;
 
 	--color-stroke: #2a2a3f;
 	
@@ -110,11 +110,11 @@ body {
 
 .button {
 	padding: 8px 14px;
-	margin: 2px;
+	margin: 1px;
 
 	background: #e9edf7;
-	background: var(--color-palette-a-main);
-	border: none;
+	background: #111;
+	border: 1px solid var(--color-stroke);
 	border-radius: 10px;
 	
 	color: inherit;
@@ -127,7 +127,8 @@ body {
 }
 
 .button:hover {
-	background: var(--color-palette-a-contrast);
+	border-color: rgba(138, 160, 255, 0.45);
+	background: rgba(138, 160, 255, 0.10);
 }
 
 .app {
@@ -506,8 +507,8 @@ body {
 .catpage--left--top {
 	display: flex;
 	gap: 10px;
-	align-items:center;
-	justify-content:space-between;
+	align-items: center;
+	justify-content: space-between;
 
 	padding: 14px 14px 10px;
 
@@ -521,7 +522,7 @@ body {
 .catpage--right--top {
 	display: flex;
 	gap: 10px;
-	align-items: flex-start;
+	align-items: center;
 	justify-content: space-between;
 	
 	padding: 14px;
@@ -564,6 +565,63 @@ body {
 	font-size: 0.8em;
 }
 
+.catpage--right--top--pill {
+	flex: 0 0 auto;
+}
+
+.catpage--right--body {
+	flex: 1;
+
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+
+	padding: 14px;
+}
+
+.catpage--right--body--photo {
+	width: 100%;
+	height: 240px;
+}
+
+.catpage--right--body--info {
+	background: rgba(255,255,255,.03);
+	border: 1px solid rgba(255,255,255,.08);
+	border-radius: 16px;
+	padding: 12px;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.catpage--right--body--info--row {
+	display: flex;
+	gap: 12px;
+	justify-content: space-between;
+	align-items: center;
+	
+	padding: 8px 10px;
+
+	background: rgba(0, 0, 0, 0.12);
+	border: 1px solid rgba(255, 255, 255, 0.06);
+	border-radius: 12px;
+}
+
+.catpage--right--body--info--row--key {
+	color: var(--color-text-main-layer);
+	font-weight: 800;
+	font-size: 0.9em;
+}
+
+.catpage--right--body--info--row--value {
+	max-width: 60%;
+	overflow: hidden;
+
+	font-weight: 950;
+	text-overflow: ellipsis;
+	text-align: right;
+	white-space: nowrap;
+}
 
 .input-text {
 	width: 100%;
@@ -580,5 +638,34 @@ body {
 .input-text:focus {
 	border-color: rgba(138, 160, 255, 0.55);
 	box-shadow: 0 0 0 3px rgba(138, 160, 255, 0.18);
+}
+
+.pill {
+	padding: 6px 10px;
+	border-radius: 999px;
+	
+	background: var(--color-background-main-layer2);
+	border: 1px solid var(--color-stroke);
+	
+	color: inherit;
+	font-weight: 800;
+	font-size: 0.8rem;
+}
+
+.photo {
+	display: grid;
+	place-items: center;
+
+	background:
+		linear-gradient(135deg, rgba(255,255,255,.06), rgba(255,255,255,.02)),
+		repeating-linear-gradient(45deg, rgba(255,255,255,.04) 0 10px, rgba(255,255,255,.02) 10px 20px);
+	border: 1px solid var(--color-stroke);
+	border-radius: 4px;
+
+	color: var(--color-text-main-layer);
+	font-weight: 900;
+	letter-spacing: 0.8px;
+
+	user-select: none;
 }
 

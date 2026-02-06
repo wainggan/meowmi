@@ -96,10 +96,23 @@ const cat_view: router.Middleware<Shared, 'GET', never, ForceSessionExport & Fla
 					</div>
 
 					<div class="catpage--right--body">
-						<div class="photo">CAT PICTURE PLACEHOLDER</div>
+						<div class="photo catpage--right--body--photo">CAT PICTURE PLACEHOLDER</div>
 
 						<div class="catpage--right--body--info">
+							<div class="catpage--right--body--info--row">
+								<div class="catpage--right--body--info--row--key">name</div>
+								<div id="value_name" class="catpage--right--body--info--row--value">-</div>
+							</div>
 
+							<div class="catpage--right--body--info--row">
+								<div class="catpage--right--body--info--row--key">nickname</div>
+								<div id="value_nick" class="catpage--right--body--info--row--value">-</div>
+							</div>
+
+							<div class="catpage--right--body--info--row">
+								<div class="catpage--right--body--info--row--key">type</div>
+								<div id="value_value" class="catpage--right--body--info--row--value">-</div>
+							</div>
 						</div>
 
 
