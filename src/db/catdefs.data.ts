@@ -27,12 +27,12 @@ const loot = {
 
 const keys = Object.keys(map).map(x => Number(x)) as (keyof typeof map)[];
 
-type CatDefRarities =
+export type CatDefRarities =
 	| 'common'
 	| 'uncommon'
 	| 'rare';
 
-type CatDef = {
+export type CatDef = {
 	readonly name: string;
 	readonly rarity: CatDefRarities;
 };

@@ -5,6 +5,7 @@ various helpful jsx 'template' components
 import { jsx, fragment } from "@parchii/jsx";
 import { User } from "../db/db.types.ts";
 import * as db_util from "../db/db.util.ts";
+import { CatDefRarities } from "../db/catdefs.data.ts";
 
 export const Base = (input: { title: string, user: User | null }, children: unknown[]) => {
 	const settings = db_util.user_settings_extract(input.user);
@@ -140,6 +141,31 @@ export const Flash = (input: { flash: { message: string, mood: 'ok' | 'err' } | 
 		<>
 			{ out }
 		</>
+	);
+};
+
+export const CatpageRow = (input: {
+	id: number;
+	breed: string;
+	name: string;
+	rarity: CatDefRarities;
+}) => {
+	const thumb = name[0].toUpperCase();
+	return (
+		<div class="catpage--left--list--row">
+			<div class="--thumb">{ thumb }</div>
+			<div class="--main">
+				<div class="--main--name">
+					{ input.name }
+				</div>
+				<div class="--main--sub">
+					{ input.breed } • { input.id }
+				</div>
+			</div>
+			<span class="--pill pill">
+				{ input.rarity }
+			</span>
+		</div>
 	);
 };
 

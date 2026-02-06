@@ -20,6 +20,10 @@ const cat_view: router.Middleware<Shared, 'GET', never, ForceSessionExport & Fla
 		catinst_id = Number(extract_catinst_id);
 	}
 
+	const param_offset = Number(ctx.url.searchParams.get('offset') ?? "0");
+	const param_query = ctx.url.searchParams.get('q') ?? "";
+	param_query;
+
 	let catinst = null;
 	if (catinst_id !== null) {
 		catinst = await ctx.data.db.catinst_get(catinst_id);
@@ -31,7 +35,7 @@ const cat_view: router.Middleware<Shared, 'GET', never, ForceSessionExport & Fla
 		}
 	}
 
-	const list = await ctx.data.db.catinst_list_user(user.id, 40, 0);
+	const list = await ctx.data.db.catinst_list_user(user.id, 40, param_offset);
 	if (list instanceof Miss) {
 		return undefined;
 	}
@@ -45,7 +49,7 @@ const cat_view: router.Middleware<Shared, 'GET', never, ForceSessionExport & Fla
 				<li>{ breed.name } ({ breed.rarity })</li>
 			</>
 		);
-	}	
+	}
 
 	const a = list.values()
 		.map(x => {
