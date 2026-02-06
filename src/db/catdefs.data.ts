@@ -1,23 +1,36 @@
+import { CatDef } from "./db.types.ts";
 
-const map = {
-	0: {
+const rarity = [
+	'common',
+	'uncommon',
+	'rare',
+] as const;
+
+export type CatDefRarities =
+	Exclude<Partial<typeof rarity>["length"], (typeof rarity)["length"]>
+
+const map = [
+	{
+		id: 0,
 		name: "basic",
-		rarity: 'common',
+		rarity: 0,
 	},
-	1: {
+	{
+		id: 1,
 		name: "science",
-		rarity: 'common',
+		rarity: 0,
 	},
-} as const satisfies {
-	[key: number]: CatDef;
-};
+] as const satisfies CatDef[];
+
+type CatDefKeys =
+	Exclude<Partial<typeof map>["length"], (typeof map)["length"]>
 
 const loot = {
 	base: {
 		rarities: {
-			common: 8,
-			uncommon: 4,
-			rare: 2,
+			0: 8,
+			1: 4,
+			2: 8,
 		},
 		specific: {},
 	},
@@ -25,30 +38,18 @@ const loot = {
 	readonly [key: string]: CatDefLoot;
 };
 
-const keys = Object.keys(map).map(x => Number(x)) as (keyof typeof map)[];
-
-export type CatDefRarities =
-	| 'common'
-	| 'uncommon'
-	| 'rare';
-
-export type CatDef = {
-	readonly name: string;
-	readonly rarity: CatDefRarities;
-};
-
 type CatDefLoot = {
 	readonly rarities: {
 		readonly [key in CatDefRarities]: number;
 	};
 	readonly specific: {
-		readonly [key in keyof typeof map]?: number;
+		readonly [key in CatDefKeys]?: number;
 	};
 };
 
 export default {
+	rarity,
 	map,
-	keys,
 	loot,
 };
 

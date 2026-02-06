@@ -34,6 +34,13 @@ export class DBSql implements DB {
 				FOREIGN KEY (original_user_id) REFERENCES users(id) ON DELETE SET NULL,
 				FOREIGN KEY (owner_user_id) REFERENCES users(id) ON DELETE CASCADE
 			);
+
+			CREATE TABLE IF NOT EXISTS catdefs (
+				id INTEGER PRIMARY KEY,
+				key TEXT NOT NULL UNIQUE,
+				name TEXT NOT NULL,
+				rarity INTEGER NOT NULL
+			);
 		`);
 	}
 
