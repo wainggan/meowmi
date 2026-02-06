@@ -22,7 +22,7 @@ export const Base = (input: { title: string, user: User | null }, children: unkn
 			<body>
 				<div class="app">
 					<Navigation user={ input.user }/>
-					<div class="app-content">
+					<div class="app--content">
 						{ ...children }
 					</div>
 				</div>
@@ -34,9 +34,9 @@ export const Base = (input: { title: string, user: User | null }, children: unkn
 
 export const NavigationGroup = (input: { name: string }, children: unknown[]) => {
 	return (
-		<div class="nav-group">
+		<div class="app--nav--group">
 			<button class="button">{ input.name }</button>
-			<div class="nav-dropdown">
+			<div class="app--nav--group--dropdown">
 				{ ...children }
 			</div>
 		</div>
@@ -46,7 +46,7 @@ export const NavigationGroup = (input: { name: string }, children: unknown[]) =>
 export const Navigation = (input: { user: User | null }) => {
 	return (
 		<>
-			<nav class="app-nav">
+			<nav class="app--nav">
 				<a href="/" class="button">Home</a>
 
 				<NavigationGroup name="News">
@@ -83,7 +83,7 @@ export const Navigation = (input: { user: User | null }) => {
 
 				<a href="/settings" class="button">Settings</a>
 
-				<div class="nav-spacer"></div>
+				<div class="app--nav--spacer"></div>
 
 				{
 					input.user === null

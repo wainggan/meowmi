@@ -61,12 +61,49 @@ const cat_view: router.Middleware<Shared, 'GET', never, ForceSessionExport & Fla
 		<template.Base title="your cats" user={ user }>
 			<template.Flash flash={ ctx.ware.flash.get() }/>
 			
-			<div class="layout--split">
-				<div class="layout--split-left">
-
+			<div class="layout-split">
+				<div class="layout-split--left">
+					<div class="catpage--left--top">
+						<h1>cats</h1>
+						<input id="search" class="input-text catpage--left--top--search" type="search" placeholder="search cats by name or nickname..."/>
+					</div>
 				</div>
-				<div class="layout--split-right">
 
+				<div class="layout-split--right">
+					<div class="catpage--right--top">
+						<div class="catpage--right--top--block">
+							<div class="catpage--right--top--block--name_line">
+								<div class="catpage--right--top--block--name_line--name">
+									select a cat
+								</div>
+								<button id="name_line" class="button catpage--right--top--block--name_line--edit">nickname</button>
+							</div>
+
+							<div class="catpage--right--top--block--name_edit" hidden>
+								<input id="name_edit_input" type="text" maxlength="24" placeholder="enter nickname..."/>
+								<button id="name_edit_save" class="button" type="button">save</button>
+								<button id="name_edit_cancel" class="button secondary" type="button">cancel</button>
+							</div>
+
+							<div id="meta_line" class="catpage--right--top--block--meta_line">
+								<span id="meta_line_text_type">type: —</span>
+								<span>•</span>
+								<span id="meta_line_text_id">id: —</span>
+							</div>
+						</div>
+						
+						<span id="rarity_pill" class="catpage--right--top--pill pill">SRR</span>
+					</div>
+
+					<div class="catpage--right--body">
+						<div class="photo">CAT PICTURE PLACEHOLDER</div>
+
+						<div class="catpage--right--body--info">
+
+						</div>
+
+
+					</div>
 				</div>
 			</div>
 		</template.Base>
