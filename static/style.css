@@ -623,6 +623,13 @@ body {
 	white-space: nowrap;
 }
 
+.catpage--right--body--empty {
+	color: var(--color-text-main-layer);
+	padding: 1.5rem;
+	text-align: center;
+	font-weight: 800;
+}
+
 .input-text {
 	width: 100%;
 	max-width: 320px;

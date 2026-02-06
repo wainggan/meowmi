@@ -115,7 +115,9 @@ const cat_view: router.Middleware<Shared, 'GET', never, ForceSessionExport & Fla
 							</div>
 						</div>
 
-
+						<div class="catpage--right--body--empty" id="hint">
+							click a cat on the left to open the viewer.
+						</div>
 					</div>
 				</div>
 			</div>
