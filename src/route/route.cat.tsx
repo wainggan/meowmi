@@ -100,18 +100,18 @@ const cat_view: router.Middleware<Shared, 'GET', never, ForceSessionExport & Fla
 
 						<div class="catpage--right--body--info">
 							<div class="catpage--right--body--info--row">
-								<div class="catpage--right--body--info--row--key">name</div>
-								<div id="value_name" class="catpage--right--body--info--row--value">-</div>
+								<div class="-key">name</div>
+								<div id="value_name" class="-value">-</div>
 							</div>
 
 							<div class="catpage--right--body--info--row">
-								<div class="catpage--right--body--info--row--key">nickname</div>
-								<div id="value_nick" class="catpage--right--body--info--row--value">-</div>
+								<div class="-key">nickname</div>
+								<div id="value_nick" class="-value">-</div>
 							</div>
 
 							<div class="catpage--right--body--info--row">
-								<div class="catpage--right--body--info--row--key">type</div>
-								<div id="value_value" class="catpage--right--body--info--row--value">-</div>
+								<div class="-key">type</div>
+								<div id="value_value" class="-value">-</div>
 							</div>
 						</div>
 

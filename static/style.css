@@ -607,13 +607,13 @@ body {
 	border-radius: 12px;
 }
 
-.catpage--right--body--info--row--key {
+.catpage--right--body--info--row > .-key {
 	color: var(--color-text-main-layer);
 	font-weight: 800;
 	font-size: 0.9em;
 }
 
-.catpage--right--body--info--row--value {
+.catpage--right--body--info--row > .-value {
 	max-width: 60%;
 	overflow: hidden;
 
