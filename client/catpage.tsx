@@ -54,20 +54,20 @@ const render_list = (filter_text: string = "") => {
 	for (const f of filtered) {
 		const dom = (
 			<div class="catpage--left--list--row">
-				<div class="-thumb">{ thumb_text(f) }</div>
-				<div class="-main">
-					<div class="-main--name">
+				<div class="--thumb">{ thumb_text(f) }</div>
+				<div class="--main">
+					<div class="--main--name">
 						{
 							f.nickname
 							? `${f.nickname} (${f.name})`
 							: f.name
 						}
 					</div>
-					<div class="-main--sub">
+					<div class="--main--sub">
 						{ `${f.type} • ${f.id}` }
 					</div>
 				</div>
-				<span class="-pill pill">
+				<span class="--pill pill">
 					{ f.rarity }
 				</span>
 			</div>

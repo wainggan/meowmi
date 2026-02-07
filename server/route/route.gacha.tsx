@@ -13,6 +13,7 @@ import { ForceSessionExport } from "./util.session.tsx";
 import { Shared } from "../shared.ts";
 import * as catdefs_util from "../db/catdefs.util.ts";
 import { Miss } from "../common.ts";
+import catloot from "shared/data.loot.ts";
 
 const gacha: router.Middleware<{}, 'GET', never, ForceSessionExport & FlashExport> = async ctx => {
 	const user = ctx.ware.force_session.user();
@@ -48,9 +49,9 @@ const gacha_api: router.Middleware<Shared, 'POST', never, ForceSessionExport & F
 		return ctx.build_redirect(ctx.url);
 	}
 
-	const breed = catdefs_util.select('base');
+	const breed = catdefs_util.select(ctx.data.catdefs, catloot.base);
 
-	const catinst_id = await ctx.data.db.catinst_add(breed, user.id);
+	const catinst_id = await ctx.data.db.catinst_add(breed.id, user.id);
 	if (catinst_id instanceof Miss) {
 		if (catinst_id.type === 'not_found') {
 			ctx.ware.flash.set(`user no longer exists (???)`, 'err');

@@ -1,6 +1,7 @@
 import { DatabaseSync } from "node:sqlite";
-import { DB, User, Session, CatInst } from "./db.types.ts";
+import { DB, User, Session, CatInst, CatDef } from "./db.types.ts";
 import { Miss } from "../common.ts";
+import { CatDefJson } from "shared/types.ts";
 
 export class DBSql implements DB {
 	constructor(path: string) {
@@ -206,6 +207,61 @@ export class DBSql implements DB {
 		}
 
 		return null;
+	}
+
+	async catdefs_sync(catdefs: CatDefJson[]): Promise<null | Miss<"internal">> {
+		for (const catdef of catdefs) {
+			try {
+				this.db.prepare(`
+					INSERT INTO catdefs
+						(key, name, rarity)
+					VALUES
+						(?, ?, ?)
+					ON CONFLICT (key) DO UPDATE SET
+						name = excluded.name,
+						rarity = excluded.rarity;
+				`).run(catdef.key, catdef.name, catdef.rarity);
+			}
+			catch (_e) {
+				console.error(_e);
+				return new Miss('internal', `unknown internal error`);
+			}
+		}
+
+		return null;
+	}
+
+	async catdefs_fill(): Promise<CatDef[] | Miss<"internal">> {
+		let result;
+
+		try {
+			result = this.db.prepare(`
+				SELECT * FROM catdefs;
+			`).all();
+		}
+		catch (_e) {
+			console.error(_e);
+			return new Miss('internal', `unknown internal error`);
+		}
+
+		return result as CatDef[];
+	}
+
+	async catdefs_get(catdef_id: number): Promise<CatDef | Miss<"internal">> {
+		let result;
+
+		try {
+			result = this.db.prepare(`
+				SELECT * FROM catdefs
+				WHERE id = (?);
+			`).get(catdef_id);
+		}
+		catch (_e) {
+			console.error(_e);
+			return new Miss('internal', `unknown internal error`);
+		}
+
+		return result as CatDef;
 	}
 
 	async catinst_add(catdef_id: number, user_id: number): Promise<number | Miss<'internal' | 'not_found'>> {

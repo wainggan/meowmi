@@ -2,14 +2,13 @@
 import * as router from "@parchii/router";
 import * as template from "./template.tsx";
 
-import { jsx, fragment } from "@parchii/jsx";
+import { jsx } from "@parchii/jsx";
 import { render } from "@parchii/html";
 
 import { FlashExport } from "./util.flash.tsx";
 import { ForceSessionExport } from "./util.session.tsx";
 import { Shared } from "../shared.ts";
 import { Miss } from "../common.ts";
-import catdefs from "../db/catdefs.data.ts";
 
 const cat_view: router.Middleware<Shared, 'GET', never, ForceSessionExport & FlashExport> = async ctx => {
 	const user = ctx.ware.force_session.user();
@@ -40,26 +39,26 @@ const cat_view: router.Middleware<Shared, 'GET', never, ForceSessionExport & Fla
 		return undefined;
 	}
 
-	let dom_catinst = null;dom_catinst;
+	const dom_catinst = null;dom_catinst;
 	if (catinst !== null) {
-		const breed = catdefs.map[catinst.catdef_id];
-		dom_catinst = (
-			<>
-				<li>{ catinst.name }</li>
-				<li>{ breed.name } ({ breed.rarity })</li>
-			</>
-		);
+		// const breed = catdefs[catinst.catdef_id];
+		// dom_catinst = (
+		// 	<>
+		// 		<li>{ catinst.name }</li>
+		// 		<li>{ breed.name } ({ breed.rarity })</li>
+		// 	</>
+		// );
 	}
 
-	const a = list.values()
-		.map(x => {
-			const breed = catdefs.map[x.catdef_id];
-			const url = new URL(ctx.url);
-			url.searchParams.set('view', x.id.toString());
-			return <li><a href={ url.href }>{ x.name } ({ breed.name })</a></li>;
-		})
-		.toArray();
-	a;
+	// const a = list.values()
+	// 	.map(x => {
+	// 		const breed = catdefs.map[x.catdef_id];
+	// 		const url = new URL(ctx.url);
+	// 		url.searchParams.set('view', x.id.toString());
+	// 		return <li><a href={ url.href }>{ x.name } ({ breed.name })</a></li>;
+	// 	})
+	// 	.toArray();
+	// a;
 
 	const dom = (
 		<template.Base title="your cats" user={ user }>
