@@ -69,5 +69,6 @@ export const splashtext: readonly string[] = [
 	`~(=^･ω･^)ﾍ >ﾟ)))彡`,
 	`ㅇㅅㅇ`,
 	`(ㅇㅅㅇ❀)`,
+	`now with 67% more cats! *gunshot noise*`
 ];
 
