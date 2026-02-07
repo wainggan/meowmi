@@ -121,7 +121,6 @@ const nickname_editor_open = (): void => {
 	els.name_edit_input.focus();
 	els.name_edit_input.select();
 };
-nickname_editor_open;
 
 const nickname_editor_close = (): void => {
 	els.name_edit.hidden = true;
