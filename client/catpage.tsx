@@ -1,6 +1,7 @@
 
 import { jsx } from "@parchii/jsx";
 import { render_html } from "@parchii/html_dom";
+import { CatpageRow } from "shared/templates.tsx"
 
 const els = {
 	search: document.getElementById('search')! as HTMLInputElement,
@@ -31,11 +32,6 @@ const cats = [
 
 // let selected_id = null;
 
-const thumb_text = (cat: (typeof cats)[number]) => {
-	const base = (cat.nickname || cat.name).trim()[0];
-	return base === undefined ? '?' : base.toUpperCase();
-};
-
 const render_list = (filter_text: string = "") => {
 	const q = filter_text.trim().toLowerCase();
 	const filtered = cats.filter(c => {
@@ -53,24 +49,7 @@ const render_list = (filter_text: string = "") => {
 
 	for (const f of filtered) {
 		const dom = (
-			<div class="catpage--left--list--row">
-				<div class="--thumb">{ thumb_text(f) }</div>
-				<div class="--main">
-					<div class="--main--name">
-						{
-							f.nickname
-							? `${f.nickname} (${f.name})`
-							: f.name
-						}
-					</div>
-					<div class="--main--sub">
-						{ `${f.type} • ${f.id}` }
-					</div>
-				</div>
-				<span class="--pill pill">
-					{ f.rarity }
-				</span>
-			</div>
+			<CatpageRow id={ f.id } name={ f.name } rarity={ f.rarity } breed={ f.type }/>
 		);
 
 		console.log(dom);

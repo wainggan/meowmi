@@ -143,28 +143,3 @@ export const Flash = (input: { flash: { message: string, mood: 'ok' | 'err' } | 
 	);
 };
 
-export const CatpageRow = (input: {
-	id: number;
-	breed: string;
-	name: string;
-	rarity: string;
-}) => {
-	const thumb = name[0].toUpperCase();
-	return (
-		<div class="catpage--left--list--row">
-			<div class="--thumb">{ thumb }</div>
-			<div class="--main">
-				<div class="--main--name">
-					{ input.name }
-				</div>
-				<div class="--main--sub">
-					{ input.breed } • { input.id }
-				</div>
-			</div>
-			<span class="--pill pill">
-				{ input.rarity }
-			</span>
-		</div>
-	);
-};
-
