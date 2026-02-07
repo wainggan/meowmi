@@ -31,7 +31,7 @@
 		},
 		"dev": {
 			"dependencies": ["check"],
-			"command": "deno run --allow-net --allow-read --allow-write --check=all --watch server/main.ts & deno task build-watch"
+			"command": "deno run --reload --allow-net --allow-read --allow-write --check=all --watch server/main.ts & deno task build-watch"
 		}
 	},
 	"imports": {
