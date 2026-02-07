@@ -4,7 +4,8 @@ this makes it easier to find api problems.
 */
 
 import { Miss } from "../common.ts";
-import catdefs from "./catdefs.data.ts";
+
+import { CatDefJson } from "shared/types.ts";
 
 /**
 representation of a user.
@@ -39,10 +40,8 @@ export type Session = {
 	readonly date_expire: number;
 };
 
-export type CatDef = {
+export type CatDef = CatDefJson & {
 	readonly id: number;
-	readonly name: string;
-	readonly rarity: number;
 };
 
 /**
@@ -108,7 +107,11 @@ export interface DB {
 	session_get(session_id: string): Promise<Session | Miss<internal | not_found>>;
 	session_delete(session_id: string): Promise<null | Miss<internal | not_found>>;
 
-	catinst_add(catdef_id: keyof typeof catdefs.map, user_id: number): Promise<number | Miss<internal | not_found>>;
+	catdefs_sync(catdefs: CatDef[]): Promise<null | Miss<internal>>;
+	catdefs_fill(): Promise<CatDefJson[] | Miss<internal>>;
+	catdefs_get(catdef_id: number): Promise<CatDef | Miss<internal>>;
+
+	catinst_add(catdef_id: number, user_id: number): Promise<number | Miss<internal | not_found>>;
 	catinst_get(catinst_id: number): Promise<CatInst | Miss<internal | not_found>>;
 	catinst_set(catinst: CatInst): Promise<null | Miss<internal>>;
 	catinst_delete(catinst_id: number): Promise<null | Miss<internal | not_found>>;

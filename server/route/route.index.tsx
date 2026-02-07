@@ -8,18 +8,19 @@ import * as template from "./template.tsx";
 import { jsx } from "@parchii/jsx";
 import { render } from "@parchii/html";
 import { SessionExport } from "./util.session.tsx";
-import { splashtext } from "../db/extra.data.ts";
+import splash_list from "shared/splash.json" with { type: 'json' };
+
 
 const index: router.Middleware<{}, 'GET', never, SessionExport> = async ctx => {
 	const user = ctx.ware.session.user();
 
-	const splash = splashtext[splashtext.length * Math.random() | 0];
+	const splash_text = splash_list[splash_list.length * Math.random() | 0];
 
 	const dom = (
 		<template.Base title="index" user={ user }>
 			<div class="content-hero">
 				<main>
-					<div class="splash">{ splash }</div>
+					<div class="splash">{ splash_text }</div>
 					NEWS TICKER ART
 				</main>
 			</div>

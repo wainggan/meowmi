@@ -3,9 +3,10 @@ this file defines `Shared`, which is used in middleware to access global
 configuration, such as a database connection or the actual `config.ts`.
 */
 
-import { DB } from "./db/db.types.ts";
+import { CatDef, DB } from "./db/db.types.ts";
 
 export type Shared = {
 	db: DB;
+	catdefs: CatDef[];
 };
 

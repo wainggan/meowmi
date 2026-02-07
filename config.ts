@@ -2,7 +2,7 @@
 the config file!
 */
 
-const config: import("./src/config.types.ts").default = {
+const config: import("./server/config.types.ts").default = {
 	// database settings
 	db: {
 		// where the database directory is located
