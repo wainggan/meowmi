@@ -102,6 +102,10 @@ html[data-theme="light"] {
 	padding: 0;
 }
 
+[hidden] {
+	display: none !important;
+}
+
 body {
 	min-height: 100vh;
 	

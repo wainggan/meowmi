@@ -79,11 +79,11 @@ const cat_view: router.Middleware<Shared, 'GET', never, ForceSessionExport & Fla
 				<div class="layout-split--right">
 					<div class="catpage--right--top">
 						<div class="catpage--right--top--block">
-							<div class="catpage--right--top--block--name_line">
-								<div class="catpage--right--top--block--name_line--name">
+							<div id="name_line" class="catpage--right--top--block--name_line">
+								<div id="name_line_cat" class="catpage--right--top--block--name_line--name">
 									select a cat
 								</div>
-								<button id="name_line" class="button catpage--right--top--block--name_line--edit">nickname</button>
+								<button id="name_line_edit" class="button catpage--right--top--block--name_line--edit">nickname</button>
 							</div>
 
 							<div id="name_edit" class="catpage--right--top--block--name_edit" hidden>
@@ -93,9 +93,9 @@ const cat_view: router.Middleware<Shared, 'GET', never, ForceSessionExport & Fla
 							</div>
 
 							<div id="meta_line" class="catpage--right--top--block--meta_line">
-								<span id="meta_line_type">type: —</span>
+								type: <span id="meta_line_type">—</span>
 								<span>•</span>
-								<span id="meta_line_id">id: —</span>
+								id: <span id="meta_line_id">—</span>
 							</div>
 						</div>
 						
