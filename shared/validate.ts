@@ -7,7 +7,7 @@ class Vdj<T extends Point> {
 
 	#schema: T;
 
-	validate(check: any): check is Value<T> {
+	validate(check: any): check is Validated<T> {
 		return this.#schema.validate(check);
 	}
 }
@@ -356,7 +356,7 @@ type Point =
 	| VdjOptional
 	| VdjAny;
 
-type Value<T extends Point> =
+export type Validated<T extends Point> =
 	T extends VdjOptional
 	? undefined
 	: T extends VdjNull
@@ -369,15 +369,15 @@ type Value<T extends Point> =
 	? X
 	: T extends VdjObject<infer X>
 	? {
-		[key in keyof X]: Value<X[key][number]>;
+		[key in keyof X]: Validated<X[key][number]>;
 	}
 	: T extends VdjInstance<infer X>
 	? InstanceType<X>
 	: T extends VdjArray<infer X>
-	? Value<X[number]>[]
+	? Validated<X[number]>[]
 	: T extends VdjTuple<infer X>
 	? {
-		[key in keyof X]: Value<X[key][number]>;
+		[key in keyof X]: Validated<X[key][number]>;
 	}
 	: never;
 
