@@ -83,6 +83,42 @@ class VdjObject<T extends VdjObjectSchema> {
 	}
 }
 
+type VdjInstanceSchema = {
+	new (...args: any[]): any;
+};
+
+class VdjInstance<T extends VdjInstanceSchema> {
+	validate(check: any): check is InstanceType<T> {
+		if (typeof check !== 'object') {
+			return false;
+		}
+
+		if (this.#shape !== null) {
+			let success = false;
+			for (const against of this.#shape) {
+				if (check instanceof against) {
+					success = true;
+					break;
+				}
+			}
+
+			if (!success) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+	
+	#shape: T[] | null = null;
+
+	of<const V extends VdjInstanceSchema[]>(...value: V): VdjInstance<V[number]> {
+		// @ts-ignore .
+		this.#shape = value;
+		return this;
+	}
+}
+
 class VdjArray<T extends Point[]> {
 	constructor(init: T) {
 		this.#shape = init;
@@ -309,6 +345,7 @@ class VdjNull {
 
 type Point =
 	| VdjObject<VdjObjectSchema>
+	| VdjInstance<VdjInstanceSchema>
 	| VdjArray<Point[]>
 	| VdjTuple<Point[][]>
 	| VdjNumber
@@ -332,6 +369,8 @@ type Value<T extends Point> =
 	? {
 		[key in keyof X]: Value<X[key][number]>;
 	}
+	: T extends VdjInstance<infer X>
+	? InstanceType<X>
 	: T extends VdjArray<infer X>
 	? Value<X[number]>[]
 	: T extends VdjTuple<infer X>
@@ -349,6 +388,9 @@ const vdj = {
 	},
 	object(): VdjObject<{}> {
 		return new VdjObject({});
+	},
+	instance(): VdjInstance<VdjInstanceSchema> {
+		return new VdjInstance();
 	},
 	array(): VdjArray<[]> {
 		return new VdjArray([]);
