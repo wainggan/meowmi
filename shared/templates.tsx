@@ -9,11 +9,10 @@ export const CatpageRow = (input: {
 	breed: string;
 	name: string;
 	rarity: string;
-	link: string;
 }) => {
 	const thumb = input.name[0].toUpperCase();
 	return (
-		<a class="catpage--left--list--row" href={ input.link }>
+		<div class="catpage--left--list--row">
 			<div class="--thumb">{ thumb }</div>
 			<div class="--main">
 				<div class="--main--name">
@@ -26,6 +25,6 @@ export const CatpageRow = (input: {
 			<span class="--pill pill">
 				{ input.rarity }
 			</span>
-		</a>
+		</div>
 	);
 };

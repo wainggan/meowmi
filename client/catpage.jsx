@@ -40,7 +40,6 @@ const request = async () => {
 	const url = new URL(globalThis.location.origin + '/api/cat/list');
 
 	url.searchParams.set('query', els.search.value);
-	console.log(url.href);
 
 	const data = await fetch(url.href, {
 			method: 'GET',
@@ -48,10 +47,8 @@ const request = async () => {
 		})
 		.then(r => r.json())
 		.catch(_r => {
-			console.log(_r);
 			throw new Error(`unknown`);
 		});
-	console.log(data);
 
 	if (data.status === 'err') {
 		throw new Error(`unknown`);
@@ -68,10 +65,8 @@ const render_list = () => {
 		const catdef = point.def;
 
 		const dom = (
-			<CatpageRow id={ catinst.id } name={ catinst.name } rarity={ rarity[catdef.rarity] } breed={ catdef.name } link="#"/>
+			<CatpageRow id={ catinst.id } name={ catinst.name } rarity={ rarity[catdef.rarity] } breed={ catdef.name }/>
 		);
-
-		console.log(dom);
 
 		const row = render_html(dom, els.list);
 		
@@ -95,7 +90,6 @@ const render_list = () => {
 const run = () => {
 	request()
 		.then(r => {
-			console.log(r);
 			cache_data = r;
 			render_list();
 		});
@@ -174,11 +168,7 @@ const nickname_save = () => {
 			},
 		})
 		.then(r => r.json())
-		.then(r => {
-			console.log(r);
-		})
 		.catch(_r => {
-			console.log(_r);
 			throw new Error(`unknown`);
 		});
 	}
