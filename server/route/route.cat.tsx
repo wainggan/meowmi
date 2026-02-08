@@ -35,7 +35,7 @@ const cat_view: router.Middleware<Shared, 'GET', never, ForceSessionExport & Fla
 				<div class="layout-split--left">
 					<div class="catpage--left--top">
 						<h1>cats</h1>
-						<input id="search" class="input-text catpage--left--top--search" type="search" placeholder="search cats by name or nickname..." value={ param_query }/>
+						<input id="search" class="input-text catpage--left--top--search" type="search" placeholder="search cats by name or type..." value={ param_query }/>
 						<button id="search_button" class="button catpage--right--top--button">search</button>
 					</div>
 
