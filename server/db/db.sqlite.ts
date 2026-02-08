@@ -338,15 +338,17 @@ export class DBSql implements DB {
 		return null;
 	}
 
-	async catinst_list_user(user_id: number, limit: number, offset: number): Promise<CatInst[] | Miss<"internal" | "not_found">> {
+	async catinst_list_user(user_id: number, query: string, limit: number, offset: number): Promise<CatInst[] | Miss<"internal" | "not_found">> {
 		let result;
+
+		console.log(query);
 
 		try {
 			result = this.db.prepare(`
 				SELECT * FROM catinsts
-				WHERE owner_user_id = (?)
+				WHERE owner_user_id = (?) AND name LIKE '%' || (?) || '%'
 				LIMIT (?) OFFSET (?);
-			`).all(user_id, limit, offset);
+			`).all(user_id, query, limit, offset);
 		}
 		catch (e) {
 			console.error(e);

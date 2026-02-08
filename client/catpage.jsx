@@ -8,6 +8,7 @@ import { rarity } from "shared/types.ts";
 const els = {
 	// the search input
 	search: document.getElementById('search'),
+	search_button: document.getElementById('search_button'),
 	// left side list of cats
 	list: document.getElementById('list'),
 	// right side header, when not in edit mode
@@ -38,12 +39,12 @@ let cache_select;
 const request = async () => {
 	const url = new URL(globalThis.location.origin + '/api/cat/list');
 
+	url.searchParams.set('query', els.search.value);
+	console.log(url.href);
+
 	const data = await fetch(url.href, {
 			method: 'GET',
 			credentials: 'same-origin',
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded',
-			},
 		})
 		.then(r => r.json())
 		.catch(_r => {
@@ -187,8 +188,14 @@ const nickname_save = () => {
 	nickname_editor_close();
 };
 
-els.search.addEventListener('input', () => {
-	render_list(els.search.value);
+els.search.addEventListener('keydown', (e) => {
+	if (e.key === 'Enter') {
+		run();
+	}
+});
+
+els.search_button.addEventListener('click', () => {
+	run();
 });
 
 els.name_line_edit.addEventListener('click', () => {

@@ -19,54 +19,11 @@ const cat_view: router.Middleware<Shared, 'GET', never, ForceSessionExport & Fla
 	if (extract_catinst_id !== null) {
 		catinst_id = Number(extract_catinst_id);
 	}
+	catinst_id;
 
 	const param_offset = Number(ctx.url.searchParams.get('offset') ?? "0");
+	param_offset;
 	const param_query = ctx.url.searchParams.get('q') ?? "";
-
-	let catinst = null;
-	let catinst_breed = null;
-	if (catinst_id !== null) {
-		catinst = await ctx.data.db.catinst_get(catinst_id);
-		if (catinst instanceof Miss) {
-			return undefined;
-		}
-		if (user.id !== catinst.owner_user_id) {
-			catinst = null;
-		}
-		else {
-			catinst_breed = ctx.data.catdefs[catinst.catdef_id];
-			if (catinst_breed === undefined) {
-				throw new Error(`??? (${catinst})`);
-			}
-		}
-		
-	}
-
-	const list = await ctx.data.db.catinst_list_user(user.id, 40, param_offset);
-	if (list instanceof Miss) {
-		return undefined;
-	}
-
-	const dom_catinst = null;dom_catinst;
-	if (catinst !== null) {
-		// const breed = catdefs[catinst.catdef_id];
-		// dom_catinst = (
-		// 	<>
-		// 		<li>{ catinst.name }</li>
-		// 		<li>{ breed.name } ({ breed.rarity })</li>
-		// 	</>
-		// );
-	}
-
-	// const a = list.values()
-	// 	.map(x => {
-	// 		const breed = catdefs.map[x.catdef_id];
-	// 		const url = new URL(ctx.url);
-	// 		url.searchParams.set('view', x.id.toString());
-	// 		return <li><a href={ url.href }>{ x.name } ({ breed.name })</a></li>;
-	// 	})
-	// 	.toArray();
-	// a;
 
 	const dom = (
 		<template.Base title="your cats" user={ user }>
@@ -79,6 +36,7 @@ const cat_view: router.Middleware<Shared, 'GET', never, ForceSessionExport & Fla
 					<div class="catpage--left--top">
 						<h1>cats</h1>
 						<input id="search" class="input-text catpage--left--top--search" type="search" placeholder="search cats by name or nickname..." value={ param_query }/>
+						<button id="search_button" class="button catpage--right--top--button">search</button>
 					</div>
 
 					<div id="list" class="catpage--left--list">
@@ -139,8 +97,6 @@ const cat_view: router.Middleware<Shared, 'GET', never, ForceSessionExport & Fla
 };
 
 const api_cat_list: router.Middleware<Shared, 'GET', never, SessionExport> = async ctx => {
-	const form = await ctx.request.formData();
-
 	let output_json;
 	let output_code: router.StatusNames;
 
@@ -156,9 +112,9 @@ const api_cat_list: router.Middleware<Shared, 'GET', never, SessionExport> = asy
 			break exit;
 		}
 
-		const form_query = form.get('query') ?? '';
-		const form_offset = form.get('offset') ?? '0';
-		const form_limit = form.get('limit') ?? '20';
+		const form_query = ctx.url.searchParams.get('query') ?? '';
+		const form_offset = ctx.url.searchParams.get('offset') ?? '0';
+		const form_limit = ctx.url.searchParams.get('limit') ?? '20';
 
 		if (
 			typeof form_query !== 'string' ||
@@ -177,7 +133,7 @@ const api_cat_list: router.Middleware<Shared, 'GET', never, SessionExport> = asy
 		const input_limit = Math.min(Math.max(Number(form_limit), 0), 40);
 		const input_offset = Math.max(Number(form_offset), 0);
 
-		const list = await ctx.data.db.catinst_list_user(user.id, input_limit, input_offset);
+		const list = await ctx.data.db.catinst_list_user(user.id, form_query, input_limit, input_offset);
 		if (list instanceof Miss) {
 			output_code = 'internal_error';
 			output_json = {
