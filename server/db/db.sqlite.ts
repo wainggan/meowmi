@@ -341,14 +341,13 @@ export class DBSql implements DB {
 	async catinst_list_user(user_id: number, query: string, limit: number, offset: number): Promise<CatInst[] | Miss<"internal" | "not_found">> {
 		let result;
 
-		console.log(query);
-
 		try {
 			result = this.db.prepare(`
-				SELECT * FROM catinsts
-				WHERE owner_user_id = (?) AND name LIKE '%' || (?) || '%'
+				SELECT catinsts.* FROM catinsts
+				JOIN catdefs ON catinsts.catdef_id = catdefs.id
+				WHERE catinsts.owner_user_id = (?) AND (catinsts.name LIKE '%' || (?) || '%' OR catdefs.name LIKE '%' || (?) || '%')
 				LIMIT (?) OFFSET (?);
-			`).all(user_id, query, limit, offset);
+			`).all(user_id, query, query, limit, offset);
 		}
 		catch (e) {
 			console.error(e);
