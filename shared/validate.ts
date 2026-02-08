@@ -88,6 +88,8 @@ type VdjInstanceSchema = {
 };
 
 class VdjInstance<T extends VdjInstanceSchema> {
+	type: 'instance' = 'instance';
+
 	validate(check: any): check is InstanceType<T> {
 		if (typeof check !== 'object') {
 			return false;
