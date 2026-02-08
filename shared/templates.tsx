@@ -1,14 +1,19 @@
 import { jsx } from "@parchii/jsx";
 
+export const CatPageLeft = () => {
+
+};
+
 export const CatpageRow = (input: {
 	id: string;
 	breed: string;
 	name: string;
 	rarity: string;
+	link: string;
 }) => {
 	const thumb = input.name[0].toUpperCase();
 	return (
-		<div class="catpage--left--list--row">
+		<a class="catpage--left--list--row" href={ input.link }>
 			<div class="--thumb">{ thumb }</div>
 			<div class="--main">
 				<div class="--main--name">
@@ -21,6 +26,6 @@ export const CatpageRow = (input: {
 			<span class="--pill pill">
 				{ input.rarity }
 			</span>
-		</div>
+		</a>
 	);
 };

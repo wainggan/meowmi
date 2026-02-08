@@ -60,7 +60,7 @@ const render_list = (filter_text: string = ""): void => {
 
 	for (const cat of filtered) {
 		const dom = (
-			<CatpageRow id={ cat.id } name={ cat.nickname || cat.name } rarity={ cat.rarity } breed={ cat.type }/>
+			<CatpageRow id={ cat.id } name={ cat.nickname || cat.name } rarity={ cat.rarity } breed={ cat.type } link="#"/>
 		);
 
 		console.log(dom);
