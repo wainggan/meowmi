@@ -95,13 +95,21 @@ class VdjArray<T extends Point[]> {
 			return false;
 		}
 
-		for (const against of this.#shape) {
-			if (against.validate(check)) {
-				return true;
+		for (const value of check) {
+			let success = false;
+			for (const against of this.#shape) {
+				if (against.validate(value)) {
+					success = true;
+					break;
+				}
+			}
+
+			if (!success) {
+				return false;
 			}
 		}
 
-		return false;
+		return true;
 	}
 
 	#shape: T;
