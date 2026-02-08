@@ -262,7 +262,15 @@ class VdjString<T extends string> {
 		}
 
 		if (this.#exact !== null) {
-			if (check !== this.#exact) {
+			let success = false;
+			for (const against of this.#exact) {
+				if (check === against) {
+					success = true;
+					break;
+				}
+			}
+
+			if (!success) {
 				return false;
 			}
 		}
@@ -276,10 +284,10 @@ class VdjString<T extends string> {
 		return true;
 	}
 
-	#exact: null | T = null;
-	exact<const U extends string>(value: U): VdjString<U> {
+	#exact: null | T[] = null;
+	exact<const U extends string>(...values: U[]): VdjString<U> {
 		// @ts-ignore .
-		this.#exact = value;
+		this.#exact = values;
 		// @ts-ignore .
 		return this;
 	}
