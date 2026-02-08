@@ -115,6 +115,6 @@ export interface DB {
 	catinst_get(catinst_id: number): Promise<CatInst | Miss<internal | not_found>>;
 	catinst_set(catinst: CatInst): Promise<null | Miss<internal>>;
 	catinst_delete(catinst_id: number): Promise<null | Miss<internal | not_found>>;
-	catinst_list_user(user_id: number, limit: number, offset: number): Promise<CatInst[] | Miss<internal | not_found>>;
+	catinst_list_user(user_id: number, query: string, limit: number, offset: number): Promise<CatInst[] | Miss<internal | not_found>>;
 }
 

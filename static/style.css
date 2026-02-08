@@ -736,6 +736,8 @@ body {
 	outline: none;
 
 	color: inherit;
+	font-family: inherit;
+	font-size: inherit;
 }
 .input-text:focus {
 	border-color: rgba(138, 160, 255, 0.55);

@@ -49,7 +49,7 @@ const gacha_api: router.Middleware<Shared, 'POST', never, ForceSessionExport & F
 		return ctx.build_redirect(ctx.url);
 	}
 
-	const breed = catdefs_util.select(ctx.data.catdefs, catloot.base);
+	const breed = catdefs_util.select(Object.values(ctx.data.catdefs), catloot.base);
 
 	const catinst_id = await ctx.data.db.catinst_add(breed.id, user.id);
 	if (catinst_id instanceof Miss) {

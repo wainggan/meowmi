@@ -309,10 +309,11 @@ export class DBSql implements DB {
 			this.db.prepare(`
 				UPDATE catinsts
 				SET
-					owner_user_id = (?)
+					owner_user_id = (?),
+					name = (?)
 				WHERE
 					id = (?);
-			`).run(catinst.owner_user_id, catinst.id);
+			`).run(catinst.owner_user_id, catinst.name, catinst.id);
 		}
 		catch (e) {
 			console.error(e);
@@ -337,15 +338,16 @@ export class DBSql implements DB {
 		return null;
 	}
 
-	async catinst_list_user(user_id: number, limit: number, offset: number): Promise<CatInst[] | Miss<"internal" | "not_found">> {
+	async catinst_list_user(user_id: number, query: string, limit: number, offset: number): Promise<CatInst[] | Miss<"internal" | "not_found">> {
 		let result;
 
 		try {
 			result = this.db.prepare(`
-				SELECT * FROM catinsts
-				WHERE owner_user_id = (?)
+				SELECT catinsts.* FROM catinsts
+				JOIN catdefs ON catinsts.catdef_id = catdefs.id
+				WHERE catinsts.owner_user_id = (?) AND (catinsts.name LIKE '%' || (?) || '%' OR catdefs.name LIKE '%' || (?) || '%')
 				LIMIT (?) OFFSET (?);
-			`).all(user_id, limit, offset);
+			`).all(user_id, query, query, limit, offset);
 		}
 		catch (e) {
 			console.error(e);

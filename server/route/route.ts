@@ -59,5 +59,8 @@ route.post("/gacha", session_middleware, force_session_middleware, flash_middlew
 
 route.get("/cat", session_middleware, force_session_middleware, flash_middleware, route_cat.cat_view);
 
+route.get("/api/cat/list", session_middleware, flash_middleware, route_cat.api_cat_list);
+route.post("/api/cat/update", session_middleware, flash_middleware, route_cat.api_cat_update);
+
 export default route;
 

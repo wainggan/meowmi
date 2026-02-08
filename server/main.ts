@@ -18,10 +18,12 @@ if (result_sync instanceof Miss) {
 	throw result_sync.toError();
 }
 
-const catdefs = await db.catdefs_fill();
-if (catdefs instanceof Miss) {
-	throw catdefs.toError();
+const catdefs_list = await db.catdefs_fill();
+if (catdefs_list instanceof Miss) {
+	throw catdefs_list.toError();
 }
+
+const catdefs = Object.fromEntries(catdefs_list.values().map(x => [x.id, x]));
 
 const data = {
 	db,

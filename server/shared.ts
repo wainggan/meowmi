@@ -7,6 +7,8 @@ import { CatDef, DB } from "./db/db.types.ts";
 
 export type Shared = {
 	db: DB;
-	catdefs: CatDef[];
+	catdefs: {
+		[id: number]: CatDef;
+	};
 };
 
