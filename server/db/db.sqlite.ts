@@ -309,10 +309,11 @@ export class DBSql implements DB {
 			this.db.prepare(`
 				UPDATE catinsts
 				SET
-					owner_user_id = (?)
+					owner_user_id = (?),
+					name = (?)
 				WHERE
 					id = (?);
-			`).run(catinst.owner_user_id, catinst.id);
+			`).run(catinst.owner_user_id, catinst.name, catinst.id);
 		}
 		catch (e) {
 			console.error(e);
