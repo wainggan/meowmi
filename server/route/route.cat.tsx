@@ -10,6 +10,7 @@ import { FlashExport } from "./util.flash.tsx";
 import { ForceSessionExport, SessionExport } from "./util.session.tsx";
 import { Shared } from "../shared.ts";
 import { Miss } from "../common.ts";
+import vdj from "shared/validate.ts";
 
 const cat_view: router.Middleware<Shared, 'GET', never, ForceSessionExport & FlashExport> = async ctx => {
 	const user = ctx.ware.force_session.user();
@@ -166,7 +167,7 @@ const api_cat_list: router.Middleware<Shared, 'GET', never, SessionExport> = asy
 };
 
 const api_cat_update: router.Middleware<Shared, 'POST', never, SessionExport> = async ctx => {
-	const form = await ctx.request.formData();
+	const form_data = await ctx.request.formData();
 
 	let output_json;
 	let output_code: router.StatusNames;
@@ -183,12 +184,18 @@ const api_cat_update: router.Middleware<Shared, 'POST', never, SessionExport> = 
 			break exit;
 		}
 
-		const form_id = form.get('id');
-		const form_name = form.get('name');
-		if (
-			typeof form_id !== 'string' ||
-			typeof form_name !== 'string'
-		) {
+		const form_schema = vdj.schema(
+			vdj.object()
+				.key('id', vdj.string().regex(/[0-9]+/))
+				.key('name', vdj.string().regex(/[0-9a-zA-Z_]+/)),
+		);
+
+		const form = {
+			id: form_data.get('id'),
+			name: form_data.get('name'),
+		};
+
+		if (!form_schema.validate(form)) {
 			output_code = 'bad_request';
 			output_json = {
 				status: 'err',
@@ -198,7 +205,7 @@ const api_cat_update: router.Middleware<Shared, 'POST', never, SessionExport> = 
 			break exit;
 		}
 
-		const catinst = await ctx.data.db.catinst_get(Number(form_id));
+		const catinst = await ctx.data.db.catinst_get(Number(form.id));
 		if (catinst instanceof Miss) {
 			output_code = 'internal_error';
 			output_json = {
@@ -209,7 +216,7 @@ const api_cat_update: router.Middleware<Shared, 'POST', never, SessionExport> = 
 			break exit;
 		}
 
-		catinst.name = form_name.trim();
+		catinst.name = form.name.trim();
 
 		const result = await ctx.data.db.catinst_set(catinst);
 		if (result instanceof Miss) {
