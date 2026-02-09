@@ -178,6 +178,7 @@ const nickname_save = () => {
 	nickname_editor_close();
 };
 
+// theyre listening they are in my walls
 els.search.addEventListener('keydown', (e) => {
 	if (e.key === 'Enter') {
 		run();
