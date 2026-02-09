@@ -58,6 +58,28 @@ export type CatInst = {
 	name: string;
 };
 
+export type TradeGlobalRequest = {
+	readonly id: number;
+	readonly user_id: number;
+	readonly catinst_id: number;
+	description: string;
+};
+
+export type TradeGlobalOffer = {
+	readonly id: number;
+	readonly user_id: number;
+	readonly catinst_id: number;
+	readonly traderequest_id: number;
+};
+
+export type TradeLocal = {
+	readonly id: number;
+	readonly peer_x_id: number;
+	readonly peer_y_id: number;
+	readonly catinst_x_id: number;
+	readonly catinst_y_id: number;
+};
+
 type internal = 'internal';
 type exists = 'exists';
 type not_found = 'not_found';
@@ -116,5 +138,9 @@ export interface DB {
 	catinst_set(catinst: CatInst): Promise<null | Miss<internal>>;
 	catinst_delete(catinst_id: number): Promise<null | Miss<internal | not_found>>;
 	catinst_list_user(user_id: number, query: string, limit: number, offset: number): Promise<CatInst[] | Miss<internal | not_found>>;
+
+	tradelocal_new(creator_user_id: number, with_user_id: number, creator_catinst_id: number, with_catinst_id: number): Promise<number | Miss<internal>>;
+	tradelocal_get(tradelocal_id: number): Promise<TradeLocal | Miss<internal | not_found>>;
+	tradelocal_delete(tradelocal_id: number): Promise<null | Miss<internal | not_found>>;
 }
 

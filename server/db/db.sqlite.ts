@@ -1,5 +1,5 @@
 import { DatabaseSync } from "node:sqlite";
-import { DB, User, Session, CatInst, CatDef } from "./db.types.ts";
+import { DB, User, Session, CatInst, CatDef, TradeLocal } from "./db.types.ts";
 import { Miss } from "../common.ts";
 import { CatDefJson } from "shared/types.ts";
 
@@ -41,6 +41,14 @@ export class DBSql implements DB {
 				key TEXT NOT NULL UNIQUE,
 				name TEXT NOT NULL,
 				rarity INTEGER NOT NULL
+			);
+
+			CREATE TABLE IF NOT EXISTS tradelocal (
+				id INTEGER PRIMARY KEY AUTOINCREMENT,
+				peer_x_id INTEGER NOT NULL,
+				peer_y_id INTEGER NOT NULL,
+				catinst_x_id INTEGER NOT NULL,
+				catinst_y_id INTEGER NOT NULL
 			);
 		`);
 	}
@@ -355,6 +363,67 @@ export class DBSql implements DB {
 		}
 
 		return result as CatInst[];
+	}
+
+	async tradelocal_new(creator_user_id: number, with_user_id: number, creator_catinst_id: number, with_catinst_id: number): Promise<number | Miss<"internal">> {
+		let result;
+
+		try {
+			result = this.db.prepare(`
+				INSERT INTO tradelocal
+					(peer_x_id, peer_y_id, catinst_x_id, catinst_y_id)
+				VALUES
+					(?, ?, ?, ?);
+			`).run(creator_user_id, with_user_id, creator_catinst_id, with_catinst_id);
+		}
+		catch (e) {
+			console.error(e);
+			return new Miss('internal', `unknown internal error`);
+		}
+
+		return result.lastInsertRowid as number;
+	}
+
+	async tradelocal_get(tradelocal_id: number): Promise<TradeLocal | Miss<"internal" | "not_found">> {
+		let result;
+
+		try {
+			result = this.db.prepare(`
+				SELECT * FROM tradelocal
+				WHERE id = (?);
+			`).get(tradelocal_id);
+		}
+		catch (e) {
+			console.error(e);
+			return new Miss('internal', `unknown internal error`);
+		}
+
+		if (result === undefined) {
+			return new Miss('not_found', `local trade id '${tradelocal_id}' not found`);
+		}
+
+		return result as TradeLocal;
+	}
+
+	async tradelocal_delete(tradelocal_id: number): Promise<null | Miss<"internal" | "not_found">> {
+		let result;
+
+		try {
+			result = this.db.prepare(`
+				DELETE FROM tradelocal
+				WHERE id = (?);
+			`).run(tradelocal_id);
+		}
+		catch (e) {
+			console.error(e);
+			return new Miss('internal', `unknown internal error`);
+		}
+
+		if (result.changes !== 1) {
+			return new Miss('not_found', `did not delete 1 row`);
+		}
+
+		return null;
 	}
 }
 
