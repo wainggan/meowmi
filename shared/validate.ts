@@ -299,6 +299,18 @@ class VdjString<T extends string> {
 			return false;
 		}
 
+		if (this.#range_0 !== null) {
+			if (check.length < this.#range_0) {
+				return false;
+			}
+		}
+
+		if (this.#range_1 !== null) {
+			if (check.length > this.#range_1) {
+				return false;
+			}
+		}
+
 		if (this.#exact !== null) {
 			let success = false;
 			for (const against of this.#exact) {
@@ -333,6 +345,17 @@ class VdjString<T extends string> {
 	#regex: RegExp | null = null;
 	regex(value: RegExp): this {
 		this.#regex = value;
+		return this;
+	}
+
+	#range_0: number | null = null;
+	#range_1: number | null = null;
+	lenmin(value: number | null): this {
+		this.#range_0 = value;
+		return this;
+	}
+	lenmax(value: number | null): this {
+		this.#range_1 = value;
 		return this;
 	}
 }
