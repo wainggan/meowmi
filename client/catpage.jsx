@@ -39,10 +39,14 @@ let cache_select;
 const request = async () => {
 	const url = new URL(globalThis.location.origin + '/api/cat/list');
 
-	url.searchParams.set('query', els.search.value);
+	const form = new URLSearchParams();
+	form.set('query', els.search.value);
+	form.set('limit', '40');
+	form.set('offset', '0');
 
 	const data = await fetch(url.href, {
-			method: 'GET',
+			method: 'POST',
+			body: form,
 			credentials: 'same-origin',
 		})
 		.then(r => r.json())
@@ -163,9 +167,6 @@ const nickname_save = () => {
 			method: 'POST',
 			body: form,
 			credentials: 'same-origin',
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded',
-			},
 		})
 		.then(r => r.json())
 		.catch(_r => {

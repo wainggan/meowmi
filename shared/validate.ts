@@ -12,7 +12,12 @@ class Vdj<T extends Point> {
 	}
 }
 
-class VdjAny {
+abstract class VdjShared {
+	abstract type: string;
+	abstract validate(check: any): boolean;
+}
+
+class VdjAny extends VdjShared {
 	type: 'any' = 'any';
 
 	validate(_check: any): boolean {
@@ -20,7 +25,19 @@ class VdjAny {
 	}
 }
 
-class VdjOptional {
+class VdjBoolean extends VdjShared {
+	type: 'boolean' = 'boolean';
+
+	validate(check: any): boolean {
+		if (typeof check !== 'boolean') {
+			return false;
+		}
+
+		return true;
+	}
+}
+
+class VdjOptional extends VdjShared {
 	type: 'optional' = 'optional';
 
 	validate(check: any): boolean {
@@ -28,7 +45,12 @@ class VdjOptional {
 	}
 }
 
-class VdjEither<T extends Point[]> {
+class VdjEither<T extends Point[]> extends VdjShared {
+	constructor(shape: T) {
+		super();
+		this.#shape = shape;
+	}
+
 	type: 'either' = 'either';
 
 	validate(check: any): boolean {
@@ -41,8 +63,7 @@ class VdjEither<T extends Point[]> {
 		return false;
 	}
 
-	// @ts-ignore .
-	#shape: T = [];
+	#shape: T;
 
 	or<const U extends Point>(value: U): VdjEither<[...T, U]> {
 		// @ts-ignore .
@@ -56,8 +77,9 @@ type VdjObjectSchema = {
 	[key: string]: Point[];
 };
 
-class VdjObject<T extends VdjObjectSchema> {
+class VdjObject<T extends VdjObjectSchema> extends VdjShared {
 	constructor(init: T) {
+		super();
 		this.#shape = init;
 	}
 
@@ -111,7 +133,7 @@ type VdjInstanceSchema = {
 	new (...args: any[]): any;
 };
 
-class VdjInstance<T extends VdjInstanceSchema> {
+class VdjInstance<T extends VdjInstanceSchema> extends VdjShared {
 	type: 'instance' = 'instance';
 
 	validate(check: any): boolean {
@@ -145,8 +167,9 @@ class VdjInstance<T extends VdjInstanceSchema> {
 	}
 }
 
-class VdjArray<T extends Point[]> {
+class VdjArray<T extends Point[]> extends VdjShared {
 	constructor(init: T) {
+		super();
 		this.#shape = init;
 	}
 
@@ -184,8 +207,9 @@ class VdjArray<T extends Point[]> {
 	}
 }
 
-class VdjTuple<T extends Point[][]> {
+class VdjTuple<T extends Point[][]> extends VdjShared {
 	constructor(init: T) {
+		super();
 		this.#shape = init;
 	}
 
@@ -229,7 +253,7 @@ class VdjTuple<T extends Point[][]> {
 	}
 }
 
-class VdjNumber {
+class VdjNumber<T extends number> extends VdjShared {
 	type: 'number' = 'number';
 
 	validate(check: any): boolean {
@@ -273,7 +297,29 @@ class VdjNumber {
 			}
 		}
 
+		if (this.#exact !== null) {
+			let success = false;
+			for (const against of this.#exact) {
+				if (check === against) {
+					success = true;
+					break;
+				}
+			}
+
+			if (!success) {
+				return false;
+			}
+		}
+
 		return true;
+	}
+
+	#exact: null | T[] = null;
+	exact<const U extends number>(...values: U[]): VdjNumber<U> {
+		// @ts-ignore .
+		this.#exact = values;
+		// @ts-ignore .
+		return this;
 	}
 
 	#range_0: number | null = null;
@@ -318,7 +364,7 @@ class VdjNumber {
 	}
 }
 
-class VdjString<T extends string> {
+class VdjString<T extends string> extends VdjShared {
 	type: 'string' = 'string';
 
 	validate(check: any): boolean {
@@ -338,6 +384,12 @@ class VdjString<T extends string> {
 			}
 		}
 
+		if (this.#regex !== null) {
+			if (!this.#regex.test(check)) {
+				return false;
+			}
+		}
+
 		if (this.#exact !== null) {
 			let success = false;
 			for (const against of this.#exact) {
@@ -348,12 +400,6 @@ class VdjString<T extends string> {
 			}
 
 			if (!success) {
-				return false;
-			}
-		}
-
-		if (this.#regex !== null) {
-			if (!this.#regex.test(check)) {
 				return false;
 			}
 		}
@@ -400,7 +446,8 @@ type Point =
 	| VdjInstance<VdjInstanceSchema>
 	| VdjArray<Point[]>
 	| VdjTuple<Point[][]>
-	| VdjNumber
+	| VdjBoolean
+	| VdjNumber<number>
 	| VdjString<string>
 	| VdjNull
 	| VdjOptional
@@ -414,8 +461,10 @@ type Calculate<T extends Point> =
 	? null
 	: T extends VdjAny
 	? any
-	: T extends VdjNumber
-	? number
+	: T extends VdjBoolean
+	? boolean
+	: T extends VdjNumber<infer X>
+	? X
 	: T extends VdjString<infer X>
 	? X
 	: T extends VdjObject<infer X>
@@ -446,6 +495,9 @@ const vdj = {
 	null(): VdjNull {
 		return new VdjNull();
 	},
+	boolean(): VdjBoolean {
+		return new VdjBoolean();
+	},
 	object(): VdjObject<{}> {
 		return new VdjObject({});
 	},
@@ -458,7 +510,7 @@ const vdj = {
 	tuple(): VdjTuple<[]> {
 		return new VdjTuple([]);
 	},
-	number(): VdjNumber {
+	number(): VdjNumber<number> {
 		return new VdjNumber();
 	},
 	string(): VdjString<string> {
@@ -471,8 +523,8 @@ const vdj = {
 		return new VdjOptional();
 	},
 	either(): VdjEither<[]> {
-		return new VdjEither();
-	}
+		return new VdjEither([]);
+	},
 } as const;
 
 export default vdj;

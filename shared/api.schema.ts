@@ -1,29 +1,121 @@
 import vdj from "./validate.ts";
+import { status_codes, StatusNames } from "@parchii/router";
+
+// helper schemas
+
+const status = vdj.string().exact(...Object.keys(status_codes) as StatusNames[]);
 
 const error = vdj.object()
 	.key('status', vdj.string().exact('err'))
-	.key('code', vdj.number())
+	.key('code', status)
 	.key('message', vdj.string());
 
-const cat_list_input = vdj.schema(
+const ok = vdj.string().exact('ok');
+
+const safeintstr = vdj.string().regex(/[0-9]+/);
+
+const catinst = vdj.object()
+	.key('id', vdj.number())
+	.key('name', vdj.string());
+
+const catdef = vdj.object()
+	.key('name', vdj.string());
+
+// api schemas
+
+const gacha_pull_in = vdj.schema(
 	vdj.object()
-		.key('limit', vdj.number().min(0).integer())
-		.key('offset', vdj.number().min(0).integer())
-		.key('query', vdj.string())
 );
 
-const cat_list_output = vdj.schema(
+const gacha_pull_out = vdj.schema(
 	vdj.either()
 		.or(error)
 		.or(
 			vdj.object()
 				.key('status', vdj.string().exact('ok'))
-				.key('list', vdj.array().values(vdj.any()))
+				.key('pull', vdj.array().values(vdj.number()))
+		)
+);
+
+const cat_list_in = vdj.schema(
+	vdj.object()
+		.key('id', safeintstr, vdj.optional())
+		.key('limit', safeintstr)
+		.key('offset', safeintstr)
+		.key('query', vdj.string())
+);
+
+const cat_list_out = vdj.schema(
+	vdj.either()
+		.or(error)
+		.or(
+			vdj.object()
+				.key('status', vdj.string().exact('ok'))
+				.key('list', vdj.array().values(
+					vdj.object()
+						.key('inst', catinst)
+						.key('def', catdef)
+				))
+		)
+);
+
+const cat_update_in = vdj.schema(
+	vdj.object()
+		.key('id', safeintstr)
+		.key('name', vdj.string().regex(/[0-9a-zA-Z_]+/))
+);
+
+const cat_update_out = vdj.schema(
+	vdj.either()
+		.or(error)
+		.or(
+			vdj.object()
+				.key('status', ok)
+		)
+);
+
+const tradelocal_new_in = vdj.schema(
+	vdj.object()
+		.key('creator_user_id', safeintstr)
+		.key('target_user_id', safeintstr)
+		.key('creator_cat_id', safeintstr)
+		.key('target_cat_id', safeintstr)
+);
+
+const tradelocal_new_out = vdj.schema(
+	vdj.either()
+		.or(error)
+		.or(
+			vdj.object()
+				.key('status', ok)
+		)
+);
+
+const tradelocal_complete_in = vdj.schema(
+	vdj.object()
+		.key('trade_id', vdj.number())
+		.key('accept', vdj.boolean())
+	);
+
+const tradelocal_complete_out = vdj.schema(
+	vdj.either()
+		.or(error)
+		.or(
+			vdj.object()
+				.key('status', ok)
 		)
 );
 
 export default {
-	cat_list_input,
-	cat_list_output,
+	gacha_pull_in,
+	gacha_pull_out,
+	cat_list_in,
+	cat_list_out,
+	cat_update_in,
+	cat_update_out,
+	tradelocal_new_in,
+	tradelocal_new_out,
+	tradelocal_complete_in,
+	tradelocal_complete_out,
 };
 

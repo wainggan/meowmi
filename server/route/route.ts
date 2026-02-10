@@ -6,6 +6,7 @@ import * as router from "@parchii/router";
 import { Shared } from "../shared.ts";
 
 import route_error from "./route.error.tsx";
+import route_api from "./route.api.ts";
 import route_index from "./route.index.tsx";
 import route_user from "./route.user.tsx";
 import route_gacha from "./route.gacha.tsx";
@@ -59,8 +60,8 @@ route.post("/gacha", session_middleware, force_session_middleware, flash_middlew
 
 route.get("/cat", session_middleware, force_session_middleware, flash_middleware, route_cat.cat_view);
 
-route.get("/api/cat/list", session_middleware, flash_middleware, route_cat.api_cat_list);
-route.post("/api/cat/update", session_middleware, flash_middleware, route_cat.api_cat_update);
+route.post("/api/cat/list", session_middleware, flash_middleware, route_api.api_cat_list);
+route.post("/api/cat/update", session_middleware, flash_middleware, route_api.api_cat_update);
 
 export default route;
 

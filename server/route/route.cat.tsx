@@ -7,10 +7,8 @@ import { render } from "@parchii/html";
 import * as template from "./template.tsx";
 
 import { FlashExport } from "./util.flash.tsx";
-import { ForceSessionExport, SessionExport } from "./util.session.tsx";
+import { ForceSessionExport } from "./util.session.tsx";
 import { Shared } from "../shared.ts";
-import { Miss } from "../common.ts";
-import vdj from "shared/validate.ts";
 
 const cat_view: router.Middleware<Shared, 'GET', never, ForceSessionExport & FlashExport> = async ctx => {
 	const user = ctx.ware.force_session.user();
@@ -97,153 +95,7 @@ const cat_view: router.Middleware<Shared, 'GET', never, ForceSessionExport & Fla
 	return ctx.build_response(str, 'ok', 'html');
 };
 
-const api_cat_list: router.Middleware<Shared, 'GET', never, SessionExport> = async ctx => {
-	let output_json;
-	let output_code: router.StatusNames;
-
-	exit: {
-		const user = ctx.ware.session.user();
-		if (user === null) {
-			output_code = 'unauthorized';
-			output_json = {
-				status: 'err',
-				code: output_code,
-				message: `missing session cookie`,
-			};
-			break exit;
-		}
-
-		const form_query = ctx.url.searchParams.get('query') ?? '';
-		const form_offset = ctx.url.searchParams.get('offset') ?? '0';
-		const form_limit = ctx.url.searchParams.get('limit') ?? '20';
-
-		if (
-			typeof form_query !== 'string' ||
-			typeof form_offset !== 'string' ||
-			typeof form_limit !== 'string'
-		) {
-			output_code = 'bad_request';
-			output_json = {
-				status: 'err',
-				code: output_code,
-				message: `invalid form data`,
-			};
-			break exit;
-		}
-
-		const input_limit = Math.min(Math.max(Number(form_limit), 0), 40);
-		const input_offset = Math.max(Number(form_offset), 0);
-
-		const list = await ctx.data.db.catinst_list_user(user.id, form_query, input_limit, input_offset);
-		if (list instanceof Miss) {
-			output_code = 'internal_error';
-			output_json = {
-				status: 'err',
-				code: output_code,
-				message: `internal error`,
-			};
-			break exit;
-		}
-
-		const mapped = list.values()
-			.map(x => {
-				return {
-					inst: x,
-					def: ctx.data.catdefs[x.catdef_id],
-				};
-			})
-			.toArray();
-
-		output_code = 'ok'
-		output_json = {
-			status: 'ok',
-			list: mapped
-		};
-	}
-
-	const str = JSON.stringify(output_json);
-	
-	return ctx.build_response(str, output_code, 'json');
-};
-
-const api_cat_update: router.Middleware<Shared, 'POST', never, SessionExport> = async ctx => {
-	const form_data = await ctx.request.formData();
-
-	let output_json;
-	let output_code: router.StatusNames;
-
-	exit: {
-		const user = ctx.ware.session.user();
-		if (user === null) {
-			output_code = 'unauthorized';
-			output_json = {
-				status: 'err',
-				code: output_code,
-				message: `missing session cookie`,
-			};
-			break exit;
-		}
-
-		const form_schema = vdj.schema(
-			vdj.object()
-				.key('id', vdj.string().regex(/[0-9]+/))
-				.key('name', vdj.string().regex(/[0-9a-zA-Z_]+/)),
-		);
-
-		const form = {
-			id: form_data.get('id'),
-			name: form_data.get('name'),
-		};
-
-		if (!form_schema.validate(form)) {
-			output_code = 'bad_request';
-			output_json = {
-				status: 'err',
-				code: output_code,
-				message: `invalid form data`,
-			};
-			break exit;
-		}
-
-		const catinst = await ctx.data.db.catinst_get(Number(form.id));
-		if (catinst instanceof Miss) {
-			output_code = 'internal_error';
-			output_json = {
-				status: 'err',
-				code: output_code,
-				message: catinst.toString(),
-			};
-			break exit;
-		}
-
-		catinst.name = form.name.trim();
-
-		const result = await ctx.data.db.catinst_set(catinst);
-		if (result instanceof Miss) {
-			output_code = 'internal_error';
-			output_json = {
-				status: 'err',
-				code: output_code,
-				message: catinst.toString(),
-			};
-			break exit;
-		}
-
-		output_code = 'ok';
-		output_json = {
-			status: 'ok',
-		};
-		break exit;
-	}
-
-	const str = JSON.stringify(output_json);
-
-	return ctx.build_response(str, output_code, 'json');
-};
-
 export default {
 	cat_view,
-	api_cat_list,
-	api_cat_update,
 };
 
