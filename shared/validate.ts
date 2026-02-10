@@ -7,7 +7,7 @@ class Vdj<T extends Point> {
 
 	#schema: T;
 
-	validate(check: any): check is Validated<T> {
+	validate(check: any): check is Calculate<T> {
 		return this.#schema.validate(check);
 	}
 }
@@ -15,7 +15,7 @@ class Vdj<T extends Point> {
 class VdjAny {
 	type: 'any' = 'any';
 
-	validate(_check: any): _check is any {
+	validate(_check: any): boolean {
 		return true;
 	}
 }
@@ -23,8 +23,32 @@ class VdjAny {
 class VdjOptional {
 	type: 'optional' = 'optional';
 
-	validate(check: any): check is undefined {
+	validate(check: any): boolean {
 		return check === undefined;
+	}
+}
+
+class VdjEither<T extends Point[]> {
+	type: 'either' = 'either';
+
+	validate(check: any): boolean {
+		for (const against of this.#shape) {
+			if (against.validate(check)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	// @ts-ignore .
+	#shape: T = [];
+
+	or<const U extends Point>(value: U): VdjEither<[...T, U]> {
+		// @ts-ignore .
+		this.#shape.push(value);
+		// @ts-ignore .
+		return this;
 	}
 }
 
@@ -39,7 +63,7 @@ class VdjObject<T extends VdjObjectSchema> {
 
 	type: 'object' = 'object';
 
-	validate(check: any): check is T {
+	validate(check: any): boolean {
 		if (typeof check !== 'object') {
 			return false;
 		}
@@ -90,7 +114,7 @@ type VdjInstanceSchema = {
 class VdjInstance<T extends VdjInstanceSchema> {
 	type: 'instance' = 'instance';
 
-	validate(check: any): check is InstanceType<T> {
+	validate(check: any): boolean {
 		if (typeof check !== 'object') {
 			return false;
 		}
@@ -128,7 +152,7 @@ class VdjArray<T extends Point[]> {
 
 	type: 'array' = 'array';
 
-	validate(check: any): check is T {
+	validate(check: any): boolean {
 		if (!Array.isArray(check)) {
 			return false;
 		}
@@ -167,7 +191,7 @@ class VdjTuple<T extends Point[][]> {
 
 	type: 'tuple' = 'tuple';
 
-	validate(check: any): check is T {
+	validate(check: any): boolean {
 		if (!Array.isArray(check)) {
 			return false;
 		}
@@ -208,7 +232,7 @@ class VdjTuple<T extends Point[][]> {
 class VdjNumber {
 	type: 'number' = 'number';
 
-	validate(check: any): check is number {
+	validate(check: any): boolean {
 		if (typeof check !== 'number') {
 			return false;
 		}
@@ -254,9 +278,12 @@ class VdjNumber {
 
 	#range_0: number | null = null;
 	#range_1: number | null = null;
-	range(x0: number, x1: number): this {
-		this.#range_0 = x0;
-		this.#range_1 = x1;
+	min(value: number): this {
+		this.#range_0 = value;
+		return this;
+	}
+	max(value: number): this {
+		this.#range_1 = value;
 		return this;
 	}
 
@@ -294,7 +321,7 @@ class VdjNumber {
 class VdjString<T extends string> {
 	type: 'string' = 'string';
 
-	validate(check: any): check is T {
+	validate(check: any): boolean {
 		if (typeof check !== 'string') {
 			return false;
 		}
@@ -363,7 +390,7 @@ class VdjString<T extends string> {
 class VdjNull {
 	type: 'null' = 'null';
 
-	validate(check: any): check is null {
+	validate(check: any): boolean {
 		return check === null;
 	}
 }
@@ -377,9 +404,10 @@ type Point =
 	| VdjString<string>
 	| VdjNull
 	| VdjOptional
+	| VdjEither<Point[]>
 	| VdjAny;
 
-export type Validated<T extends Point> =
+type Calculate<T extends Point> =
 	T extends VdjOptional
 	? undefined
 	: T extends VdjNull
@@ -392,16 +420,23 @@ export type Validated<T extends Point> =
 	? X
 	: T extends VdjObject<infer X>
 	? {
-		[key in keyof X]: Validated<X[key][number]>;
+		[key in keyof X]: Calculate<X[key][number]>;
 	}
 	: T extends VdjInstance<infer X>
 	? InstanceType<X>
 	: T extends VdjArray<infer X>
-	? Validated<X[number]>[]
+	? Calculate<X[number]>[]
 	: T extends VdjTuple<infer X>
 	? {
-		[key in keyof X]: Validated<X[key][number]>;
+		[key in keyof X]: Calculate<X[key][number]>;
 	}
+	: T extends VdjEither<infer X>
+	? Calculate<X[number]>
+	: never;
+
+export type Validated<T extends Vdj<Point>> =
+	T extends Vdj<infer X>
+	? Calculate<X>
 	: never;
 
 const vdj = {
@@ -435,6 +470,9 @@ const vdj = {
 	optional(): VdjOptional {
 		return new VdjOptional();
 	},
+	either(): VdjEither<[]> {
+		return new VdjEither();
+	}
 } as const;
 
 export default vdj;
