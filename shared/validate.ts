@@ -37,7 +37,7 @@ class VdjBoolean extends VdjShared {
 	}
 }
 
-class VdjOptional extends VdjShared {
+class VdjUndefined extends VdjShared {
 	type: 'optional' = 'optional';
 
 	validate(check: any): boolean {
@@ -450,7 +450,7 @@ type Point =
 	| VdjNumber<number>
 	| VdjString<string>
 	| VdjNull
-	| VdjOptional
+	| VdjUndefined
 	| VdjEither<Point[]>
 	| VdjAny;
 
@@ -459,7 +459,7 @@ type Prev = [never, 0, 1, 2, 3, 4, 5, 6];
 type Calculate<T extends Point, R extends number = 6> =
 	R extends 0
 	? never
-	: T extends VdjOptional
+	: T extends VdjUndefined
 	? undefined
 	: T extends VdjNull
 	? null
@@ -492,7 +492,7 @@ export type Validated<T extends Vdj<Point>> =
 	? Calculate<X>
 	: never;
 
-const vdj = {
+export default {
 	schema<const T extends Point>(schema: T): Vdj<T> {
 		return new Vdj(schema);
 	},
@@ -523,13 +523,11 @@ const vdj = {
 	any(): VdjAny {
 		return new VdjAny();
 	},
-	optional(): VdjOptional {
-		return new VdjOptional();
+	optional(): VdjUndefined {
+		return new VdjUndefined();
 	},
 	either(): VdjEither<[]> {
 		return new VdjEither([]);
 	},
 } as const;
-
-export default vdj;
 
