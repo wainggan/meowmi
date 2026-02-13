@@ -12,19 +12,28 @@ import { jsx, fragment } from "@parchii/jsx.ts";
 import { render } from "@parchii/html.ts";
 import { status_codes } from "@parchii/codes.ts";
 import * as db_util from "../db/db.util.ts";
-import { themes_list } from "../db/db.types.ts";
+import { themes_list } from "shared/types.ts";
 
 const view: router.Middleware<Shared, 'GET', 'username', SessionExport & FlashExport> = async ctx => {
-	const loggedin = ctx.ware.session.user();
+	const user = ctx.ware.session.user();
+	let user_ctx = null;
+	if (user !== null) {
+		const settings = await ctx.data.db.settings_list(user.id);
+		if (settings instanceof Miss) {
+			return undefined;
+		}
 
-	const user = await ctx.data.db.user_get_name(ctx.extract.username);
+		user_ctx = db_util.user_settings_context(user, settings);
+	}
+
+	const user_view = await ctx.data.db.user_get_name(ctx.extract.username);
 
 	let dom_inner, code: keyof typeof status_codes;
 
-	if (user instanceof Miss) {
+	if (user_view instanceof Miss) {
 		let message;
 		
-		if (user.type === 'not_found') {
+		if (user_view.type === 'not_found') {
 			message = `user '${ctx.extract.username}' does not exist`;
 			code = 'not_found';
 		}
@@ -45,7 +54,7 @@ const view: router.Middleware<Shared, 'GET', 'username', SessionExport & FlashEx
 	else {
 		dom_inner = (
 			<>
-				<h1>{ user.username }</h1>
+				<h1>{ user_view.username }</h1>
 				<p>
 					wow!
 				</p>
@@ -55,7 +64,7 @@ const view: router.Middleware<Shared, 'GET', 'username', SessionExport & FlashEx
 	}
 	
 	const dom = (
-		<template.Base title="user" user={ loggedin }>
+		<template.Base title="user" user_ctx={ user_ctx }>
 			<template.Flash flash={ ctx.ware.flash.get() }/>
 			{ dom_inner }
 		</template.Base>
@@ -70,8 +79,15 @@ const login: router.Middleware<Shared, 'GET', never, SessionExport & FlashExport
 	const user = ctx.ware.session.user();
 
 	if (user !== null) {
+		const settings = await ctx.data.db.settings_list(user.id);
+		if (settings instanceof Miss) {
+			return undefined;
+		}
+
+		const user_ctx = db_util.user_settings_context(user, settings);
+
 		const dom = (
-			<template.Base title="login" user={ user }>
+			<template.Base title="login" user_ctx={ user_ctx }>
 				<template.Flash flash={ ctx.ware.flash.get() }/>
 				
 				<div class="auth-wrap">
@@ -89,7 +105,7 @@ const login: router.Middleware<Shared, 'GET', never, SessionExport & FlashExport
 	}
 
 	const dom = (
-		<template.Base title="login" user={ user satisfies null }>
+		<template.Base title="login" user_ctx={ user satisfies null }>
 			<template.Flash flash={ ctx.ware.flash.get() }/>
 			
 			<div class="auth-wrap">
@@ -223,9 +239,9 @@ const login_api: router.Middleware<Shared, 'POST', never, FlashExport & SessionE
 			const password_hash_buffer = await crypto.subtle.digest('sha-256', password_buffer);
 			const password_hash = new TextDecoder().decode(password_hash_buffer);
 
-			const settings = db_util.user_settings_pack(db_util.user_settings_default());
+			// const settings = db_util.user_settings_pack(db_util.user_settings_default());
 
-			const user_id = await ctx.data.db.user_new(form_username, password_hash, settings);
+			const user_id = await ctx.data.db.user_new(form_username, password_hash);
 			if (user_id instanceof Miss) {
 				if (user_id.type === 'exists') {
 					ctx.ware.flash.set(`username '${form_username}' already exists.`, 'err');
@@ -238,6 +254,20 @@ const login_api: router.Middleware<Shared, 'POST', never, FlashExport & SessionE
 				}
 
 				return ctx.build_redirect(ctx.url);
+			}
+
+			for (const [key, value] of Object.entries(db_util.user_settings_default())) {
+				const result = await ctx.data.db.settings_get(user_id, key, value);
+				if (result instanceof Miss) {
+					if (result.type === 'internal') {
+						ctx.ware.flash.set(`internal error`, 'err');
+					}
+					else {
+						throw result.type satisfies never;
+					}
+
+					return ctx.build_redirect(ctx.url);
+				}
 			}
 
 			ctx.ware.flash.set(`successfully created account. please log in.`, 'ok');
@@ -253,7 +283,7 @@ const logout: router.Middleware<Shared, 'GET', never, SessionExport> = async ctx
 	ctx.ware.session.logout();
 	
 	const dom = (
-		<template.Base title="logout" user={ null }>
+		<template.Base title="logout" user_ctx={ null }>
 			<h1>logout</h1>
 			<p>
 				you have been logged out.
@@ -269,10 +299,15 @@ const logout: router.Middleware<Shared, 'GET', never, SessionExport> = async ctx
 const settings: router.Middleware<Shared, 'GET', never, ForceSessionExport & FlashExport> = async ctx => {
 	const user = ctx.ware.force_session.user();
 
-	const settings = db_util.user_settings_extract(user);
+	const settings = await ctx.data.db.settings_list(user.id);
+	if (settings instanceof Miss) {
+		return undefined;
+	}
+
+	const user_ctx = db_util.user_settings_context(user, settings);
 
 	const dom = (
-		<template.Base title="login" user={ user }>
+		<template.Base title="login" user_ctx={ user_ctx }>
 			<template.Flash flash={ ctx.ware.flash.get() }/>
 			
 			<div class="auth-wrap">
@@ -285,7 +320,7 @@ const settings: router.Middleware<Shared, 'GET', never, ForceSessionExport & Fla
 
 					<select name="theme">
 						{
-							...themes_list.map(x => <option value={ x } selected={ x === settings.theme }>{ x }</option>)
+							...themes_list.map(x => <option value={ x } selected={ x === user_ctx.settings['theme'] }>{ x }</option>)
 						}
 					</select>
 					
@@ -330,16 +365,12 @@ const settings_api: router.Middleware<Shared, 'POST', never, FlashExport & Force
 				return ctx.build_redirect(ctx.url);
 			}
 
-			const settings = db_util.user_settings_extract(user);
-
 			if (!db_util.settings_theme_check(form_theme)) {
 				ctx.ware.flash.set(`invalid theme`, 'err');
 				return ctx.build_redirect(ctx.url);
 			}
 
-			settings.theme = form_theme;
-
-			user.settings = db_util.user_settings_pack(settings);
+			await ctx.data.db.settings_set(user.id, 'theme', form_theme);
 
 			const result = await ctx.data.db.user_set(user);
 			if (result instanceof Miss) {

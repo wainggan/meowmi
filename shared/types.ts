@@ -5,6 +5,8 @@ export const rarity = [
 	'rare',
 ] as const;
 
+export const themes_list = ['light', 'dark'] as const;
+
 export type CatDefRarities =
 	Exclude<Partial<typeof rarity>["length"], (typeof rarity)["length"]>
 

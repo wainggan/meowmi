@@ -1,11 +1,11 @@
-import { Validated } from "shared/validate.ts";
+import { type Validated } from "shared/validate.ts";
 import api_schema from "shared/api.schema.ts";
-import { Shared } from "./shared.ts";
+import { type Shared } from "./shared.ts";
 import { Miss } from "shared/utility.ts";
 
 import catloot from "shared/data.loot.ts";
 import * as catdefs_util from "./db/catdefs.util.ts";
-import { User } from "./db/db.types.ts";
+import { type User } from "./db/db.types.ts";
 
 const util_user_or_session = async (shared: Shared, user: User | null, session: string | null) => {
 	let return_user;

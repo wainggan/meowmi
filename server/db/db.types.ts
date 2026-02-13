@@ -7,7 +7,7 @@ see db.sqlite.ts for the implementation.
 
 import { Miss } from "shared/utility.ts";
 
-import { CatDefJson } from "shared/types.ts";
+import { type CatDefJson } from "shared/types.ts";
 
 /**
 representation of a user.
@@ -20,15 +20,6 @@ export type User = {
 	password: string;
 	settings: string;
 	tokens: number;
-};
-
-export const themes_list = ['light', 'dark'] as const;
-
-/**
-user settings.
-*/
-export type UserSettings = {
-	theme: (typeof themes_list)[number];
 };
 
 /**
@@ -93,7 +84,7 @@ export interface DB {
 	will be set to `password` without any adjustments. therefore, `password` should be hashed
 	before passing it into this function.
 	*/
-	user_new(username: string, password: string, settings: string): Promise<number | Miss<internal | exists>>;
+	user_new(username: string, password: string): Promise<number | Miss<internal | exists>>;
 
 	/**
 	get a user from an id.
@@ -117,6 +108,10 @@ export interface DB {
 	returns `null` if successful, and `Miss<'not_found'>` if `user_id` is invalid.
 	*/
 	user_delete(user_id: number): Promise<null | Miss<internal | not_found>>;
+
+	settings_get(user_id: number, key: string, def?: string): Promise<string | undefined | Miss<internal>>;
+	settings_set(user_id: number, key: string, value: string): Promise<null | Miss<internal>>;
+	settings_list(user_id: number): Promise<[string, string][] | Miss<internal>>;
 
 	/**
 	create a new login session for the user corresponding to `user_id`. `expires` is
