@@ -1,3 +1,7 @@
+/*
+the implementation of the database. this is the nervous system of our game.
+*/
+
 import { DatabaseSync } from "node:sqlite";
 import { DB, User, Session, CatInst, CatDef, TradeLocal } from "./db.types.ts";
 import { Miss } from "shared/utility.ts";

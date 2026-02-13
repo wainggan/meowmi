@@ -1,6 +1,8 @@
 /*
 defines the types and interfaces used for the database.
 this makes it easier to find api problems.
+
+see db.sqlite.ts for the implementation.
 */
 
 import { Miss } from "shared/utility.ts";

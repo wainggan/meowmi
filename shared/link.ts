@@ -1,3 +1,8 @@
+/*
+the shape of our urls.
+we do this so its easy to see what urls are being used, so we can change url endpoints in the future.
+*/
+
 const link = {
 	index: () => `/` as const,
 

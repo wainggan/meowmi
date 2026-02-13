@@ -1,3 +1,7 @@
+/*
+the shape of our server api. this helps us make sure our server and client are cooperating correctly.
+*/
+
 import vdj from "./validate.ts";
 import { status_codes, StatusNames } from "@parchii/codes.ts";
 
