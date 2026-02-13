@@ -74,6 +74,7 @@ const cat_update_out = vdj.schema(
 
 const tradelocal_new_in = vdj.schema(
 	vdj.object()
+		.key('session', vdj.string(), vdj.null())
 		.key('creator_cat_id', vdj.number().integer().min(0))
 		.key('target_user_id', vdj.number().integer().min(0))
 		.key('target_cat_id', vdj.number().integer().min(0))
@@ -91,6 +92,7 @@ const tradelocal_new_out = vdj.schema(
 
 const tradelocal_complete_in = vdj.schema(
 	vdj.object()
+		.key('session', vdj.string(), vdj.null())
 		.key('trade_id', vdj.number())
 		.key('accept', vdj.boolean())
 	);

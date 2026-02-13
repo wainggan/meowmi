@@ -164,8 +164,7 @@ const nickname_save = () => {
 		};
 
 		api.cat_update(body)
-			.then(r => r.json())
-			.then(r => {
+			.catch(r => {
 				console.error(r);
 				throw new Error(`??`);
 			});
