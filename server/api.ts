@@ -7,24 +7,92 @@ import catloot from "shared/data.loot.ts";
 import * as catdefs_util from "./db/catdefs.util.ts";
 import { User } from "./db/db.types.ts";
 
+const util_user_or_session = async (shared: Shared, user: User | null, session: string | null) => {
+	let return_user;
+
+	if (session !== null) {
+		const user_session = await shared.db.session_get(session);
+		if (user_session instanceof Miss) {
+			if (user_session.type === 'not_found') {
+				return [false, {
+					status: 'err' as const,
+					code: 'unauthorized' as const,
+					message: `invalid 'session' key`,
+				}] as const;
+			}
+			else if (user_session.type === 'internal') {
+				return [false, {
+					status: 'err' as const,
+					code: 'internal_error' as const,
+					message: `internal error.`,
+				}] as const;
+			}
+			else {
+				throw user_session.type satisfies never;
+			}
+		}
+
+		const user_from = await shared.db.user_get_id(user_session.user_id);
+		if (user_from instanceof Miss) {
+			if (user_from.type === 'not_found') {
+				// in what world??
+				return [false, {
+					status: 'err' as const,
+					code: 'internal_error' as const,
+					message: `internal error.`,
+				}] as const;
+			}
+			else if (user_from.type === 'internal') {
+				return [false, {
+					status: 'err' as const,
+					code: 'internal_error' as const,
+					message: `internal error.`,
+				}] as const;
+			}
+			else {
+				throw user_from.type satisfies never;
+			}
+		}
+
+		return_user = user_from;
+	}
+	else if (user !== null) {
+		return_user = user;
+	}
+	else {
+		return [false, {
+			status: 'err' as const,
+			code: 'bad_request' as const,
+			message: `request is missing both 'session' key and session cookie`,
+		}] as const;
+	}
+
+	return [true, return_user] as const;
+};
+
 const gacha_pull = async (shared: Shared, user: User, input: Validated<typeof api_schema.gacha_pull_in>):
 	Promise<Validated<typeof api_schema.gacha_pull_out>> =>
 {
+	// reference the variable to silence the unused variable error.
 	input;
 
+	// no pulling unless you have a token.
 	if (user.tokens <= 0) {
 		return {
 			status: 'err',
 			code: 'unauthorized',
-			message: `not enough tokens`,
+			message: `not enough tokens.`,
 		};
 	}
 
+	// select a random breed from the loot pool.
 	const breed = catdefs_util.select(Object.values(shared.catdefs), catloot.base);
 
+	// create the cat
 	const catinst_id = await shared.db.catinst_add(breed.id, user.id);
 	if (catinst_id instanceof Miss) {
 		if (catinst_id.type === 'not_found') {
+			// this is beyond unlikely, but technically possible I guess?
 			return {
 				status: 'err',
 				code: 'internal_error',
@@ -35,7 +103,7 @@ const gacha_pull = async (shared: Shared, user: User, input: Validated<typeof ap
 			return {
 				status: 'err',
 				code: 'internal_error',
-				message: `unknown internal error`,
+				message: `internal error.`,
 			};
 		}
 		else {
@@ -43,10 +111,12 @@ const gacha_pull = async (shared: Shared, user: User, input: Validated<typeof ap
 		}
 	}
 
+	// subtract tokens.
 	user.tokens = Math.max(user.tokens - 1, 0);
 
-	const result_update = await shared.db.user_set(user);
-	if (result_update instanceof Miss) {
+	// update user token count.
+	const result_status_update = await shared.db.user_set(user);
+	if (result_status_update instanceof Miss) {
 		return {
 			status: 'err',
 			code: 'internal_error',
@@ -123,43 +193,76 @@ const cat_list = async (shared: Shared, input: Validated<typeof api_schema.cat_l
 const tradelocal_new = async (shared: Shared, user: User | null, input: Validated<typeof api_schema.tradelocal_new_in>):
 	Promise<Validated<typeof api_schema.tradelocal_new_out>> =>
 {
-	let creator_user_id;
+	const resolved_user = await util_user_or_session(shared, user, input.session);
+	if (!resolved_user[0]) {
+		return resolved_user[1];
+	}
 
-	if (input.session !== null) {
-		const session_user = await shared.db.session_get(input.session);
-		if (session_user instanceof Miss) {
-			if (session_user.type === 'not_found') {
-				return {
-					status: 'err',
-					code: 'unauthorized',
-					message: `invalid 'session' key`,
-				};
-			}
-			else if (session_user.type === 'internal') {
-				return {
-					status: 'err',
-					code: 'internal_error',
-					message: `internal error`,
-				};
-			}
-			else {
-				throw session_user.type satisfies never;
-			}
+	const creator_user_id = resolved_user[1].id;
+
+	// get both cats.
+
+	const cat_x = await shared.db.catinst_get(input.creator_cat_id);
+	if (cat_x instanceof Miss) {
+		if (cat_x.type === 'not_found') {
+			return {
+				status: 'err',
+				code: 'unauthorized',
+				message: `the trade creator's cat does not exist.`,
+			};
 		}
+		else if (cat_x.type === 'internal') {
+			return {
+				status: 'err',
+				code: 'internal_error',
+				message: `internal error`,
+			};
+		}
+		else {
+			throw cat_x.type satisfies never;
+		}
+	}
 
-		creator_user_id = session_user.user_id;
+	const cat_y = await shared.db.catinst_get(input.target_cat_id);
+	if (cat_y instanceof Miss) {
+		if (cat_y.type === 'not_found') {
+			return {
+				status: 'err',
+				code: 'unauthorized',
+				message: `the trade creator's cat does not exist.`,
+			};
+		}
+		else if (cat_y.type === 'internal') {
+			return {
+				status: 'err',
+				code: 'internal_error',
+				message: `internal error`,
+			};
+		}
+		else {
+			throw cat_y.type satisfies never;
+		}
 	}
-	else if (user !== null) {
-		creator_user_id = user.id;
-	}
-	else {
+
+	// check if the cats are owned by their respective users.
+
+	if (cat_x.owner_user_id !== creator_user_id) {
 		return {
 			status: 'err',
-			code: 'bad_request',
-			message: `request is missing both 'session' key and session cookie`,
+			code: 'unauthorized',
+			message: `the trade creator does not own their selected cat.`,
 		};
 	}
 
+	if (cat_y.owner_user_id !== input.target_user_id) {
+		return {
+			status: 'err',
+			code: 'unauthorized',
+			message: `the trade target does not own the selected cat.`,
+		};
+	}
+
+	// create new tradelocal.
 	const result = await shared.db.tradelocal_new(creator_user_id, input.target_user_id, input.creator_cat_id, input.target_cat_id);
 	if (result instanceof Miss) {
 		if (result.type === 'internal') {
@@ -174,6 +277,8 @@ const tradelocal_new = async (shared: Shared, user: User | null, input: Validate
 		}
 	}
 
+	// yippee!
+
 	return {
 		status: 'ok',
 		trade_id: result,
@@ -183,45 +288,14 @@ const tradelocal_new = async (shared: Shared, user: User | null, input: Validate
 const tradelocal_complete = async (shared: Shared, user: User | null, input: Validated<typeof api_schema.tradelocal_complete_in>):
 	Promise<Validated<typeof api_schema.tradelocal_complete_out>> =>
 {
-	let user_id;
+	const resolved_user = await util_user_or_session(shared, user, input.session);
+	if (!resolved_user[0]) {
+		return resolved_user[1];
+	}
 
-	if (input.session !== null) {
-		const session_user = await shared.db.session_get(input.session);
-		if (session_user instanceof Miss) {
-			if (session_user.type === 'not_found') {
-				return {
-					status: 'err',
-					code: 'unauthorized',
-					message: `invalid 'session' key`,
-				};
-			}
-			else if (session_user.type === 'internal') {
-				return {
-					status: 'err',
-					code: 'internal_error',
-					message: `internal error`,
-				};
-			}
-			else {
-				throw session_user.type satisfies never;
-			}
-		}
-
-		user_id = session_user.user_id;
-	}
-	else if (user !== null) {
-		user_id = user.id;
-	}
-	else {
-		return {
-			status: 'err',
-			code: 'bad_request',
-			message: `request is missing both 'session' key and session cookie`,
-		};
-	}
+	const user_id = resolved_user[1].id;
 
 	// first, get the trade data.
-
 	const result_tradelocal = await shared.db.tradelocal_get(input.trade_id);
 	if (result_tradelocal instanceof Miss) {
 		if (result_tradelocal.type === 'not_found') {
@@ -356,8 +430,7 @@ const tradelocal_complete = async (shared: Shared, user: User | null, input: Val
 		};
 	}
 	
-	// delete trade.
-
+	// delete tradelocal.
 	const result_status_delete = await shared.db.tradelocal_delete(result_tradelocal.id);
 	if (result_status_delete instanceof Miss) {
 		if (result_status_delete.type === 'not_found') {
