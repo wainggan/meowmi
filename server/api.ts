@@ -59,9 +59,32 @@ const gacha_pull = async (shared: Shared, user: User, input: Validated<typeof ap
 	};
 }
 
-const cat_list = async (shared: Shared, user: User, input: Validated<typeof api_schema.cat_list_in>):
-	Promise<Validated<typeof api_schema.cat_list_out>> => {
-	const input_id = Number(user.id);
+const cat_list = async (shared: Shared, input: Validated<typeof api_schema.cat_list_in>):
+	Promise<Validated<typeof api_schema.cat_list_out>> =>
+{
+	const user = await shared.db.user_get_name(input.username);
+	if (user instanceof Miss) {
+		if (user.type === 'not_found') {
+			return {
+				status: 'err',
+				code: 'not_found',
+				message: `username ${input.username} does not exist.`,
+			};
+		}
+		else if (user.type === 'internal') {
+			return {
+				status: 'err',
+				code: 'internal_error',
+				message: user.message,
+			};
+		}
+		else {
+			throw user.type satisfies never;
+		}
+	}
+
+	const input_id = user.id;
+
 	const input_limit = Math.min(Math.max(Number(input.limit), 0), 40);
 	const input_offset = Math.max(Number(input.offset), 0);
 

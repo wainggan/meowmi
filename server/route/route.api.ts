@@ -1,27 +1,17 @@
 
-import * as router from "@parchii/router";
+import * as router from "@parchii/router.ts";
 import { Shared } from "../shared.ts";
 import { SessionExport } from "./util.session.tsx";
 import { Miss } from "shared/utility.ts";
 import api_schema from "shared/api.schema.ts";
 import api from "../api.ts";
+import { StatusNames } from "@parchii/codes.ts";
 
-const api_cat_list: router.Middleware<Shared, 'POST', never, SessionExport> = async ctx => {
+const api_cat_list: router.Middleware<Shared, 'POST', never> = async ctx => {
 	let output_json;
-	let output_code: router.StatusNames;
+	let output_code: StatusNames;
 
 	exit: {
-		const user = ctx.ware.session.user();
-		if (user === null) {
-			output_code = 'unauthorized';
-			output_json = {
-				status: 'err',
-				code: output_code,
-				message: `missing session cookie`,
-			};
-			break exit;
-		}
-
 		const body = await ctx.request.json();
 
 		if (!api_schema.cat_list_in.validate(body)) {
@@ -34,7 +24,7 @@ const api_cat_list: router.Middleware<Shared, 'POST', never, SessionExport> = as
 			break exit;
 		}
 
-		const result = await api.cat_list(ctx.data, user, body);
+		const result = await api.cat_list(ctx.data, body);
 
 		if (result.status === 'err') {
 			output_code = result.code;
@@ -58,7 +48,7 @@ const api_cat_list: router.Middleware<Shared, 'POST', never, SessionExport> = as
 
 const api_cat_update: router.Middleware<Shared, 'POST', never, SessionExport> = async ctx => {
 	let output_json;
-	let output_code: router.StatusNames;
+	let output_code: StatusNames;
 
 	exit: {
 		const user = ctx.ware.session.user();

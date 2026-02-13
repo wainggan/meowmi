@@ -2,7 +2,7 @@
 import { TextEncoder } from "node:util";
 import * as std_cookie from "@std/http/cookie";
 
-import * as router from "@parchii/router";
+import * as router from "@parchii/router.ts";
 
 import { Shared } from "../shared.ts";
 

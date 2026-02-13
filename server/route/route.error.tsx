@@ -2,13 +2,13 @@
 404!
 */
 
-import * as router from "@parchii/router";
+import * as router from "@parchii/router.ts";
 import * as template from "./template.tsx";
 
 import { SessionExport } from "./util.session.tsx";
 
-import { jsx } from "@parchii/jsx";
-import { render } from "@parchii/html";
+import { jsx } from "@parchii/jsx.ts";
+import { render } from "@parchii/html.ts";
 
 const not_found: router.Middleware<{}, router.Method, never, SessionExport> = async ctx => {
 	const user = ctx.ware.session.user();

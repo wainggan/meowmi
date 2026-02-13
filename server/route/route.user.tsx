@@ -1,4 +1,4 @@
-import * as router from "@parchii/router";
+import * as router from "@parchii/router.ts";
 import * as template from "./template.tsx";
 
 import { Shared } from "../shared.ts";
@@ -8,8 +8,9 @@ import link from "shared/link.ts";
 import { FlashExport } from "./util.flash.tsx";
 import { ForceSessionExport, SessionExport } from "./util.session.tsx";
 
-import { jsx, fragment } from "@parchii/jsx";
-import { render } from "@parchii/html";
+import { jsx, fragment } from "@parchii/jsx.ts";
+import { render } from "@parchii/html.ts";
+import { status_codes } from "@parchii/codes.ts";
 import * as db_util from "../db/db.util.ts";
 import { themes_list } from "../db/db.types.ts";
 
@@ -18,7 +19,7 @@ const view: router.Middleware<Shared, 'GET', 'username', SessionExport & FlashEx
 
 	const user = await ctx.data.db.user_get_name(ctx.extract.username);
 
-	let dom_inner, code: keyof typeof router.status_codes;
+	let dom_inner, code: keyof typeof status_codes;
 
 	if (user instanceof Miss) {
 		let message;

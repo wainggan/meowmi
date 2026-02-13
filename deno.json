@@ -35,11 +35,7 @@
 		}
 	},
 	"imports": {
-		"@parchii/html": "https://raw.githubusercontent.com/wainggan/raas/refs/heads/main/html.ts",
-		"@parchii/html_dom": "https://raw.githubusercontent.com/wainggan/raas/refs/heads/main/html_dom.ts",
-		"@parchii/jsx": "https://raw.githubusercontent.com/wainggan/raas/refs/heads/main/jsx.ts",
-		"@parchii/router": "https://raw.githubusercontent.com/wainggan/raas/refs/heads/main/router.ts",
-		"@parchii/application": "https://raw.githubusercontent.com/wainggan/raas/refs/heads/main/application.ts",
+		"@parchii/": "https://raw.githubusercontent.com/wainggan/raas/refs/heads/main/",
 		"shared/": "./shared/",
 		"@std/http": "jsr:@std/http@^1.0.24"
 	},

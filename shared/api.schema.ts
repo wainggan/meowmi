@@ -1,5 +1,5 @@
 import vdj from "./validate.ts";
-import { status_codes, StatusNames } from "@parchii/router";
+import { status_codes, StatusNames } from "@parchii/codes.ts";
 
 // helper schemas
 
@@ -37,7 +37,7 @@ const gacha_pull_out = vdj.schema(
 
 const cat_list_in = vdj.schema(
 	vdj.object()
-		.key('session', vdj.string(), vdj.null())
+		.key('username', vdj.string())
 		.key('limit', vdj.number().integer().min(0))
 		.key('offset', vdj.number().integer().min(0))
 		.key('query', vdj.string())

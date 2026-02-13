@@ -1,7 +1,7 @@
 "use strict";
 
-import { jsx } from "@parchii/jsx";
-import { render_html } from "@parchii/html_dom";
+import { jsx } from "@parchii/jsx.ts";
+import { render_html } from "@parchii/html_dom.ts";
 import { CatpageRow } from "shared/templates.tsx";
 import { rarity } from "shared/types.ts";
 import api from "./lib/api.ts";
@@ -40,24 +40,26 @@ const els = {
 	hint: document.getElementById('hint'),
 };
 
+const data = JSON.parse(document.getElementById('data').textContent);
+
 let cache_data;
 let cache_select;
 
 const request = async () => {
 	const body = {
-		session: null,
+		username: data.username,
 		query: els.search.value,
 		limit: 40,
 		offset: 0,
 	};
 
-	const data = await api.cat_list(body);
+	const response = await api.cat_list(body);
 
-	if (data.status === 'err') {
+	if (response.status === 'err') {
 		throw new Error(`unknown`);
 	}
 
-	return data.list;
+	return response.list;
 };
 
 const render_list = () => {
@@ -162,7 +164,7 @@ const nickname_save = () => {
 		};
 
 		api.cat_update(body)
-			.then(r => r.json)
+			.then(r => r.json())
 			.then(r => {
 				console.error(r);
 				throw new Error(`??`);

@@ -2,11 +2,11 @@
 page used for gacha.
 */
 
-import * as router from "@parchii/router";
+import * as router from "@parchii/router.ts";
 import * as template from "./template.tsx";
 
-import { jsx } from "@parchii/jsx";
-import { render } from "@parchii/html";
+import { jsx } from "@parchii/jsx.ts";
+import { render } from "@parchii/html.ts";
 
 import { FlashExport } from "./util.flash.tsx";
 import { ForceSessionExport } from "./util.session.tsx";

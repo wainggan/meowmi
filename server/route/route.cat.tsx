@@ -1,17 +1,17 @@
 
-import * as router from "@parchii/router";
+import * as router from "@parchii/router.ts";
 
-import { jsx } from "@parchii/jsx";
-import { render } from "@parchii/html";
+import { jsx } from "@parchii/jsx.ts";
+import { render } from "@parchii/html.ts";
 
 import * as template from "./template.tsx";
 
 import { FlashExport } from "./util.flash.tsx";
-import { ForceSessionExport } from "./util.session.tsx";
+import { SessionExport } from "./util.session.tsx";
 import { Shared } from "../shared.ts";
 
-const cat_view: router.Middleware<Shared, 'GET', never, ForceSessionExport & FlashExport> = async ctx => {
-	const user = ctx.ware.force_session.user();
+const cat_view: router.Middleware<Shared, 'GET', 'username', SessionExport & FlashExport> = async ctx => {
+	const user = ctx.ware.session.user();
 
 	const extract_catinst_id = ctx.url.searchParams.get('view');
 	let catinst_id = null;
@@ -28,6 +28,13 @@ const cat_view: router.Middleware<Shared, 'GET', never, ForceSessionExport & Fla
 		<template.Base title="your cats" user={ user }>
 			<template.Flash flash={ ctx.ware.flash.get() }/>
 
+			<script id="data" type="application/json">
+			{`
+			{
+				"username": "${ctx.extract.username}"
+			}
+			`}
+			</script>
 			<script src="/static/script/catpage.js" defer></script>
 			
 			<div class="layout-split">

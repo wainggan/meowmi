@@ -2,7 +2,8 @@
 gathers together all our middleware and exports a `Router`.
 */
 
-import * as router from "@parchii/router";
+import * as router from "@parchii/router.ts";
+import { content_type_codes } from "@parchii/codes.ts";
 import { Shared } from "../shared.ts";
 
 import route_error from "./route.error.tsx";
@@ -24,7 +25,7 @@ route.set_static(async ctx => {
 	const parts = "./" + ctx.url_parts.slice(1).join("/");
 
 	const ext = ctx.url_parts.at(-1)?.split(".").at(-1);
-	if (ext === undefined || !(ext in router.content_type_codes)) {
+	if (ext === undefined || !(ext in content_type_codes)) {
 		return undefined;
 	}
 
@@ -36,7 +37,7 @@ route.set_static(async ctx => {
 		return undefined;
 	}
 
-	return ctx.build_response(file, 'ok', ext as keyof typeof router.content_type_codes);
+	return ctx.build_response(file, 'ok', ext as keyof typeof content_type_codes);
 });
 
 route.get("/ping", async (ctx) => {
@@ -59,7 +60,7 @@ route.post(link.user_settings(), session_middleware, force_session_middleware, f
 route.get("/gacha", session_middleware, force_session_middleware, flash_middleware, route_gacha.gacha);
 route.post("/gacha", session_middleware, force_session_middleware, flash_middleware, route_gacha.gacha_api);
 
-route.get("/cat", session_middleware, force_session_middleware, flash_middleware, route_cat.cat_view);
+route.get(link.user_cats(":username"), session_middleware, force_session_middleware, flash_middleware, route_cat.cat_view);
 
 route.post(link.api_cat_list(), session_middleware, flash_middleware, route_api.api_cat_list);
 route.post(link.api_cat_update(), session_middleware, flash_middleware, route_api.api_cat_update);

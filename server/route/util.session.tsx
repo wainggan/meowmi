@@ -1,5 +1,5 @@
 
-import * as router from "@parchii/router";
+import * as router from "@parchii/router.ts";
 import { Session, User } from "../db/db.types.ts";
 import { Miss } from "shared/utility.ts";
 

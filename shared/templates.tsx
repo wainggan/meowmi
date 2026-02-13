@@ -1,4 +1,4 @@
-import { jsx } from "@parchii/jsx";
+import { jsx } from "@parchii/jsx.ts";
 
 export const CatPageLeft = () => {
 

@@ -2,7 +2,7 @@
 various helpful jsx 'template' components
 */
 
-import { jsx, fragment } from "@parchii/jsx";
+import { jsx, fragment } from "@parchii/jsx.ts";
 import { User } from "../db/db.types.ts";
 import * as db_util from "../db/db.util.ts";
 
