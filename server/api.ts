@@ -1,7 +1,7 @@
 import { Validated } from "shared/validate.ts";
 import api_schema from "shared/api.schema.ts";
 import { Shared } from "./shared.ts";
-import { Miss } from "./common.ts";
+import { Miss } from "shared/utility.ts";
 
 import catloot from "shared/data.loot.ts";
 import * as catdefs_util from "./db/catdefs.util.ts";

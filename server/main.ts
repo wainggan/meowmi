@@ -5,7 +5,7 @@ import config from "../config.ts";
 import catdefs_json from "shared/data.catdefs.ts";
 
 import { DBSql } from "./db/db.sqlite.ts";
-import { Miss } from "./common.ts";
+import { Miss } from "shared/utility.ts";
 
 Deno.mkdir(config.db.path, {
 	recursive: true,

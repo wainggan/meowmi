@@ -3,7 +3,7 @@ defines the types and interfaces used for the database.
 this makes it easier to find api problems.
 */
 
-import { Miss } from "../common.ts";
+import { Miss } from "shared/utility.ts";
 
 import { CatDefJson } from "shared/types.ts";
 

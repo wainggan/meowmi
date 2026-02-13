@@ -2,7 +2,7 @@ import * as router from "@parchii/router";
 import * as template from "./template.tsx";
 
 import { Shared } from "../shared.ts";
-import { Miss } from "../common.ts";
+import { Miss } from "shared/utility.ts";
 import link from "shared/link.ts";
 
 import { FlashExport } from "./util.flash.tsx";

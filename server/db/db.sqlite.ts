@@ -1,6 +1,6 @@
 import { DatabaseSync } from "node:sqlite";
 import { DB, User, Session, CatInst, CatDef, TradeLocal } from "./db.types.ts";
-import { Miss } from "../common.ts";
+import { Miss } from "shared/utility.ts";
 import { CatDefJson } from "shared/types.ts";
 
 export class DBSql implements DB {
