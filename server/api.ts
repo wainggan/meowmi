@@ -61,7 +61,7 @@ const gacha_pull = async (shared: Shared, user: User, input: Validated<typeof ap
 
 const cat_list = async (shared: Shared, user: User, input: Validated<typeof api_schema.cat_list_in>):
 	Promise<Validated<typeof api_schema.cat_list_out>> => {
-	const input_id = Number(input.id ?? user.id);
+	const input_id = Number(user.id);
 	const input_limit = Math.min(Math.max(Number(input.limit), 0), 40);
 	const input_offset = Math.max(Number(input.offset), 0);
 

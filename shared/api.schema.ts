@@ -12,8 +12,6 @@ const error = vdj.object()
 
 const ok = vdj.string().exact('ok');
 
-const safeintstr = vdj.string().regex(/[0-9]+/);
-
 const catinst = vdj.object()
 	.key('id', vdj.number())
 	.key('name', vdj.string());
@@ -39,9 +37,9 @@ const gacha_pull_out = vdj.schema(
 
 const cat_list_in = vdj.schema(
 	vdj.object()
-		.key('user_id', safeintstr, vdj.optional())
-		.key('limit', safeintstr)
-		.key('offset', safeintstr)
+		.key('session', vdj.string(), vdj.null())
+		.key('limit', vdj.number().integer().min(0))
+		.key('offset', vdj.number().integer().min(0))
 		.key('query', vdj.string())
 );
 
@@ -61,7 +59,7 @@ const cat_list_out = vdj.schema(
 
 const cat_update_in = vdj.schema(
 	vdj.object()
-		.key('cat_id', safeintstr)
+		.key('cat_id', vdj.number().integer().min(0))
 		.key('name', vdj.string().regex(/[0-9a-zA-Z_]+/))
 );
 
@@ -76,9 +74,9 @@ const cat_update_out = vdj.schema(
 
 const tradelocal_new_in = vdj.schema(
 	vdj.object()
-		.key('creator_cat_id', safeintstr)
-		.key('target_user_id', safeintstr)
-		.key('target_cat_id', safeintstr)
+		.key('creator_cat_id', vdj.number().integer().min(0))
+		.key('target_user_id', vdj.number().integer().min(0))
+		.key('target_cat_id', vdj.number().integer().min(0))
 );
 
 const tradelocal_new_out = vdj.schema(
@@ -108,7 +106,7 @@ const tradelocal_complete_out = vdj.schema(
 
 const tradeglobalrequest_new_in = vdj.schema(
 	vdj.object()
-		.key('cat_id', safeintstr)
+		.key('cat_id', vdj.number().integer().min(0))
 		.key('description', vdj.string())
 );
 
@@ -124,8 +122,8 @@ const tradeglobalrequest_new_out = vdj.schema(
 
 const tradeglobalresponse_new_in = vdj.schema(
 	vdj.object()
-		.key('trade_id', safeintstr)
-		.key('cat_id', safeintstr)
+		.key('trade_id', vdj.number().integer().min(0))
+		.key('cat_id', vdj.number().integer().min(0))
 );
 
 const tradeglobalresponse_new_out = vdj.schema(
@@ -137,7 +135,6 @@ const tradeglobalresponse_new_out = vdj.schema(
 				.key('response_id', vdj.number())
 		)
 );
-
 
 export default {
 	gacha_pull_in,
@@ -152,5 +149,7 @@ export default {
 	tradelocal_complete_out,
 	tradeglobalrequest_new_in,
 	tradeglobalrequest_new_out,
+	tradeglobalresponse_new_in,
+	tradeglobalresponse_new_out,
 };
 

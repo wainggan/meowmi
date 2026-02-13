@@ -454,8 +454,12 @@ type Point =
 	| VdjEither<Point[]>
 	| VdjAny;
 
-type Calculate<T extends Point> =
-	T extends VdjOptional
+type Prev = [never, 0, 1, 2, 3, 4, 5, 6];
+
+type Calculate<T extends Point, R extends number = 6> =
+	R extends 0
+	? never
+	: T extends VdjOptional
 	? undefined
 	: T extends VdjNull
 	? null
@@ -469,18 +473,18 @@ type Calculate<T extends Point> =
 	? X
 	: T extends VdjObject<infer X>
 	? {
-		[key in keyof X]: Calculate<X[key][number]>;
+		[key in keyof X]: Calculate<X[key][number], Prev[R]>;
 	}
 	: T extends VdjInstance<infer X>
 	? InstanceType<X>
 	: T extends VdjArray<infer X>
-	? Calculate<X[number]>[]
+	? Calculate<X[number], Prev[R]>[]
 	: T extends VdjTuple<infer X>
 	? {
-		[key in keyof X]: Calculate<X[key][number]>;
+		[key in keyof X]: Calculate<X[key][number], Prev[R]>;
 	}
 	: T extends VdjEither<infer X>
-	? Calculate<X[number]>
+	? Calculate<X[number], Prev[R]>
 	: never;
 
 export type Validated<T extends Vdj<Point>> =

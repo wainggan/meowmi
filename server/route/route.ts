@@ -14,6 +14,7 @@ import route_cat from "./route.cat.tsx";
 
 import { flash_middleware } from "./util.flash.tsx";
 import { force_session_middleware, session_middleware } from "./util.session.tsx";
+import link from "shared/link.ts";
 
 const route = new router.Router<Shared>();
 
@@ -44,24 +45,24 @@ route.get("/ping", async (ctx) => {
 
 route.get("/unauthorized", session_middleware, route_error.unauthorized);
 
-route.get("/", session_middleware, route_index.index);
+route.get(link.index(), session_middleware, route_index.index);
 
-route.get("/user/:username", session_middleware, flash_middleware, route_user.view);
+route.get(link.user_view(":username"), session_middleware, flash_middleware, route_user.view);
 
-route.get("/login", session_middleware, flash_middleware, route_user.login);
-route.post("/login", session_middleware, flash_middleware, route_user.login_api);
-route.get("/logout", session_middleware, flash_middleware, route_user.logout);
+route.get(link.user_login(), session_middleware, flash_middleware, route_user.login);
+route.post(link.user_login(), session_middleware, flash_middleware, route_user.login_api);
+route.get(link.user_logout(), session_middleware, flash_middleware, route_user.logout);
 
-route.get("/settings", session_middleware, force_session_middleware, flash_middleware, route_user.settings);
-route.post("/settings", session_middleware, force_session_middleware, flash_middleware, route_user.settings_api);
+route.get(link.user_settings(), session_middleware, force_session_middleware, flash_middleware, route_user.settings);
+route.post(link.user_settings(), session_middleware, force_session_middleware, flash_middleware, route_user.settings_api);
 
 route.get("/gacha", session_middleware, force_session_middleware, flash_middleware, route_gacha.gacha);
 route.post("/gacha", session_middleware, force_session_middleware, flash_middleware, route_gacha.gacha_api);
 
 route.get("/cat", session_middleware, force_session_middleware, flash_middleware, route_cat.cat_view);
 
-route.post("/api/cat/list", session_middleware, flash_middleware, route_api.api_cat_list);
-route.post("/api/cat/update", session_middleware, flash_middleware, route_api.api_cat_update);
+route.post(link.api_cat_list(), session_middleware, flash_middleware, route_api.api_cat_list);
+route.post(link.api_cat_update(), session_middleware, flash_middleware, route_api.api_cat_update);
 
 export default route;
 

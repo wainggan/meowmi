@@ -7,8 +7,6 @@ import api_schema from "shared/api.schema.ts";
 import api from "../api.ts";
 
 const api_cat_list: router.Middleware<Shared, 'POST', never, SessionExport> = async ctx => {
-	const form_data = await ctx.request.formData();
-
 	let output_json;
 	let output_code: router.StatusNames;
 
@@ -24,13 +22,9 @@ const api_cat_list: router.Middleware<Shared, 'POST', never, SessionExport> = as
 			break exit;
 		}
 
-		const form: object = {
-			query: form_data.get('query'),
-			offset: form_data.get('offset'),
-			limit: form_data.get('limit'),
-		};
+		const body = await ctx.request.json();
 
-		if (!api_schema.cat_list_in.validate(form)) {
+		if (!api_schema.cat_list_in.validate(body)) {
 			output_code = 'bad_request';
 			output_json = {
 				status: 'err',
@@ -40,7 +34,7 @@ const api_cat_list: router.Middleware<Shared, 'POST', never, SessionExport> = as
 			break exit;
 		}
 
-		const result = await api.cat_list(ctx.data, user, form);
+		const result = await api.cat_list(ctx.data, user, body);
 
 		if (result.status === 'err') {
 			output_code = result.code;
@@ -63,8 +57,6 @@ const api_cat_list: router.Middleware<Shared, 'POST', never, SessionExport> = as
 };
 
 const api_cat_update: router.Middleware<Shared, 'POST', never, SessionExport> = async ctx => {
-	const form_data = await ctx.request.formData();
-
 	let output_json;
 	let output_code: router.StatusNames;
 
@@ -80,12 +72,9 @@ const api_cat_update: router.Middleware<Shared, 'POST', never, SessionExport> = 
 			break exit;
 		}
 
-		const form = {
-			id: form_data.get('id'),
-			name: form_data.get('name'),
-		};
+		const body = await ctx.request.json();
 
-		if (!api_schema.cat_update_in.validate(form)) {
+		if (!api_schema.cat_update_in.validate(body)) {
 			output_code = 'bad_request';
 			output_json = {
 				status: 'err',
@@ -95,7 +84,7 @@ const api_cat_update: router.Middleware<Shared, 'POST', never, SessionExport> = 
 			break exit;
 		}
 
-		const catinst = await ctx.data.db.catinst_get(Number(form.id));
+		const catinst = await ctx.data.db.catinst_get(Number(body.cat_id));
 		if (catinst instanceof Miss) {
 			output_code = 'internal_error';
 			output_json = {
@@ -106,7 +95,7 @@ const api_cat_update: router.Middleware<Shared, 'POST', never, SessionExport> = 
 			break exit;
 		}
 
-		catinst.name = form.name.trim();
+		catinst.name = body.name.trim();
 
 		const result = await ctx.data.db.catinst_set(catinst);
 		if (result instanceof Miss) {

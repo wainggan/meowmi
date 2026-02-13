@@ -4,17 +4,24 @@ import { jsx } from "@parchii/jsx";
 import { render_html } from "@parchii/html_dom";
 import { CatpageRow } from "shared/templates.tsx";
 import { rarity } from "shared/types.ts";
+import api from "./lib/api.ts";
 
 const els = {
 	// the search input
 	search: document.getElementById('search'),
+	// button next to input
 	search_button: document.getElementById('search_button'),
+
 	// left side list of cats
 	list: document.getElementById('list'),
+
 	// right side header, when not in edit mode
 	name_line: document.getElementById('name_line'),
+	// name of cat h1
 	name_line_cat: document.getElementById('name_line_cat'),
+	// edit button next to name
 	name_line_edit: document.getElementById('name_line_edit'),
+
 	// right side header, when in edit mode
 	name_edit: document.getElementById('name_edit'),
 	name_edit_input: document.getElementById('name_edit_input'),
@@ -37,22 +44,14 @@ let cache_data;
 let cache_select;
 
 const request = async () => {
-	const url = new URL(globalThis.location.origin + '/api/cat/list');
+	const body = {
+		session: null,
+		query: els.search.value,
+		limit: 40,
+		offset: 0,
+	};
 
-	const form = new URLSearchParams();
-	form.set('query', els.search.value);
-	form.set('limit', '40');
-	form.set('offset', '0');
-
-	const data = await fetch(url.href, {
-			method: 'POST',
-			body: form,
-			credentials: 'same-origin',
-		})
-		.then(r => r.json())
-		.catch(_r => {
-			throw new Error(`unknown`);
-		});
+	const data = await api.cat_list(body);
 
 	if (data.status === 'err') {
 		throw new Error(`unknown`);
@@ -157,21 +156,17 @@ const nickname_save = () => {
 	// els.value_nick.textContent = cat.nickname || "—";
 
 	{
-		const url = new URL(globalThis.location.origin + '/api/cat/update');
+		const body = {
+			cat_id: cat.id,
+			name: nickname,
+		};
 
-		const form = new URLSearchParams();
-		form.set('id', cat.id);
-		form.set('name', nickname);
-
-		fetch(url.href, {
-			method: 'POST',
-			body: form,
-			credentials: 'same-origin',
-		})
-		.then(r => r.json())
-		.catch(_r => {
-			throw new Error(`unknown`);
-		});
+		api.cat_update(body)
+			.then(r => r.json)
+			.then(r => {
+				console.error(r);
+				throw new Error(`??`);
+			});
 	}
 
 	render_list();
