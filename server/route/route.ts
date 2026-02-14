@@ -19,8 +19,6 @@ import link from "shared/link.ts";
 
 const route = new router.Router<Shared>();
 
-route.set_404(session_middleware, route_error.not_found);
-
 route.set_static(async ctx => {
 	const parts = "./" + ctx.url_parts.slice(1).join("/");
 
@@ -38,10 +36,6 @@ route.set_static(async ctx => {
 	}
 
 	return ctx.build_response(file, 'ok', ext as keyof typeof content_type_codes);
-});
-
-route.get("/ping", async (ctx) => {
-	return ctx.build_response("meow", "ok", "txt");
 });
 
 route.get("/unauthorized", session_middleware, route_error.unauthorized);

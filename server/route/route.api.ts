@@ -7,7 +7,7 @@ import api_schema from "shared/api.schema.ts";
 import api from "../api.ts";
 import { StatusNames } from "@parchii/codes.ts";
 
-const api_cat_list: router.Middleware<Shared, 'POST', never> = async ctx => {
+const api_cat_list: router.Middleware<Shared, 'POST', []> = async ctx => {
 	let output_json;
 	let output_code: StatusNames;
 
@@ -46,7 +46,7 @@ const api_cat_list: router.Middleware<Shared, 'POST', never> = async ctx => {
 	return ctx.build_response(str, output_code, 'json');
 };
 
-const api_cat_update: router.Middleware<Shared, 'POST', never, SessionExport> = async ctx => {
+const api_cat_update: router.Middleware<Shared, 'POST', [], [SessionExport]> = async ctx => {
 	let output_json;
 	let output_code: StatusNames;
 

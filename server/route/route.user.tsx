@@ -14,7 +14,7 @@ import { status_codes } from "@parchii/codes.ts";
 import * as db_util from "../db/db.util.ts";
 import { themes_list } from "shared/types.ts";
 
-const view: router.Middleware<Shared, 'GET', 'username', SessionExport & FlashExport> = async ctx => {
+const view: router.Middleware<Shared, 'GET', ['username'], [SessionExport, FlashExport]> = async ctx => {
 	const user = ctx.ware.session.user();
 	let user_ctx = null;
 	if (user !== null) {
@@ -75,7 +75,7 @@ const view: router.Middleware<Shared, 'GET', 'username', SessionExport & FlashEx
 	return ctx.build_response(src, code, 'html');
 };
 
-const login: router.Middleware<Shared, 'GET', never, SessionExport & FlashExport> = async ctx => {
+const login: router.Middleware<Shared, 'GET', [], [SessionExport, FlashExport]> = async ctx => {
 	const user = ctx.ware.session.user();
 
 	if (user !== null) {
@@ -136,7 +136,7 @@ const login: router.Middleware<Shared, 'GET', never, SessionExport & FlashExport
 	return ctx.build_response(str, 'ok', 'html');
 };
 
-const login_api: router.Middleware<Shared, 'POST', never, FlashExport & SessionExport> = async ctx => {
+const login_api: router.Middleware<Shared, 'POST', [], [FlashExport, SessionExport]> = async ctx => {
 	const user = ctx.ware.session.user();
 	if (user !== null) {
 		ctx.ware.flash.set(`already logged in`, 'err');
@@ -279,7 +279,7 @@ const login_api: router.Middleware<Shared, 'POST', never, FlashExport & SessionE
 	return ctx.build_redirect(ctx.url);
 };
 
-const logout: router.Middleware<Shared, 'GET', never, SessionExport> = async ctx => {
+const logout: router.Middleware<Shared, 'GET', [], [SessionExport]> = async ctx => {
 	ctx.ware.session.logout();
 	
 	const dom = (
@@ -296,7 +296,7 @@ const logout: router.Middleware<Shared, 'GET', never, SessionExport> = async ctx
 	return ctx.build_response(str, 'ok', 'html');
 };
 
-const settings: router.Middleware<Shared, 'GET', never, ForceSessionExport & FlashExport> = async ctx => {
+const settings: router.Middleware<Shared, 'GET', [], [ForceSessionExport, FlashExport]> = async ctx => {
 	const user = ctx.ware.force_session.user();
 
 	const settings = await ctx.data.db.settings_list(user.id);
@@ -348,7 +348,7 @@ const settings: router.Middleware<Shared, 'GET', never, ForceSessionExport & Fla
 	return ctx.build_response(str, 'ok', 'html');
 };
 
-const settings_api: router.Middleware<Shared, 'POST', never, FlashExport & ForceSessionExport> = async ctx => {
+const settings_api: router.Middleware<Shared, 'POST', never, [FlashExport, ForceSessionExport]> = async ctx => {
 	const user = ctx.ware.force_session.user();
 
 	// parse form

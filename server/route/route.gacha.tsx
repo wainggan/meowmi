@@ -12,13 +12,25 @@ import { FlashExport } from "./util.flash.tsx";
 import { ForceSessionExport } from "./util.session.tsx";
 import { Shared } from "../shared.ts";
 import api from "../api.ts";
+import { Miss } from "shared/utility.ts";
+import * as db_util from "../db/db.util.ts";
 
-const gacha: router.Middleware<{}, 'GET', never, ForceSessionExport & FlashExport> = async ctx => {
+const gacha: router.Middleware<Shared, 'GET', [], [ForceSessionExport, FlashExport]> = async ctx => {
 	const user = ctx.ware.force_session.user();
 	const session = ctx.ware.force_session.session();
 
+	let user_ctx = null;
+	if (user !== null) {
+		const settings = await ctx.data.db.settings_list(user.id);
+		if (settings instanceof Miss) {
+			return undefined;
+		}
+
+		user_ctx = db_util.user_settings_context(user, settings);
+	}
+
 	const dom = (
-		<template.Base title="index" user={ user }>
+		<template.Base title="index" user_ctx={ user_ctx }>
 			<template.Flash flash={ ctx.ware.flash.get() }/>
 			
 			<h1>gacha</h1>
@@ -39,7 +51,7 @@ const gacha: router.Middleware<{}, 'GET', never, ForceSessionExport & FlashExpor
 	return ctx.build_response(src, 'ok', 'html');
 };
 
-const gacha_api: router.Middleware<Shared, 'POST', never, ForceSessionExport & FlashExport> = async ctx => {
+const gacha_api: router.Middleware<Shared, 'POST', [], [ForceSessionExport, FlashExport]> = async ctx => {
 	const user = ctx.ware.force_session.user();
 
 	const result = await api.gacha_pull(ctx.data, user, {});

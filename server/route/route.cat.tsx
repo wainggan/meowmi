@@ -9,9 +9,20 @@ import * as template from "./template.tsx";
 import { FlashExport } from "./util.flash.tsx";
 import { SessionExport } from "./util.session.tsx";
 import { Shared } from "../shared.ts";
+import { Miss } from "shared/utility.ts";
+import * as db_util from "../db/db.util.ts";
 
-const cat_view: router.Middleware<Shared, 'GET', 'username', SessionExport & FlashExport> = async ctx => {
+const cat_view: router.Middleware<Shared, 'GET', ['username'], [SessionExport, FlashExport]> = async ctx => {
 	const user = ctx.ware.session.user();
+	let user_ctx = null;
+	if (user !== null) {
+		const settings = await ctx.data.db.settings_list(user.id);
+		if (settings instanceof Miss) {
+			return undefined;
+		}
+
+		user_ctx = db_util.user_settings_context(user, settings);
+	}
 
 	const extract_catinst_id = ctx.url.searchParams.get('view');
 	let catinst_id = null;
@@ -25,7 +36,7 @@ const cat_view: router.Middleware<Shared, 'GET', 'username', SessionExport & Fla
 	const param_query = ctx.url.searchParams.get('q') ?? "";
 
 	const dom = (
-		<template.Base title="your cats" user={ user }>
+		<template.Base title="your cats" user_ctx={ user_ctx }>
 			<template.Flash flash={ ctx.ware.flash.get() }/>
 
 			<script id="data" type="application/json">

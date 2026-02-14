@@ -12,13 +12,16 @@ type FlashMessage = {
 };
 
 export type FlashExport = {
-	flash: {
-		readonly get: () => { message: string, mood: 'ok' | 'err' } | null;
-		readonly set: (message: string, mood: 'ok' | 'err') => void;
+	signal: never;
+	ware: {
+		flash: {
+			readonly get: () => { message: string, mood: 'ok' | 'err' } | null;
+			readonly set: (message: string, mood: 'ok' | 'err') => void;
+		};
 	};
 };
 
-export const flash_middleware: router.Middleware<Shared, router.Method, string, {}, FlashExport> = async ctx => {
+export const flash_middleware: router.Middleware<Shared, router.Method, [], [], [FlashExport]> = async ctx => {
 	const state: {
 		consumed: boolean;
 		message: FlashMessage | null;

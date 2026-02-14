@@ -7,22 +7,28 @@ import * as std_cookie from "@std/http/cookie";
 import { Shared } from "../shared.ts";
 
 export type SessionExport = {
-	session: {
-		readonly user: () => User | null;
-		readonly session: () => Session | null;
-		readonly set: (session_id: string) => void;
-		readonly logout: () => void;
+	signal: never;
+	ware: {
+		session: {
+			readonly user: () => User | null;
+			readonly session: () => Session | null;
+			readonly set: (session_id: string) => void;
+			readonly logout: () => void;
+		};
 	};
 };
 
 export type ForceSessionExport = {
-	force_session: {
-		readonly user: () => User;
-		readonly session: () => Session;
+	signal: never;
+	ware: {
+		force_session: {
+			readonly user: () => User;
+			readonly session: () => Session;
+		};
 	};
 };
 
-export const session_middleware: router.Middleware<Shared, router.Method, never, {}, SessionExport> = async ctx => {
+export const session_middleware: router.Middleware<Shared, router.Method, [], [], [SessionExport]> = async ctx => {
 	const state: {
 		session_id: null | string;
 		session_id_new: null | string;
@@ -114,7 +120,7 @@ export const session_middleware: router.Middleware<Shared, router.Method, never,
 	return response;
 };
 
-export const force_session_middleware: router.Middleware<Shared, router.Method, never, SessionExport, ForceSessionExport> = async ctx => {
+export const force_session_middleware: router.Middleware<Shared, router.Method, never, [SessionExport], [ForceSessionExport]> = async ctx => {
 	const user = ctx.ware.session.user();
 	const session = ctx.ware.session.session();
 
