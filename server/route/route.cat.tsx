@@ -6,8 +6,8 @@ import { render } from "@parchii/html.ts";
 
 import * as template from "./template.tsx";
 
-import { FlashExport } from "./util.flash.tsx";
-import { SessionExport } from "./util.session.tsx";
+import { FlashExport } from "./ware.flash.tsx";
+import { SessionExport } from "./ware.session.tsx";
 import { Shared } from "../shared.ts";
 import { Miss } from "shared/utility.ts";
 import * as db_util from "../db/db.util.ts";
@@ -18,7 +18,7 @@ const cat_view: router.Middleware<Shared, 'GET', ['username'], [SessionExport, F
 	if (user !== null) {
 		const settings = await ctx.data.db.settings_list(user.id);
 		if (settings instanceof Miss) {
-			return undefined;
+			return null;
 		}
 
 		user_ctx = db_util.user_settings_context(user, settings);

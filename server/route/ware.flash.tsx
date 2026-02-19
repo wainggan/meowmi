@@ -12,12 +12,9 @@ type FlashMessage = {
 };
 
 export type FlashExport = {
-	signal: never;
-	ware: {
-		flash: {
-			readonly get: () => { message: string, mood: 'ok' | 'err' } | null;
-			readonly set: (message: string, mood: 'ok' | 'err') => void;
-		};
+	flash: {
+		readonly get: () => { message: string, mood: 'ok' | 'err' } | null;
+		readonly set: (message: string, mood: 'ok' | 'err') => void;
 	};
 };
 
@@ -63,8 +60,8 @@ export const flash_middleware: router.Middleware<Shared, router.Method, [], [], 
 	};
 	
 	const response = await ctx.next();
-	if (response === undefined) {
-		return undefined;
+	if (!(response instanceof Response)) {
+		return response;
 	}
 
 	if (state.consumed) {

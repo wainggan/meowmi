@@ -7,24 +7,18 @@ import * as std_cookie from "@std/http/cookie";
 import { Shared } from "../shared.ts";
 
 export type SessionExport = {
-	signal: never;
-	ware: {
-		session: {
-			readonly user: () => User | null;
-			readonly session: () => Session | null;
-			readonly set: (session_id: string) => void;
-			readonly logout: () => void;
-		};
+	session: {
+		readonly user: () => User | null;
+		readonly session: () => Session | null;
+		readonly set: (session_id: string) => void;
+		readonly logout: () => void;
 	};
 };
 
 export type ForceSessionExport = {
-	signal: never;
-	ware: {
-		force_session: {
-			readonly user: () => User;
-			readonly session: () => Session;
-		};
+	force_session: {
+		readonly user: () => User;
+		readonly session: () => Session;
 	};
 };
 
@@ -85,8 +79,8 @@ export const session_middleware: router.Middleware<Shared, router.Method, [], []
 	};
 
 	const response = await ctx.next();
-	if (response === undefined) {
-		return undefined;
+	if (!(response instanceof Response)) {
+		return response;
 	}
 
 	if (state.session_id_new !== null) {

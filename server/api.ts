@@ -103,7 +103,7 @@ const gacha_pull = async (shared: Shared, user: User, input: Validated<typeof ap
 			return {
 				status: 'err',
 				code: 'internal_error',
-				message: `internal error.`,
+				message: catinst_id.message,
 			};
 		}
 		else {
@@ -120,7 +120,7 @@ const gacha_pull = async (shared: Shared, user: User, input: Validated<typeof ap
 		return {
 			status: 'err',
 			code: 'internal_error',
-			message: `unknown internal error`,
+			message: result_status_update.message,
 		};
 	}
 

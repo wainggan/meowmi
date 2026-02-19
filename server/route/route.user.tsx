@@ -5,8 +5,8 @@ import { Shared } from "../shared.ts";
 import { Miss } from "shared/utility.ts";
 import link from "shared/link.ts";
 
-import { FlashExport } from "./util.flash.tsx";
-import { ForceSessionExport, SessionExport } from "./util.session.tsx";
+import { FlashExport } from "./ware.flash.tsx";
+import { ForceSessionExport, SessionExport } from "./ware.session.tsx";
 
 import { jsx, fragment } from "@parchii/jsx.ts";
 import { render } from "@parchii/html.ts";
@@ -20,7 +20,7 @@ const view: router.Middleware<Shared, 'GET', ['username'], [SessionExport, Flash
 	if (user !== null) {
 		const settings = await ctx.data.db.settings_list(user.id);
 		if (settings instanceof Miss) {
-			return undefined;
+			return null;
 		}
 
 		user_ctx = db_util.user_settings_context(user, settings);
@@ -81,7 +81,7 @@ const login: router.Middleware<Shared, 'GET', [], [SessionExport, FlashExport]> 
 	if (user !== null) {
 		const settings = await ctx.data.db.settings_list(user.id);
 		if (settings instanceof Miss) {
-			return undefined;
+			return null;
 		}
 
 		const user_ctx = db_util.user_settings_context(user, settings);
@@ -301,7 +301,7 @@ const settings: router.Middleware<Shared, 'GET', [], [ForceSessionExport, FlashE
 
 	const settings = await ctx.data.db.settings_list(user.id);
 	if (settings instanceof Miss) {
-		return undefined;
+		return null;
 	}
 
 	const user_ctx = db_util.user_settings_context(user, settings);

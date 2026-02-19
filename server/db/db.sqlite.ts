@@ -214,7 +214,6 @@ export class DBSql implements DB {
 				SET
 					username = (${user.username}),
 					password = (${user.password}),
-					settings = (${user.settings}),
 					tokens = (${user.tokens})
 				WHERE
 					id = (${user.id});`;

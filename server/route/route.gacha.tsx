@@ -8,8 +8,8 @@ import * as template from "./template.tsx";
 import { jsx } from "@parchii/jsx.ts";
 import { render } from "@parchii/html.ts";
 
-import { FlashExport } from "./util.flash.tsx";
-import { ForceSessionExport } from "./util.session.tsx";
+import { FlashExport } from "./ware.flash.tsx";
+import { ForceSessionExport } from "./ware.session.tsx";
 import { Shared } from "../shared.ts";
 import api from "../api.ts";
 import { Miss } from "shared/utility.ts";
@@ -23,7 +23,7 @@ const gacha: router.Middleware<Shared, 'GET', [], [ForceSessionExport, FlashExpo
 	if (user !== null) {
 		const settings = await ctx.data.db.settings_list(user.id);
 		if (settings instanceof Miss) {
-			return undefined;
+			return null;
 		}
 
 		user_ctx = db_util.user_settings_context(user, settings);
@@ -55,6 +55,8 @@ const gacha_api: router.Middleware<Shared, 'POST', [], [ForceSessionExport, Flas
 	const user = ctx.ware.force_session.user();
 
 	const result = await api.gacha_pull(ctx.data, user, {});
+
+	console.log(result);
 
 	if (result.status === 'err') {
 		ctx.ware.flash.set(result.message, 'err');

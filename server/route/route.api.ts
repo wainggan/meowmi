@@ -1,7 +1,7 @@
 
 import * as router from "@parchii/router.ts";
 import { Shared } from "../shared.ts";
-import { SessionExport } from "./util.session.tsx";
+import { SessionExport } from "./ware.session.tsx";
 import { Miss } from "shared/utility.ts";
 import api_schema from "shared/api.schema.ts";
 import api from "../api.ts";

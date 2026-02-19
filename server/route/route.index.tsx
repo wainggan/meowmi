@@ -7,7 +7,7 @@ import * as template from "./template.tsx";
 
 import { jsx } from "@parchii/jsx.ts";
 import { render } from "@parchii/html.ts";
-import { SessionExport } from "./util.session.tsx";
+import { SessionExport } from "./ware.session.tsx";
 import splash_list from "shared/splash.json" with { type: 'json' };
 import { Shared } from "../shared.ts";
 import * as db_util from "../db/db.util.ts";
@@ -20,7 +20,7 @@ const index: router.Middleware<Shared, 'GET', [], [SessionExport]> = async ctx =
 	if (user !== null) {
 		const settings = await ctx.data.db.settings_list(user.id);
 		if (settings instanceof Miss) {
-			return undefined;
+			return null;
 		}
 
 		user_ctx = db_util.user_settings_context(user, settings);

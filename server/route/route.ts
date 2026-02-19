@@ -6,25 +6,25 @@ import * as router from "@parchii/router.ts";
 import { content_type_codes } from "@parchii/codes.ts";
 import { Shared } from "../shared.ts";
 
-import route_error from "./route.error.tsx";
+import * as ware_error from "./ware.error.tsx";
 import route_api from "./route.api.ts";
 import route_index from "./route.index.tsx";
 import route_user from "./route.user.tsx";
 import route_gacha from "./route.gacha.tsx";
 import route_cat from "./route.cat.tsx";
 
-import { flash_middleware } from "./util.flash.tsx";
-import { force_session_middleware, session_middleware } from "./util.session.tsx";
+import { flash_middleware } from "./ware.flash.tsx";
+import { force_session_middleware, session_middleware } from "./ware.session.tsx";
 import link from "shared/link.ts";
 
 const route = new router.Router<Shared>();
 
-route.set_static(async ctx => {
+const __route_static: router.Middleware<Shared, 'GET', [], [ware_error.ErrorNotFoundExport]> = async ctx => {
 	const parts = "./" + ctx.url_parts.slice(1).join("/");
 
 	const ext = ctx.url_parts.at(-1)?.split(".").at(-1);
 	if (ext === undefined || !(ext in content_type_codes)) {
-		return undefined;
+		return ctx.ware.error_not_found.signal();
 	}
 
 	let file;
@@ -32,13 +32,14 @@ route.set_static(async ctx => {
 		file = await Deno.readFile(parts);
 	}
 	catch (_e) {
-		return undefined;
+		return ctx.ware.error_not_found.signal();
 	}
 
 	return ctx.build_response(file, 'ok', ext as keyof typeof content_type_codes);
-});
+};
+route.set_static(session_middleware, ware_error.default.not_found, __route_static);
 
-route.get("/unauthorized", session_middleware, route_error.unauthorized);
+route.set_fallback(session_middleware, ware_error.default.not_found);
 
 route.get(link.index(), session_middleware, route_index.index);
 

@@ -5,7 +5,7 @@
 import * as router from "@parchii/router.ts";
 import * as template from "./template.tsx";
 
-import { SessionExport } from "./util.session.tsx";
+import { SessionExport } from "./ware.session.tsx";
 
 import { jsx } from "@parchii/jsx.ts";
 import { render } from "@parchii/html.ts";
@@ -13,13 +13,38 @@ import { Miss } from "shared/utility.ts";
 import { Shared } from "../shared.ts";
 import * as db_util from "../db/db.util.ts";
 
-const not_found: router.Middleware<Shared, router.Method, [], [SessionExport]> = async ctx => {
+const not_found_signal = Symbol('not_found');
+
+export type ErrorNotFoundExport = {
+	error_not_found: {
+		signal(): router.Signal;
+	};
+};
+
+const not_found: router.Middleware<Shared, router.Method, [], [SessionExport], [ErrorNotFoundExport]> = async ctx => {
+	ctx.ware.error_not_found = {
+		signal() {
+			return {
+				[not_found_signal]: 0,
+			};
+		},
+	};
+
+	const response = await ctx.next();
+
+	if (response instanceof Response) {
+		return response;
+	}
+	else if (response !== null && !(not_found_signal in response)) {
+		return response;
+	}
+	
 	const user = ctx.ware.session.user();
 	let user_ctx = null;
 	if (user !== null) {
 		const settings = await ctx.data.db.settings_list(user.id);
 		if (settings instanceof Miss) {
-			return undefined;
+			return null;
 		}
 
 		user_ctx = db_util.user_settings_context(user, settings);
@@ -39,13 +64,41 @@ const not_found: router.Middleware<Shared, router.Method, [], [SessionExport]> =
 	return ctx.build_response(src, 'not_found', 'html');
 };
 
-const unauthorized: router.Middleware<Shared, router.Method, [], [SessionExport]> = async ctx => {
+const unauthorized_signal = Symbol('unauthorized');
+
+export type ErrorUnauthorizedExport = {
+	error_unauthorized: {
+		signal(): router.Signal;
+	};
+};
+
+const unauthorized: router.Middleware<Shared, router.Method, [], [SessionExport], [ErrorUnauthorizedExport]> = async ctx => {
+	ctx.ware.error_unauthorized = {
+		signal() {
+			return {
+				[unauthorized_signal]: 0,
+			};
+		},
+	};
+
+	const response = await ctx.next();
+
+	if (response === null) {
+		return response;
+	}
+	else if (response instanceof Response) {
+		return response;
+	}
+	else if (!(unauthorized_signal in response)) {
+		return response;
+	}
+
 	const user = ctx.ware.session.user();
 	let user_ctx = null;
 	if (user !== null) {
 		const settings = await ctx.data.db.settings_list(user.id);
 		if (settings instanceof Miss) {
-			return undefined;
+			return null;
 		}
 
 		user_ctx = db_util.user_settings_context(user, settings);
