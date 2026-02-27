@@ -105,7 +105,7 @@ export const unauthorized: router.Middleware<Shared, router.Method, [], [Session
 			<h1>unauthorized</h1>
 			<p>
 				you are not authorized to see that page.
-				{ user === null ? 'perhaps you are not logged in?' : '' }
+				{ user === null ? ' perhaps you are not logged in?' : '' }
 			</p>
 		</template.Base>
 	);
