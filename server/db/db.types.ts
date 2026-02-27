@@ -145,6 +145,7 @@ export interface DB {
 
 	notification_new(user_id: number, content: string): Promise<number | Miss<internal>>;
 	notification_delete(notification_id: number): Promise<null | Miss<internal | not_found>>;
+	notification_list(user_id: number): Promise<Notification[] | Miss<internal>>
 
 	catdefs_sync(catdefs: CatDef[]): Promise<null | Miss<internal>>;
 	catdefs_fill(): Promise<CatDefJson[] | Miss<internal>>;

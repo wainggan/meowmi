@@ -3,7 +3,7 @@ the implementation of the database. this is the nervous system of our game.
 */
 
 import { DatabaseSync, SQLInputValue, SQLOutputValue, StatementResultingChanges, StatementSync } from "node:sqlite";
-import { DB, User, Session, CatInst, CatDef, TradeLocal, TradeRandom } from "./db.types.ts";
+import { DB, User, Session, CatInst, CatDef, TradeLocal, TradeRandom, Notification } from "./db.types.ts";
 import { Miss } from "shared/utility.ts";
 import { CatDefJson } from "shared/types.ts";
 
@@ -367,8 +367,14 @@ export class DBSql implements DB {
 	async notification_new(user_id: number, content: string): Promise<number | Miss<"internal">> {
 		let result;
 
+		const now = Date.now();
+
 		try {
-			result = this.sql.run `INSERT INTO notifications (user_id, content) VALUES (${user_id}, ${content});`;
+			result = this.sql.run `
+				INSERT INTO notifications
+					(user_id, date_created, content)
+				VALUES
+					(${user_id}, ${now}, ${content});`;
 		}
 		catch (_e) {
 			console.error(_e);
@@ -394,6 +400,20 @@ export class DBSql implements DB {
 		}
 
 		return null;
+	}
+
+	async notification_list(user_id: number): Promise<Notification[] | Miss<"internal">> {
+		let result;
+
+		try {
+			result = this.sql.all `SELECT * FROM notifications WHERE user_id = ${user_id} ORDER BY date_created DESC;`
+		}
+		catch (_e) {
+			console.error(_e);
+			return new Miss('internal', `unknown internal error`);
+		}
+
+		return result as Notification[];
 	}
 
 	async catdefs_sync(catdefs: CatDefJson[]): Promise<null | Miss<"internal">> {

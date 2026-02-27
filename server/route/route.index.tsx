@@ -18,12 +18,10 @@ const index: router.Middleware<Shared, 'GET', [], [SessionExport]> = async ctx =
 	const user = ctx.ware.session.user();
 	let user_ctx = null;
 	if (user !== null) {
-		const settings = await ctx.data.db.settings_list(user.id);
-		if (settings instanceof Miss) {
+		user_ctx = await db_util.user_context(ctx.data, user);
+		if (user_ctx instanceof Miss) {
 			return null;
 		}
-
-		user_ctx = db_util.user_settings_context(user, settings);
 	}
 
 	const splash_text = splash_list[splash_list.length * Math.random() | 0];

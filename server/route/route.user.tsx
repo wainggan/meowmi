@@ -18,12 +18,10 @@ const view: router.Middleware<Shared, 'GET', ['username'], [SessionExport, Flash
 	const user = ctx.ware.session.user();
 	let user_ctx = null;
 	if (user !== null) {
-		const settings = await ctx.data.db.settings_list(user.id);
-		if (settings instanceof Miss) {
+		user_ctx = await db_util.user_context(ctx.data, user);
+		if (user_ctx instanceof Miss) {
 			return null;
 		}
-
-		user_ctx = db_util.user_settings_context(user, settings);
 	}
 
 	const user_view = await ctx.data.db.user_get_name(ctx.extract.username);
@@ -79,12 +77,10 @@ const login: router.Middleware<Shared, 'GET', [], [SessionExport, FlashExport]> 
 	const user = ctx.ware.session.user();
 
 	if (user !== null) {
-		const settings = await ctx.data.db.settings_list(user.id);
-		if (settings instanceof Miss) {
+		const user_ctx = await db_util.user_context(ctx.data, user);
+		if (user_ctx instanceof Miss) {
 			return null;
 		}
-
-		const user_ctx = db_util.user_settings_context(user, settings);
 
 		const dom = (
 			<template.Base title="login" user_ctx={ user_ctx }>
@@ -299,12 +295,10 @@ const logout: router.Middleware<Shared, 'GET', [], [SessionExport]> = async ctx 
 const settings: router.Middleware<Shared, 'GET', [], [ForceSessionExport, FlashExport]> = async ctx => {
 	const user = ctx.ware.force_session.user();
 
-	const settings = await ctx.data.db.settings_list(user.id);
-	if (settings instanceof Miss) {
+	const user_ctx = await db_util.user_context(ctx.data, user);
+	if (user_ctx instanceof Miss) {
 		return null;
 	}
-
-	const user_ctx = db_util.user_settings_context(user, settings);
 
 	const dom = (
 		<template.Base title="login" user_ctx={ user_ctx }>

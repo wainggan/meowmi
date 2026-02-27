@@ -21,12 +21,10 @@ const gacha: router.Middleware<Shared, 'GET', [], [ForceSessionExport, FlashExpo
 
 	let user_ctx = null;
 	if (user !== null) {
-		const settings = await ctx.data.db.settings_list(user.id);
-		if (settings instanceof Miss) {
+		user_ctx = await db_util.user_context(ctx.data, user);
+		if (user_ctx instanceof Miss) {
 			return null;
 		}
-
-		user_ctx = db_util.user_settings_context(user, settings);
 	}
 
 	const dom = (

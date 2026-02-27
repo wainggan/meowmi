@@ -3,7 +3,6 @@ various helpful jsx 'template' components
 */
 
 import { jsx, fragment } from "@parchii/jsx.ts";
-import { User } from "../db/db.types.ts";
 import { UserContext } from "../db/db.util.ts";
 import link from "shared/link.ts";
 // import * as db_util from "../db/db.util.ts";
@@ -21,7 +20,7 @@ export const Base = (input: { title: string, user_ctx: UserContext | null }, chi
 			</head>
 			<body>
 				<div class="app">
-					<Navigation user={ input.user_ctx?.user ?? null }/>
+					<Navigation user_ctx={ input.user_ctx }/>
 					<div class="app--content">
 						{ ...children }
 					</div>
@@ -43,7 +42,7 @@ export const NavigationGroup = (input: { name: string }, children: unknown[]) =>
 	);
 };
 
-export const Navigation = (input: { user: User | null }) => {
+export const Navigation = (input: { user_ctx: UserContext | null }) => {
 	return (
 		<>
 			<nav class="app--nav">
@@ -75,7 +74,7 @@ export const Navigation = (input: { user: User | null }) => {
 				</NavigationGroup>
 
 				<NavigationGroup name="Cats">
-					<a href={ input.user ? link.user_cats(input.user.username) : '/' } class="button">Owned Cats</a>
+					<a href={ input.user_ctx ? link.user_cats(input.user_ctx.user.username) : '/' } class="button">Owned Cats</a>
 					<a href="#" class="button">Care</a>
 					<a href="#" class="button">Feeding</a>
 					<a href="#" class="button">Play</a>
@@ -86,7 +85,7 @@ export const Navigation = (input: { user: User | null }) => {
 				<div class="app--nav--spacer"></div>
 
 				{
-					input.user === null
+					input.user_ctx === null
 					? <a href={ link.user_login() } class="button">Login</a>
 					: <a href={ link.user_logout() } class="button">Logout</a>
 				}
