@@ -327,11 +327,11 @@ const tradelocal_complete = async (shared: Shared, user: User | null, input: Val
 		};
 	}
 
-	// the trade is a go!
+	let result: Validated<typeof api_schema.tradelocal_complete_out>;	
 
-	let result: Validated<typeof api_schema.tradelocal_complete_out>;
-
-	exit: {
+	// we only have to go through the trouble of swapping cat ownership if the user accepts.
+	// otherwise, delete the request (which is what happens at the end anyways)
+	exit: if (input.accept) {
 		// get both cats.
 		const cat_x = await shared.db.catinst_get(result_tradelocal.catinst_x_id);
 		const cat_y = await shared.db.catinst_get(result_tradelocal.catinst_y_id);
@@ -425,6 +425,11 @@ const tradelocal_complete = async (shared: Shared, user: User | null, input: Val
 			break exit;
 		}
 
+		result = {
+			status: 'ok',
+		};
+	}
+	else {
 		result = {
 			status: 'ok',
 		};
