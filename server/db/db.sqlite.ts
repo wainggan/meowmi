@@ -364,6 +364,38 @@ export class DBSql implements DB {
 		return null;
 	}
 
+	async notification_new(user_id: number, content: string): Promise<number | Miss<"internal">> {
+		let result;
+
+		try {
+			result = this.sql.run `INSERT INTO notifications (user_id, content) VALUES (${user_id}, ${content});`;
+		}
+		catch (_e) {
+			console.error(_e);
+			return new Miss('internal', `unknown internal error`);
+		}
+
+		return result.lastInsertRowid as number;
+	}
+
+	async notification_delete(notification_id: number): Promise<null | Miss<"internal" | "not_found">> {
+		let result;
+
+		try {
+			result = this.sql.run `DELETE FROM notifications WHERE id = ${notification_id};`
+		}
+		catch (_e) {
+			console.error(_e);
+			return new Miss('internal', `unknown internal error`);
+		}
+
+		if (result.changes !== 1) {
+			return new Miss(`not_found`, `notification did not exist`);
+		}
+
+		return null;
+	}
+
 	async catdefs_sync(catdefs: CatDefJson[]): Promise<null | Miss<"internal">> {
 		for (const catdef of catdefs) {
 			try {

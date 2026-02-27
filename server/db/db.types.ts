@@ -21,6 +21,12 @@ export type User = {
 	tokens: number;
 };
 
+export type Setting = {
+	readonly user_id: number;
+	readonly key: string;
+	value: string;
+};
+
 /**
 representation of a login session.
 valid while `Date.now() < date_expire`.
@@ -30,6 +36,12 @@ export type Session = {
 	readonly csrf: string;
 	readonly user_id: number;
 	readonly date_expire: number;
+};
+
+export type Notification = {
+	readonly id: number;
+	readonly date_created: number;
+	content: string;
 };
 
 export type CatDef = CatDefJson & {
@@ -130,6 +142,9 @@ export interface DB {
 	*/
 	session_get(session_id: string): Promise<Session | Miss<internal | not_found>>;
 	session_delete(session_id: string): Promise<null | Miss<internal | not_found>>;
+
+	notification_new(user_id: number, content: string): Promise<number | Miss<internal>>;
+	notification_delete(notification_id: number): Promise<null | Miss<internal | not_found>>;
 
 	catdefs_sync(catdefs: CatDef[]): Promise<null | Miss<internal>>;
 	catdefs_fill(): Promise<CatDefJson[] | Miss<internal>>;
