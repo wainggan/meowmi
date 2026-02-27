@@ -120,6 +120,14 @@ export class DBSql implements DB {
 				FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 			);
 
+			CREATE TABLE IF NOT EXISTS notifications (
+				id INTEGER PRIMARY KEY AUTOINCREMENT,
+				user_id INTEGER NOT NULL,
+				content TEXT NOT NULL,
+				date_created INTEGER NOT NULL,
+				FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+			);
+
 			CREATE TABLE IF NOT EXISTS catinsts (
 				id INTEGER PRIMARY KEY AUTOINCREMENT,
 				catdef_id INTEGER NOT NULL,
