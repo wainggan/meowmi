@@ -37,9 +37,9 @@ const __route_static: router.Middleware<Shared, 'GET', [], [ware_error.ErrorNotF
 
 	return ctx.build_response(file, 'ok', ext as keyof typeof content_type_codes);
 };
-route.set_static(session_middleware, ware_error.default.not_found, __route_static);
+route.set_static(session_middleware, ware_error.not_found, __route_static);
 
-route.set_fallback(session_middleware, ware_error.default.not_found);
+route.set_fallback(session_middleware, ware_error.not_found);
 
 route.get(link.index(), session_middleware, route_index.index);
 
@@ -49,13 +49,13 @@ route.get(link.user_login(), session_middleware, flash_middleware, route_user.lo
 route.post(link.user_login(), session_middleware, flash_middleware, route_user.login_api);
 route.get(link.user_logout(), session_middleware, flash_middleware, route_user.logout);
 
-route.get(link.user_settings(), session_middleware, force_session_middleware, flash_middleware, route_user.settings);
-route.post(link.user_settings(), session_middleware, force_session_middleware, flash_middleware, route_user.settings_api);
+route.get(link.user_settings(), session_middleware, ware_error.unauthorized, force_session_middleware, flash_middleware, route_user.settings);
+route.post(link.user_settings(), session_middleware, ware_error.unauthorized, force_session_middleware, flash_middleware, route_user.settings_api);
 
-route.get(link.gacha(), session_middleware, force_session_middleware, flash_middleware, route_gacha.gacha);
-route.post(link.gacha(), session_middleware, force_session_middleware, flash_middleware, route_gacha.gacha_api);
+route.get(link.gacha(), session_middleware, ware_error.unauthorized, force_session_middleware, flash_middleware, route_gacha.gacha);
+route.post(link.gacha(), session_middleware, ware_error.unauthorized, force_session_middleware, flash_middleware, route_gacha.gacha_api);
 
-route.get(link.user_cats(":username"), session_middleware, force_session_middleware, flash_middleware, route_cat.cat_view);
+route.get(link.user_cats(":username"), session_middleware, ware_error.unauthorized, force_session_middleware, flash_middleware, route_cat.cat_view);
 
 route.post(link.api_cat_list(), session_middleware, flash_middleware, route_api.api_cat_list);
 route.post(link.api_cat_update(), session_middleware, flash_middleware, route_api.api_cat_update);

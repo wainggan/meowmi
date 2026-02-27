@@ -21,7 +21,7 @@ export type ErrorNotFoundExport = {
 	};
 };
 
-const not_found: router.Middleware<Shared, router.Method, [], [SessionExport], [ErrorNotFoundExport]> = async ctx => {
+export const not_found: router.Middleware<Shared, router.Method, [], [SessionExport], [ErrorNotFoundExport]> = async ctx => {
 	ctx.ware.error_not_found = {
 		signal() {
 			return {
@@ -72,7 +72,7 @@ export type ErrorUnauthorizedExport = {
 	};
 };
 
-const unauthorized: router.Middleware<Shared, router.Method, [], [SessionExport], [ErrorUnauthorizedExport]> = async ctx => {
+export const unauthorized: router.Middleware<Shared, router.Method, [], [SessionExport], [ErrorUnauthorizedExport]> = async ctx => {
 	ctx.ware.error_unauthorized = {
 		signal() {
 			return {
@@ -117,10 +117,5 @@ const unauthorized: router.Middleware<Shared, router.Method, [], [SessionExport]
 	const src = render(dom);
 
 	return ctx.build_response(src, 'unauthorized', 'html');
-};
-
-export default {
-	not_found,
-	unauthorized,
 };
 
