@@ -7,20 +7,20 @@ class Vdj<T extends Point> {
 
 	#schema: T;
 
-	validate(check: any): check is Calculate<T> {
+	validate(check: unknown): check is Calculate<T> {
 		return this.#schema.validate(check);
 	}
 }
 
 abstract class VdjShared {
 	abstract type: string;
-	abstract validate(check: any): boolean;
+	abstract validate(check: unknown): boolean;
 }
 
 class VdjAny extends VdjShared {
 	type: 'any' = 'any';
 
-	validate(_check: any): boolean {
+	validate(_check: unknown): boolean {
 		return true;
 	}
 }
@@ -28,7 +28,7 @@ class VdjAny extends VdjShared {
 class VdjBoolean extends VdjShared {
 	type: 'boolean' = 'boolean';
 
-	validate(check: any): boolean {
+	validate(check: unknown): boolean {
 		if (typeof check !== 'boolean') {
 			return false;
 		}
@@ -40,7 +40,7 @@ class VdjBoolean extends VdjShared {
 class VdjUndefined extends VdjShared {
 	type: 'optional' = 'optional';
 
-	validate(check: any): boolean {
+	validate(check: unknown): boolean {
 		return check === undefined;
 	}
 }
@@ -53,7 +53,7 @@ class VdjEither<T extends Point[]> extends VdjShared {
 
 	type: 'either' = 'either';
 
-	validate(check: any): boolean {
+	validate(check: unknown): boolean {
 		for (const against of this.#shape) {
 			if (against.validate(check)) {
 				return true;
@@ -85,7 +85,7 @@ class VdjObject<T extends VdjObjectSchema> extends VdjShared {
 
 	type: 'object' = 'object';
 
-	validate(check: any): boolean {
+	validate(check: unknown): boolean {
 		if (typeof check !== 'object') {
 			return false;
 		}
@@ -99,6 +99,7 @@ class VdjObject<T extends VdjObjectSchema> extends VdjShared {
 		for (const schema_key of keys) {
 			const schema_value = this.#shape[schema_key];
 
+			// @ts-expect-error todo: fix
 			const check_value = check[schema_key];
 
 			let success = false;
@@ -136,7 +137,7 @@ type VdjInstanceSchema = {
 class VdjInstance<T extends VdjInstanceSchema> extends VdjShared {
 	type: 'instance' = 'instance';
 
-	validate(check: any): boolean {
+	validate(check: unknown): boolean {
 		if (typeof check !== 'object') {
 			return false;
 		}
@@ -175,7 +176,7 @@ class VdjArray<T extends Point[]> extends VdjShared {
 
 	type: 'array' = 'array';
 
-	validate(check: any): boolean {
+	validate(check: unknown): boolean {
 		if (!Array.isArray(check)) {
 			return false;
 		}
@@ -215,7 +216,7 @@ class VdjTuple<T extends Point[][]> extends VdjShared {
 
 	type: 'tuple' = 'tuple';
 
-	validate(check: any): boolean {
+	validate(check: unknown): boolean {
 		if (!Array.isArray(check)) {
 			return false;
 		}
@@ -256,7 +257,7 @@ class VdjTuple<T extends Point[][]> extends VdjShared {
 class VdjNumber<T extends number> extends VdjShared {
 	type: 'number' = 'number';
 
-	validate(check: any): boolean {
+	validate(check: unknown): boolean {
 		if (typeof check !== 'number') {
 			return false;
 		}
@@ -367,7 +368,7 @@ class VdjNumber<T extends number> extends VdjShared {
 class VdjString<T extends string> extends VdjShared {
 	type: 'string' = 'string';
 
-	validate(check: any): boolean {
+	validate(check: unknown): boolean {
 		if (typeof check !== 'string') {
 			return false;
 		}
@@ -436,7 +437,7 @@ class VdjString<T extends string> extends VdjShared {
 class VdjNull {
 	type: 'null' = 'null';
 
-	validate(check: any): boolean {
+	validate(check: unknown): boolean {
 		return check === null;
 	}
 }
