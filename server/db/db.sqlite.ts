@@ -3,7 +3,7 @@ the implementation of the database. this is the nervous system of our game.
 */
 
 import { DatabaseSync, SQLInputValue, SQLOutputValue, StatementResultingChanges, StatementSync } from "node:sqlite";
-import { DB, User, Session, CatInst, CatDef, TradeLocal } from "./db.types.ts";
+import { DB, User, Session, CatInst, CatDef, TradeLocal, TradeRandom } from "./db.types.ts";
 import { Miss } from "shared/utility.ts";
 import { CatDefJson } from "shared/types.ts";
 
@@ -142,7 +142,19 @@ export class DBSql implements DB {
 				peer_x_id INTEGER NOT NULL,
 				peer_y_id INTEGER NOT NULL,
 				catinst_x_id INTEGER NOT NULL,
-				catinst_y_id INTEGER NOT NULL
+				catinst_y_id INTEGER NOT NULL,
+				FOREIGN KEY (peer_x_id) REFERENCES users(id) ON DELETE CASCADE,
+				FOREIGN KEY (peer_y_id) REFERENCES users(id) ON DELETE CASCADE,
+				FOREIGN KEY (catinst_x_id) REFERENCES catinsts(id) ON DELETE CASCADE,
+				FOREIGN KEY (catinst_y_id) REFERENCES catinsts(id) ON DELETE CASCADE
+			);
+
+			CREATE TABLE IF NOT EXISTS traderandom (
+				id INTEGER PRIMARY KEY AUTOINCREMENT,
+				user_id INTEGER NOT NULL,
+				catinst_id INTEGER NOT NULL,
+				FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+				FOREIGN KEY (catinst_id) REFERENCES catinsts(id) ON DELETE CASCADE
 			);
 		`);
 	}
@@ -526,6 +538,60 @@ export class DBSql implements DB {
 
 		try {
 			result = this.sql.run `DELETE FROM tradelocal WHERE id = (${tradelocal_id});`;
+		}
+		catch (e) {
+			console.error(e);
+			return new Miss('internal', `unknown internal error`);
+		}
+
+		if (result.changes !== 1) {
+			return new Miss('not_found', `did not delete 1 row`);
+		}
+
+		return null;
+	}
+
+	async traderandom_new(user_id: number, catinst_id: number): Promise<number | Miss<"internal">> {
+		let result;
+
+		try {
+			result = this.sql.run `
+				INSERT INTO traderandom
+					(user_id, catinst_id)
+				VALUES
+					(${user_id}, ${catinst_id});`;
+		}
+		catch (e) {
+			console.error(e);
+			return new Miss('internal', `unknown internal error`);
+		}
+
+		return result.lastInsertRowid as number;
+	}
+
+	async traderandom_get(): Promise<TradeRandom | null | Miss<"internal">> {
+		let result;
+
+		try {
+			result = this.sql.get `SELECT * FROM tradelocal LIMIT 1;`;
+		}
+		catch (e) {
+			console.error(e);
+			return new Miss('internal', `unknown internal error`);
+		}
+
+		if (result === undefined) {
+			return null;
+		}
+
+		return result as TradeRandom;
+	}
+
+	async traderandom_delete(traderandom_id: number): Promise<null | Miss<"internal" | "not_found">> {
+		let result;
+
+		try {
+			result = this.sql.run `DELETE FROM traderandom WHERE id = (${traderandom_id});`;
 		}
 		catch (e) {
 			console.error(e);

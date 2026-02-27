@@ -72,6 +72,12 @@ export type TradeLocal = {
 	readonly catinst_y_id: number;
 };
 
+export type TradeRandom = {
+	readonly id: number;
+	readonly user_id: number;
+	readonly catinst_id: number;
+};
+
 type internal = 'internal';
 type exists = 'exists';
 type not_found = 'not_found';
@@ -138,5 +144,9 @@ export interface DB {
 	tradelocal_new(creator_user_id: number, with_user_id: number, creator_catinst_id: number, with_catinst_id: number): Promise<number | Miss<internal>>;
 	tradelocal_get(tradelocal_id: number): Promise<TradeLocal | Miss<internal | not_found>>;
 	tradelocal_delete(tradelocal_id: number): Promise<null | Miss<internal | not_found>>;
+
+	traderandom_new(user_id: number, catinst_id: number): Promise<number | Miss<internal>>;
+	traderandom_get(): Promise<TradeRandom | null | Miss<internal>>;
+	traderandom_delete(traderandom_id: number): Promise<null | Miss<internal | not_found>>;
 }
 

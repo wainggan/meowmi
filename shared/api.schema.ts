@@ -142,6 +142,22 @@ const tradeglobalresponse_new_out = vdj.schema(
 		)
 );
 
+const traderandom_new_in = vdj.schema(
+	vdj.object()
+		.key('session', vdj.string(), vdj.null())
+		.key('cat_id', vdj.number().integer().min(0))
+);
+
+const traderandom_new_out = vdj.schema(
+	vdj.either()
+		.or(error)
+		.or(
+			vdj.object()
+				.key('status', ok)
+		)
+);
+
+
 export default {
 	gacha_pull_in,
 	gacha_pull_out,
@@ -157,5 +173,7 @@ export default {
 	tradeglobalrequest_new_out,
 	tradeglobalresponse_new_in,
 	tradeglobalresponse_new_out,
+	traderandom_new_in,
+	traderandom_new_out,
 };
 

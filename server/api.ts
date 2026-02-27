@@ -464,10 +464,172 @@ const tradelocal_complete = async (shared: Shared, user: User | null, input: Val
 	return result;
 };
 
+const traderandom_new = async (shared: Shared, user: User | null, input: Validated<typeof api_schema.traderandom_new_in>):
+	Promise<Validated<typeof api_schema.traderandom_new_out>> =>
+{
+	const resolved_user = await util_user_or_session(shared, user, input.session);
+	if (!resolved_user[0]) {
+		return resolved_user[1];
+	}
+
+	const user_id = resolved_user[1].id;
+
+	const cat = await shared.db.catinst_get(input.cat_id);
+	if (cat instanceof Miss) {
+		if (cat.type === 'not_found') {
+			return {
+				status: 'err',
+				code: 'not_found',
+				message: `cat not found.`,
+			};
+		}
+		else if (cat.type === 'internal') {
+			return {
+				status: 'err',
+				code: 'internal_error',
+				message: `internal error.`,
+			};
+		}
+		else {
+			throw cat.type satisfies never;
+		}
+	}
+
+	if (cat.owner_user_id !== user_id) {
+		return {
+			status: 'err',
+			code: 'unauthorized',
+			message: `trade creator does not own corresponding cat.`,
+		};
+	}
+
+	const traderandom_last = await shared.db.traderandom_get();
+	if (traderandom_last instanceof Miss) {
+		if (traderandom_last.type === 'internal') {
+			return {
+				status: 'err',
+				code: 'internal_error',
+				message: `internal error.`,
+			};
+		}
+		else {
+			throw traderandom_last.type satisfies never;
+		}
+	}
+
+	if (traderandom_last === null) {
+		// there is no cat available!
+		// send out cat now!!
+		const traderandom_id = await shared.db.traderandom_new(user_id, input.cat_id);
+		if (traderandom_id instanceof Miss) {
+			if (traderandom_id.type === 'internal') {
+				return {
+					status: 'err',
+					code: 'internal_error',
+					message: `internal error.`,
+				};
+			}
+			else {
+				throw traderandom_id.type satisfies never;
+			}
+		}
+	}
+	else {
+		// initiate trade.
+
+		// get other cat.
+		const other_cat = await shared.db.catinst_get(traderandom_last.catinst_id);
+		if (other_cat instanceof Miss) {
+			if (other_cat.type === 'not_found') {
+				// how?
+				return {
+					status: 'err',
+					code: 'internal_error',
+					message: `internal error.`,
+				};
+			}
+			else if (other_cat.type === 'internal') {
+				return {
+					status: 'err',
+					code: 'internal_error',
+					message: `internal error.`,
+				};
+			}
+			else {
+				throw other_cat.type satisfies never;
+			}
+		}
+
+		// swap owner ids.
+		{
+			const temp = other_cat.owner_user_id;
+			other_cat.owner_user_id = cat.owner_user_id;
+			cat.owner_user_id = temp;
+		}
+
+		// update cats.
+
+		const cat_set_result = await shared.db.catinst_set(cat);
+		if (cat_set_result instanceof Miss) {
+			if (cat_set_result.type === 'internal') {
+				return {
+					status: 'err',
+					code: 'internal_error',
+					message: `internal error.`,
+				};
+			}
+			else {
+				throw cat_set_result.type satisfies never;
+			}
+		}
+
+		const other_cat_set_result = await shared.db.catinst_set(cat);
+		if (other_cat_set_result instanceof Miss) {
+			if (other_cat_set_result.type === 'internal') {
+				return {
+					status: 'err',
+					code: 'internal_error',
+					message: `internal error.`,
+				};
+			}
+			else {
+				throw other_cat_set_result.type satisfies never;
+			}
+		}
+
+		// finally, delete old trade.
+		const result_delete = await shared.db.traderandom_delete(traderandom_last.id);
+		if (result_delete instanceof Miss) {
+			if (result_delete.type === 'not_found') {
+				return {
+					status: 'err',
+					code: 'internal_error',
+					message: `internal error.`,
+				};
+			}
+			else if (result_delete.type === 'internal') {
+				return {
+					status: 'err',
+					code: 'internal_error',
+					message: `internal error.`,
+				};
+			}
+			else {
+				throw result_delete.type satisfies never;
+			}
+		}
+	}
+
+	return {
+		status: 'ok',
+	};
+};
+
 export default {
 	gacha_pull,
 	cat_list,
 	tradelocal_new,
 	tradelocal_complete,
+	traderandom_new,
 };
 
