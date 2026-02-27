@@ -52,8 +52,8 @@ route.get(link.user_logout(), session_middleware, flash_middleware, route_user.l
 route.get(link.user_settings(), session_middleware, force_session_middleware, flash_middleware, route_user.settings);
 route.post(link.user_settings(), session_middleware, force_session_middleware, flash_middleware, route_user.settings_api);
 
-route.get("/gacha", session_middleware, force_session_middleware, flash_middleware, route_gacha.gacha);
-route.post("/gacha", session_middleware, force_session_middleware, flash_middleware, route_gacha.gacha_api);
+route.get(link.gacha(), session_middleware, force_session_middleware, flash_middleware, route_gacha.gacha);
+route.post(link.gacha(), session_middleware, force_session_middleware, flash_middleware, route_gacha.gacha_api);
 
 route.get(link.user_cats(":username"), session_middleware, force_session_middleware, flash_middleware, route_cat.cat_view);
 

@@ -6,6 +6,8 @@ we do this so its easy to see what urls are being used, so we can change url end
 const link = {
 	index: () => `/` as const,
 
+	gacha: () => `/gacha` as const,
+
 	user_view: <T extends string>(username: T) => `/user/${username}` as const,
 	user_login: () => `/login` as const,
 	user_logout: () => `/logout` as const,

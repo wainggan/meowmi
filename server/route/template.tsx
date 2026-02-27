@@ -5,6 +5,7 @@ various helpful jsx 'template' components
 import { jsx, fragment } from "@parchii/jsx.ts";
 import { User } from "../db/db.types.ts";
 import { UserContext } from "../db/db.util.ts";
+import link from "shared/link.ts";
 // import * as db_util from "../db/db.util.ts";
 
 export const Base = (input: { title: string, user_ctx: UserContext | null }, children: unknown[]) => {
@@ -46,7 +47,7 @@ export const Navigation = (input: { user: User | null }) => {
 	return (
 		<>
 			<nav class="app--nav">
-				<a href="/" class="button">Home</a>
+				<a href={ link.index() } class="button">Home</a>
 
 				<NavigationGroup name="News">
 					<a href="#" class="button">Build Info</a>
@@ -56,7 +57,7 @@ export const Navigation = (input: { user: User | null }) => {
 
 				<NavigationGroup name="CDS">
 					<a href="#" class="button">Adoption</a>
-					<a href="/gacha" class="button">Gacha Pulls</a>
+					<a href={ link.gacha() } class="button">Gacha Pulls</a>
 					<a href="#" class="button">Cat Shop</a>
 				</NavigationGroup>
 
@@ -74,20 +75,20 @@ export const Navigation = (input: { user: User | null }) => {
 				</NavigationGroup>
 
 				<NavigationGroup name="Cats">
-					<a href="/cat" class="button">Owned Cats</a>
+					<a href={ input.user ? link.user_cats(input.user.username) : '/' } class="button">Owned Cats</a>
 					<a href="#" class="button">Care</a>
 					<a href="#" class="button">Feeding</a>
 					<a href="#" class="button">Play</a>
 				</NavigationGroup>
 
-				<a href="/settings" class="button">Settings</a>
+				<a href={ link.user_settings() } class="button">Settings</a>
 
 				<div class="app--nav--spacer"></div>
 
 				{
 					input.user === null
-					? <a href="/login" class="button">Login</a>
-					: <a href="/logout" class="button">Logout</a>
+					? <a href={ link.user_login() } class="button">Login</a>
+					: <a href={ link.user_logout() } class="button">Logout</a>
 				}
 				
 				<button class="button" onclick="toggleMenu()">☰</button>
