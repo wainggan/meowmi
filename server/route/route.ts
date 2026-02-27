@@ -14,7 +14,8 @@ import route_gacha from "./route.gacha.tsx";
 import route_cat from "./route.cat.tsx";
 
 import { flash_middleware } from "./ware.flash.tsx";
-import { force_session_middleware, session_middleware } from "./ware.session.tsx";
+import { session_middleware } from "./ware.session.tsx";
+import { force_session_middleware } from "./ware.forcesession.tsx";
 import link from "shared/link.ts";
 
 const route = new router.Router<Shared>();

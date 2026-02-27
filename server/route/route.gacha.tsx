@@ -9,7 +9,7 @@ import { jsx } from "@parchii/jsx.ts";
 import { render } from "@parchii/html.ts";
 
 import { FlashExport } from "./ware.flash.tsx";
-import { ForceSessionExport } from "./ware.session.tsx";
+import { ForceSessionExport } from "./ware.forcesession.tsx";
 import { Shared } from "../shared.ts";
 import api from "../api.ts";
 import { Miss } from "shared/utility.ts";

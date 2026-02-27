@@ -5,7 +5,6 @@ import { Miss } from "shared/utility.ts";
 
 import * as std_cookie from "@std/http/cookie";
 import { Shared } from "../shared.ts";
-import { ErrorUnauthorizedExport } from "./ware.error.tsx";
 
 export type SessionExport = {
 	session: {
@@ -13,13 +12,6 @@ export type SessionExport = {
 		readonly session: () => Session | null;
 		readonly set: (session_id: string) => void;
 		readonly logout: () => void;
-	};
-};
-
-export type ForceSessionExport = {
-	force_session: {
-		readonly user: () => User;
-		readonly session: () => Session;
 	};
 };
 
@@ -111,28 +103,6 @@ export const session_middleware: router.Middleware<Shared, router.Method, [], []
 			});
 		}
 	}
-
-	return response;
-};
-
-export const force_session_middleware: router.Middleware<Shared, router.Method, [], [ErrorUnauthorizedExport, SessionExport], [ForceSessionExport]> = async ctx => {
-	const user = ctx.ware.session.user();
-	const session = ctx.ware.session.session();
-
-	if (user === null || session === null) {
-		return ctx.ware.error_unauthorized.signal();
-	}
-
-	ctx.ware.force_session = {
-		user() {
-			return user;
-		},
-		session() {
-			return session;
-		}
-	};
-
-	const response = await ctx.next();
 
 	return response;
 };

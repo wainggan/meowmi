@@ -6,7 +6,8 @@ import { Miss } from "shared/utility.ts";
 import link from "shared/link.ts";
 
 import { FlashExport } from "./ware.flash.tsx";
-import { ForceSessionExport, SessionExport } from "./ware.session.tsx";
+import { SessionExport } from "./ware.session.tsx";
+import { ForceSessionExport } from "./ware.forcesession.tsx";
 
 import { jsx, fragment } from "@parchii/jsx.ts";
 import { render } from "@parchii/html.ts";
