@@ -40,6 +40,7 @@ export type Session = {
 
 export type Notification = {
 	readonly id: number;
+	readonly user_id: number;
 	readonly date_created: number;
 	content: string;
 };
@@ -144,6 +145,7 @@ export interface DB {
 	session_delete(session_id: string): Promise<null | Miss<internal | not_found>>;
 
 	notification_new(user_id: number, content: string): Promise<number | Miss<internal>>;
+	notification_get(notification_id: number): Promise<Notification | Miss<internal | not_found>>;
 	notification_delete(notification_id: number): Promise<null | Miss<internal | not_found>>;
 	notification_list(user_id: number): Promise<IteratorObject<Notification> | Miss<internal>>
 

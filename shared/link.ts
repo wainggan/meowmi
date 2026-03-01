@@ -13,6 +13,7 @@ const link = {
 	user_logout: () => `/logout` as const,
 	user_settings: () => `/settings` as const,
 	user_cats: <T extends string>(username: T) => `/user/${username}/cat` as const,
+	user_notifs: () => `/notifications` as const,
 
 	api_cat_list: () => `/api/cat/list` as const,
 	api_cat_update: () => `/api/cat/update` as const,

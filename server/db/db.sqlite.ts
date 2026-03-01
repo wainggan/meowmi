@@ -396,6 +396,24 @@ export class DBSql implements DB {
 		return result.lastInsertRowid as number;
 	}
 
+	async notification_get(notification_id: number): Promise<Notification | Miss<"internal" | "not_found">> {
+		let result;
+
+		try {
+			result = this.sql.get `SELECT * FROM notifications WHERE id = ${notification_id};`;
+		}
+		catch (_e) {
+			console.error(_e);
+			return new Miss('internal', `unknown internal error`);
+		}
+
+		if (result === undefined) {
+			return new Miss('not_found', `notification does not exist`);
+		}
+
+		return result as Notification;
+	}
+
 	async notification_delete(notification_id: number): Promise<null | Miss<"internal" | "not_found">> {
 		let result;
 

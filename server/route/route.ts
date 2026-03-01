@@ -10,6 +10,7 @@ import * as ware_error from "./ware.error.tsx";
 import route_api from "./route.api.ts";
 import route_index from "./route.index.tsx";
 import route_user from "./route.user.tsx";
+import route_notif from "./route.notif.tsx";
 import route_gacha from "./route.gacha.tsx";
 import route_cat from "./route.cat.tsx";
 
@@ -52,6 +53,9 @@ route.get(link.user_logout(), session_middleware, flash_middleware, route_user.l
 
 route.get(link.user_settings(), session_middleware, ware_error.unauthorized, force_session_middleware, flash_middleware, route_user.settings);
 route.post(link.user_settings(), session_middleware, ware_error.unauthorized, force_session_middleware, flash_middleware, route_user.settings_api);
+
+route.get(link.user_notifs(), session_middleware, ware_error.unauthorized, force_session_middleware, flash_middleware, route_notif.notifications);
+route.post(link.user_notifs(), session_middleware, ware_error.unauthorized, force_session_middleware, flash_middleware, route_notif.notifications_api);
 
 route.get(link.gacha(), session_middleware, ware_error.unauthorized, force_session_middleware, flash_middleware, route_gacha.gacha);
 route.post(link.gacha(), session_middleware, ware_error.unauthorized, force_session_middleware, flash_middleware, route_gacha.gacha_api);

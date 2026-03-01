@@ -81,20 +81,7 @@ export const Navigation = (input: { user_ctx: UserContext | null }) => {
 					<a href="#" class="button">Play</a>
 				</NavigationGroup>
 
-				{
-					input.user_ctx === null
-					? null
-					: (
-						<NavigationGroup name="zoey wont like this">
-							<ul>
-							{
-								...input.user_ctx.notifications
-									.map(x => <li>{ x.content }</li>)
-							}
-							</ul>
-						</NavigationGroup>
-					)
-				}
+				<a href={ link.user_notifs() } class="button">Notifications</a>
 
 				<a href={ link.user_settings() } class="button">Settings</a>
 
