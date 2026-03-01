@@ -124,6 +124,16 @@ const gacha_pull = async (shared: Shared, user: User, input: Validated<typeof ap
 		};
 	}
 
+	// todo: this is just a test; remove later
+	const result_notif = await shared.db.notification_new(user.id, `you just got a cat!`);
+	if (result_notif instanceof Miss) {
+		return {
+			status: 'err',
+			code: 'internal_error',
+			message: result_notif.message,
+		};
+	}
+
 	return {
 		status: 'ok',
 		pull: [catinst_id],

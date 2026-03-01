@@ -43,6 +43,7 @@ export const NavigationGroup = (input: { name: string }, children: unknown[]) =>
 };
 
 export const Navigation = (input: { user_ctx: UserContext | null }) => {
+	console.log(input.user_ctx?.notifications)
 	return (
 		<>
 			<nav class="app--nav">
@@ -79,6 +80,21 @@ export const Navigation = (input: { user_ctx: UserContext | null }) => {
 					<a href="#" class="button">Feeding</a>
 					<a href="#" class="button">Play</a>
 				</NavigationGroup>
+
+				{
+					input.user_ctx === null
+					? null
+					: (
+						<NavigationGroup name="zoey wont like this">
+							<ul>
+							{
+								...input.user_ctx.notifications
+									.map(x => <li>{ x.content }</li>)
+							}
+							</ul>
+						</NavigationGroup>
+					)
+				}
 
 				<a href={ link.user_settings() } class="button">Settings</a>
 
