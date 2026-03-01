@@ -128,7 +128,7 @@ export interface DB {
 
 	settings_get(user_id: number, key: string, def?: string): Promise<string | undefined | Miss<internal>>;
 	settings_set(user_id: number, key: string, value: string): Promise<null | Miss<internal>>;
-	settings_list(user_id: number): Promise<[string, string][] | Miss<internal>>;
+	settings_list(user_id: number): Promise<IteratorObject<{ key: string, value: string }> | Miss<internal>>;
 
 	/**
 	create a new login session for the user corresponding to `user_id`. `expires` is
@@ -145,7 +145,7 @@ export interface DB {
 
 	notification_new(user_id: number, content: string): Promise<number | Miss<internal>>;
 	notification_delete(notification_id: number): Promise<null | Miss<internal | not_found>>;
-	notification_list(user_id: number): Promise<Notification[] | Miss<internal>>
+	notification_list(user_id: number): Promise<IteratorObject<Notification> | Miss<internal>>
 
 	catdefs_sync(catdefs: CatDef[]): Promise<null | Miss<internal>>;
 	catdefs_fill(): Promise<CatDefJson[] | Miss<internal>>;
@@ -155,7 +155,7 @@ export interface DB {
 	catinst_get(catinst_id: number): Promise<CatInst | Miss<internal | not_found>>;
 	catinst_set(catinst: CatInst): Promise<null | Miss<internal>>;
 	catinst_delete(catinst_id: number): Promise<null | Miss<internal | not_found>>;
-	catinst_list_user(user_id: number, query: string, limit: number, offset: number): Promise<CatInst[] | Miss<internal | not_found>>;
+	catinst_list_user(user_id: number, query: string, limit: number, offset: number): Promise<IteratorObject<CatInst> | Miss<internal | not_found>>;
 
 	tradelocal_new(creator_user_id: number, with_user_id: number, creator_catinst_id: number, with_catinst_id: number): Promise<number | Miss<internal>>;
 	tradelocal_get(tradelocal_id: number): Promise<TradeLocal | Miss<internal | not_found>>;

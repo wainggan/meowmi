@@ -168,7 +168,7 @@ const cat_list = async (shared: Shared, input: Validated<typeof api_schema.cat_l
 		};
 	}
 
-	const mapped = list.values()
+	const mapped = list
 		.map(x => {
 			const def = shared.catdefs[x.catdef_id];
 			return {

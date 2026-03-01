@@ -33,11 +33,15 @@ export const user_context = async (shared: Shared, user: User): Promise<UserCont
 	return user_context_build(user, settings, notifications);
 };
 
-export const user_context_build = (user: User, settings: [string, string][], notifications: Notification[]): UserContext => {
+export const user_context_build = (
+	user: User,
+	settings: IteratorObject<{ key: string, value: string }>,
+	notifications: IteratorObject<Notification>
+): UserContext => {
 	return {
 		user,
-		settings: Object.fromEntries(settings),
-		notifications,
+		settings: Object.fromEntries(settings.map(x => [x.key, x.value])),
+		notifications: notifications.toArray(),
 	};
 };
 

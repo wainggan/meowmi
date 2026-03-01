@@ -86,6 +86,10 @@ class Cache {
 	get(str: TemplateStringsArray, ...input: SQLInputValue[]): Record<string, SQLOutputValue> | undefined {
 		return this.cache(str, input.length).get(...input);
 	}
+
+	iter(str: TemplateStringsArray, ...input: SQLInputValue[]): IteratorObject<Record<string, SQLOutputValue>> {
+		return this.cache(str, input.length).iterate(...input);
+	}
 }
 
 export class DBSql implements DB {
@@ -298,18 +302,18 @@ export class DBSql implements DB {
 		return null;
 	}
 
-	async settings_list(user_id: number): Promise<[string, string][] | Miss<"internal">> {
+	async settings_list(user_id: number): Promise<IteratorObject<{ key: string, value: string }> | Miss<"internal">> {
 		let result;
 
 		try {
-			result = this.sql.all `SELECT * FROM settings WHERE user_id = ${user_id};`;
+			result = this.sql.iter `SELECT * FROM settings WHERE user_id = ${user_id};`;
 		}
 		catch (e) {
 			console.error(e);
 			return new Miss('internal', `unknown internal error`);
 		}
 
-		return result.values().map(x => [x['key'] as string, x['value'] as string] as [string, string]).toArray();
+		return result as IteratorObject<{ key: string, value: string}>;
 	}
 
 	async session_new(user_id: number, expires: number): Promise<string | Miss<'internal'>> {
@@ -410,18 +414,18 @@ export class DBSql implements DB {
 		return null;
 	}
 
-	async notification_list(user_id: number): Promise<Notification[] | Miss<"internal">> {
+	async notification_list(user_id: number): Promise<IteratorObject<Notification> | Miss<"internal">> {
 		let result;
 
 		try {
-			result = this.sql.all `SELECT * FROM notifications WHERE user_id = ${user_id} ORDER BY date_created DESC;`
+			result = this.sql.iter `SELECT * FROM notifications WHERE user_id = ${user_id} ORDER BY date_created DESC;`
 		}
 		catch (_e) {
 			console.error(_e);
 			return new Miss('internal', `unknown internal error`);
 		}
 
-		return result as Notification[];
+		return result as IteratorObject<Notification>;
 	}
 
 	async catdefs_sync(catdefs: CatDefJson[]): Promise<null | Miss<"internal">> {
@@ -539,11 +543,11 @@ export class DBSql implements DB {
 		return null;
 	}
 
-	async catinst_list_user(user_id: number, query: string, limit: number, offset: number): Promise<CatInst[] | Miss<"internal" | "not_found">> {
+	async catinst_list_user(user_id: number, query: string, limit: number, offset: number): Promise<IteratorObject<CatInst> | Miss<"internal" | "not_found">> {
 		let result;
 
 		try {
-			result = this.sql.all `
+			result = this.sql.iter `
 				SELECT catinsts.* FROM catinsts
 				JOIN catdefs ON catinsts.catdef_id = catdefs.id
 				WHERE catinsts.owner_user_id = (${user_id}) AND (catinsts.name LIKE '%' || (${query}) || '%' OR catdefs.name LIKE '%' || (${query}) || '%')
@@ -554,7 +558,7 @@ export class DBSql implements DB {
 			return new Miss('internal', `unknown internal error`);
 		}
 
-		return result as CatInst[];
+		return result as IteratorObject<CatInst>;
 	}
 
 	async tradelocal_new(creator_user_id: number, with_user_id: number, creator_catinst_id: number, with_catinst_id: number): Promise<number | Miss<"internal">> {
